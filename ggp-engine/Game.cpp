@@ -257,10 +257,9 @@ void Game::Draw(float deltaTime, float totalTime) {
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	for (UINT i = 0; i < meshCount; i++) {
-		//Note: I'd like to have the GetVertexBuffer() function call be an in-line parameter for setting the
-		//vertex buffer, but I wasn't sure how to do that.  This is my "workaround" and I'm not confident
-		//on what best practices are here.
+		//Store the mesh's vertex buffer in a local variable
 		ID3D11Buffer* thisVertexBuffer = meshArray[i]->GetVertexBuffer();
+		//Set the active vertex/index buffers to this mesh's
 		dxContext->IASetVertexBuffers(0, 1, &thisVertexBuffer, &stride, &offset);
 		dxContext->IASetIndexBuffer(meshArray[i]->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 

@@ -13,10 +13,6 @@ class Mesh {
 public:
 	//Constructor
 	Mesh(Vertex vertexArray[], UINT vertexCount, int vertexIndicesArray[], UINT indexCount, ID3D11Device* dxDevice);
-	//Copy Constructor
-	Mesh(Mesh const& other);
-	//Copy Assignment Operator
-	//Mesh& operator=(Mesh const& other);
 	//Destructor
 	~Mesh(void);
 

@@ -38,13 +38,6 @@ Mesh::Mesh(Vertex _vertexArray[],
 	_dxDevice->CreateBuffer(&meshIBD, &initialIndexData, &indexBuffer);
 }
 
-Mesh::Mesh(Mesh const & other) {}
-
-//Mesh & Mesh::operator=(Mesh const & other) {
-//	// TODO: insert return statement here
-//	return;
-//}
-
 Mesh::~Mesh(void) {
 	vertexBuffer->Release();
 	indexBuffer->Release();
