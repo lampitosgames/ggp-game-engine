@@ -50,8 +50,8 @@ DXCore::DXCore(
 	fpsFrameCount = 0;
 	fpsTimeElapsed = 0.0f;
 
-	device = 0;
-	context = 0;
+	dxDevice = 0;
+	dxContext = 0;
 	swapChain = 0;
 	backBufferRTV = 0;
 	depthStencilView = 0;
@@ -71,8 +71,8 @@ DXCore::~DXCore() {
 	if (backBufferRTV) { backBufferRTV->Release(); }
 
 	if (swapChain) { swapChain->Release(); }
-	if (context) { context->Release(); }
-	if (device) { device->Release(); }
+	if (dxContext) { dxContext->Release(); }
+	if (dxDevice) { dxDevice->Release(); }
 }
 
 // --------------------------------------------------------
@@ -200,9 +200,9 @@ HRESULT DXCore::InitDirectX() {
 		D3D11_SDK_VERSION,			// Current version of the SDK
 		&swapDesc,					// Address of swap chain options
 		&swapChain,					// Pointer to our Swap Chain pointer
-		&device,					// Pointer to our Device pointer
+		&dxDevice,					// Pointer to our Device pointer
 		&dxFeatureLevel,			// This will hold the actual feature level the app will use
-		&context);					// Pointer to our Device Context pointer
+		&dxContext);					// Pointer to our Device Context pointer
 	if (FAILED(hr)) return hr;
 
 	// The above function created the back buffer render target
@@ -216,7 +216,7 @@ HRESULT DXCore::InitDirectX() {
 	// Now that we have the texture, create a render target view
 	// for the back buffer so we can render into it.  Then release
 	// our local reference to the texture, since we have the view.
-	device->CreateRenderTargetView(
+	dxDevice->CreateRenderTargetView(
 		backBufferTexture,
 		0,
 		&backBufferRTV);
@@ -239,13 +239,13 @@ HRESULT DXCore::InitDirectX() {
 	// Create the depth buffer and its view, then 
 	// release our reference to the texture
 	ID3D11Texture2D* depthBufferTexture;
-	device->CreateTexture2D(&depthStencilDesc, 0, &depthBufferTexture);
-	device->CreateDepthStencilView(depthBufferTexture, 0, &depthStencilView);
+	dxDevice->CreateTexture2D(&depthStencilDesc, 0, &depthBufferTexture);
+	dxDevice->CreateDepthStencilView(depthBufferTexture, 0, &depthStencilView);
 	depthBufferTexture->Release();
 
 	// Bind the views to the pipeline, so rendering properly 
 	// uses their underlying textures
-	context->OMSetRenderTargets(1, &backBufferRTV, depthStencilView);
+	dxContext->OMSetRenderTargets(1, &backBufferRTV, depthStencilView);
 
 	// Lastly, set up a viewport so we render into
 	// to correct portion of the window
@@ -256,7 +256,7 @@ HRESULT DXCore::InitDirectX() {
 	viewport.Height = (float)height;
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
-	context->RSSetViewports(1, &viewport);
+	dxContext->RSSetViewports(1, &viewport);
 
 	// Return the "everything is ok" HRESULT value
 	return S_OK;
@@ -287,7 +287,7 @@ void DXCore::OnResize() {
 	// texture, then release our local texture reference
 	ID3D11Texture2D* backBufferTexture;
 	swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBufferTexture));
-	device->CreateRenderTargetView(backBufferTexture, 0, &backBufferRTV);
+	dxDevice->CreateRenderTargetView(backBufferTexture, 0, &backBufferRTV);
 	backBufferTexture->Release();
 
 	// Set up the description of the texture to use for the depth buffer
@@ -307,13 +307,13 @@ void DXCore::OnResize() {
 	// Create the depth buffer and its view, then 
 	// release our reference to the texture
 	ID3D11Texture2D* depthBufferTexture;
-	device->CreateTexture2D(&depthStencilDesc, 0, &depthBufferTexture);
-	device->CreateDepthStencilView(depthBufferTexture, 0, &depthStencilView);
+	dxDevice->CreateTexture2D(&depthStencilDesc, 0, &depthBufferTexture);
+	dxDevice->CreateDepthStencilView(depthBufferTexture, 0, &depthStencilView);
 	depthBufferTexture->Release();
 
 	// Bind the views to the pipeline, so rendering properly 
 	// uses their underlying textures
-	context->OMSetRenderTargets(1, &backBufferRTV, depthStencilView);
+	dxContext->OMSetRenderTargets(1, &backBufferRTV, depthStencilView);
 
 	// Lastly, set up a viewport so we render into
 	// to correct portion of the window
@@ -324,7 +324,7 @@ void DXCore::OnResize() {
 	viewport.Height = (float)height;
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
-	context->RSSetViewports(1, &viewport);
+	dxContext->RSSetViewports(1, &viewport);
 }
 
 
@@ -528,7 +528,7 @@ LRESULT DXCore::ProcessMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 			// If DX is initialized, resize 
 			// our required buffers
-			if (device)
+			if (dxDevice)
 				OnResize();
 
 			return 0;

@@ -62,8 +62,8 @@ protected:
 	// DirectX related objects and variables
 	D3D_FEATURE_LEVEL		dxFeatureLevel;
 	IDXGISwapChain*			swapChain;
-	ID3D11Device*			device;
-	ID3D11DeviceContext*	context;
+	ID3D11Device*			dxDevice;
+	ID3D11DeviceContext*	dxContext;
 
 	ID3D11RenderTargetView* backBufferRTV;
 	ID3D11DepthStencilView* depthStencilView;
