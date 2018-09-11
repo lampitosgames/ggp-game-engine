@@ -1,4 +1,6 @@
-#pragma once
+#ifndef GGP_MESH_H
+#define GGP_MESH_H
+
 #include "Vertex.h"
 #include <d3d11.h>
 
@@ -21,3 +23,5 @@ public:
 	ID3D11Buffer* GetIndexBuffer();
 	UINT GetIndexCount();
 };
+
+#endif //GGP_MESH_H

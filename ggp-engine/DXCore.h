@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GGP_DXCORE_H
+#define GGP_DXCORE_H
 
 #include <Windows.h>
 #include <d3d11.h>
@@ -88,3 +89,4 @@ private:
 	void UpdateTitleBarStats();	// Puts debug info in the title bar
 };
 
+#endif //GGP_DXCORE_H

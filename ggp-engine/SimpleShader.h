@@ -1,4 +1,6 @@
-#pragma once
+#ifndef GGP_SIMPLE_SHADER_H
+#define GGP_SIMPLE_SHADER_H
+
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
@@ -287,3 +289,5 @@ protected:
 	void SetShaderAndCBs();
 	void CleanUp();
 };
+
+#endif //GGP_SIMPLE_SHADER_H

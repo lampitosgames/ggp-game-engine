@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GGP_GAME_H
+#define GGP_GAME_H
 
 #include "DXCore.h"
 #include "SimpleShader.h"
@@ -53,3 +54,4 @@ private:
 	Mesh** meshArray;
 };
 
+#endif //GGP_GAME_H
