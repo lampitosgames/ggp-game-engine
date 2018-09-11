@@ -5,6 +5,7 @@
 #include "SimpleShader.h"
 #include <DirectXMath.h>
 #include "Mesh.h"
+#include "Transform.h"
 
 class Game
 	: public DXCore {
@@ -52,6 +53,9 @@ private:
 	//Temporary place to keep mesh pointers until I get a resource manager
 	UINT meshCount;
 	Mesh** meshArray;
+
+	UINT transformCount;
+	Transform** transformArray;
 };
 
 #endif //GGP_GAME_H

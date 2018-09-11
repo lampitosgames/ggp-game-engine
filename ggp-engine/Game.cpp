@@ -31,6 +31,9 @@ Game::Game(HINSTANCE hInstance)
 	meshCount = 0;
 	meshArray = new Mesh*[3];
 
+	transformCount = 0;
+	transformArray = new Transform*[3];
+
 	#if defined(DEBUG) || defined(_DEBUG)
 		// Do we want a console window?  Probably only in debug mode
 	CreateConsoleWindow(500, 120, 32, 120);
@@ -59,7 +62,13 @@ Game::~Game() {
 	for (UINT i = 0; i < meshCount; i++) {
 		delete meshArray[i];
 	}
-	delete meshArray;
+	delete[] meshArray;
+
+	//Delete all transforms
+	for (UINT i = 0; i < transformCount; i++) {
+		delete transformArray[i];
+	}
+	delete[] transformArray;
 }
 
 // --------------------------------------------------------
@@ -182,10 +191,16 @@ void Game::CreateBasicGeometry() {
 	//Create every mesh using the data we just defined
 	meshArray[0] = new Mesh(mesh1Verts, 4, mesh1Indices, 6, dxDevice);
 	meshCount++;
+	transformArray[0] = new Transform();
+	transformCount++;
 	meshArray[1] = new Mesh(mesh2Verts, 3, mesh2Indices, 3, dxDevice);
 	meshCount++;
+	transformArray[1] = new Transform();
+	transformCount++;
 	meshArray[2] = new Mesh(mesh3Verts, 4, mesh3Indices, 6, dxDevice);
 	meshCount++;
+	transformArray[2] = new Transform();
+	transformCount++;
 }
 
 
@@ -232,31 +247,33 @@ void Game::Draw(float deltaTime, float totalTime) {
 		1.0f,
 		0);
 
-	// Send data to shader variables
-	//  - Do this ONCE PER OBJECT you're drawing
-	//  - This is actually a complex process of copying data to a local buffer
-	//    and then copying that entire buffer to the GPU.  
-	//  - The "SimpleShader" class handles all of that for you.
-	vertexShader->SetMatrix4x4("world", worldMatrix);
-	vertexShader->SetMatrix4x4("view", viewMatrix);
-	vertexShader->SetMatrix4x4("projection", projectionMatrix);
-
-	// Once you've set all of the data you care to change for
-	// the next draw call, you need to actually send it to the GPU
-	//  - If you skip this, the "SetMatrix" calls above won't make it to the GPU!
-	vertexShader->CopyAllBufferData();
-
-	// Set the vertex and pixel shaders to use for the next Draw() command
-	//  - These don't technically need to be set every frame...YET
-	//  - Once you start applying different shaders to different objects,
-	//    you'll need to swap the current shaders before each draw
-	vertexShader->SetShader();
-	pixelShader->SetShader();
+	transformArray[0]->rotation.z += 0.0001f;
 
 	// Set buffers in the input assembler for each object we are drawing
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	for (UINT i = 0; i < meshCount; i++) {
+		// Send data to shader variables
+		//  - Do this ONCE PER OBJECT you're drawing
+		//  - This is actually a complex process of copying data to a local buffer
+		//    and then copying that entire buffer to the GPU.  
+		//  - The "SimpleShader" class handles all of that for you.
+		vertexShader->SetMatrix4x4("world", transformArray[i]->GetWorldMatrix());
+		vertexShader->SetMatrix4x4("view", viewMatrix);
+		vertexShader->SetMatrix4x4("projection", projectionMatrix);
+
+		// Once you've set all of the data you care to change for
+		// the next draw call, you need to actually send it to the GPU
+		//  - If you skip this, the "SetMatrix" calls above won't make it to the GPU!
+		vertexShader->CopyAllBufferData();
+
+		// Set the vertex and pixel shaders to use for the next Draw() command
+		//  - These don't technically need to be set every frame...YET
+		//  - Once you start applying different shaders to different objects,
+		//    you'll need to swap the current shaders before each draw
+		vertexShader->SetShader();
+		pixelShader->SetShader();
+
 		//Store the mesh's vertex buffer in a local variable
 		ID3D11Buffer* thisVertexBuffer = meshArray[i]->GetVertexBuffer();
 		//Set the active vertex/index buffers to this mesh's
