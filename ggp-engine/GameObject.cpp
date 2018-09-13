@@ -7,7 +7,7 @@ map<std::string, GameObject*> GameObject::goUIDMap = map<std::string, GameObject
 GameObject::GameObject(string _uniqueID) {
 	Init();
 	//Ensure the provided ID is unique
-	GenerateUID(uniqueID);
+	GenerateUID(_uniqueID);
 	//Store unique ID
 	uniqueID = _uniqueID;
 	//Base constructor, this is a game object
@@ -40,12 +40,13 @@ void GameObject::GenerateUID(string &_outString) {
 	//Static unique index for generated names.
 	//Just increments for every object that calls this function to save iterations
 	static unsigned int uniqueIndex = 0;
+	goUIDMap;
 	//Store the starting name of the object
 	string startName = _outString;
 	//Check to see if the name is already unique.
 	GameObject* checkNameObject = GetGameObject(_outString);
 	//While there is an object with the generated name
-	while (checkNameObject != nullptr) {
+	while (checkNameObject) {
 		_outString = startName + "_" + to_string(uniqueIndex);
 		uniqueIndex++;
 		checkNameObject = GetGameObject(_outString);

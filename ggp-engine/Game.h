@@ -62,6 +62,7 @@ private:
 	Spatial* gameObject2;
 	Spatial* gameObject3;
 	Spatial* gameObject4;
+	Spatial* gameObject5;
 };
 
 #endif //GGP_GAME_H

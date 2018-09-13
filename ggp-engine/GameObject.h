@@ -28,6 +28,9 @@ protected:
 	GOType type;
 
 	//Map of this game object's components
+	//Storing the component's unique identifier helps prevent a messy solution to object slicing
+	//The resulting function calls to get a component are the same, but components are stored 
+	//by their respective providers in type-specific std::maps where slicing isn't an issue.
 	std::map<CompType, UINT> components;
 
 	//Pointers to required singletons (used for component management)
@@ -63,6 +66,7 @@ template<typename T>
 inline T* GameObject::GetComponent(CompType _type) {
 	//This is fugly
 	//TODO: Ask about a better way to de-reference components
+	//Can I switch based on the class type of T?
 	switch (_type) {
 		case CompType::MESH_RENDERER:
 			//Ensure the mesh renderer component exists

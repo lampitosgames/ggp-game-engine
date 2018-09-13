@@ -1,6 +1,6 @@
 #include "Game.h"
 #include "Vertex.h"
-#include "Spatial.h"
+#include <iostream>
 
 // For the DirectX Math library
 using namespace DirectX;
@@ -67,6 +67,12 @@ Game::~Game() {
 		delete meshArray[i];
 	}
 	delete[] meshArray;
+
+	delete gameObject1;
+	delete gameObject2;
+	delete gameObject3;
+	delete gameObject4;
+	delete gameObject5;
 }
 
 // --------------------------------------------------------
@@ -157,46 +163,87 @@ void Game::CreateBasicGeometry() {
 
 	//Mesh1 Vertex Array
 	Vertex mesh1Verts[] = {
-		{ XMFLOAT3(+1.0f, +2.0f, +0.0f), red },
-		{ XMFLOAT3(+2.0f, +2.0f, +0.0f), red },
+		{ XMFLOAT3(-1.0f, +1.0f, +0.0f), red },
 		{ XMFLOAT3(+1.0f, +1.0f, +0.0f), red },
-		{ XMFLOAT3(+2.0f, +1.0f, +0.0f), red },
+		{ XMFLOAT3(-1.0f, -1.0f, +0.0f), red },
+		{ XMFLOAT3(+1.0f, -1.0f, +0.0f), red },
 	};
 	//Mesh1 indices
 	int mesh1Indices[] = {0, 1, 2,
-	                      2, 1, 3};
+	                      2, 1, 3,
+	                      2, 1, 0,
+	                      3, 1, 2};
 
 	//Mesh2 Vertex Array
 	Vertex mesh2Verts[] = {
-		{XMFLOAT3(-2.0f, +1.0f, +0.0f), blue},
-		{XMFLOAT3(-2.0f, -1.0f, +0.0f), blue},
-		{XMFLOAT3(+0.0f, -1.0f, +0.0f), blue},
+		{XMFLOAT3(-1.0f, +1.0f, +0.0f), blue},
+		{XMFLOAT3(-1.0f, -1.0f, +0.0f), blue},
+		{XMFLOAT3(+1.0f, -1.0f, +0.0f), blue},
 	};
 	//Mesh2 indices
 	int mesh2Indices[] = {0, 2, 1};
 
 	//Mesh3 Vertex Array
 	Vertex mesh3Verts[] = {
-		{XMFLOAT3(+0.5f, +0.5f, +0.0f), green},
-		{XMFLOAT3(+2.5f, +0.5f, +0.0f), green},
-		{XMFLOAT3(+0.5f, -3.0f, +0.0f), green},
-		{XMFLOAT3(+2.5f, -3.0f, +0.0f), green},
+		{XMFLOAT3(-1.0f, +2.0f, +0.0f), green},
+		{XMFLOAT3(+1.0f, +2.0f, +0.0f), green},
+		{XMFLOAT3(-1.0f, -2.0f, +0.0f), green},
+		{XMFLOAT3(+1.0f, -2.0f, +0.0f), green},
 	};
 	//Mesh3 indices
 	int mesh3Indices[] = {0, 1, 2,
-						  2, 1, 3};
+						  2, 1, 3,
+						  2, 1, 0,
+						  3, 1, 2};
 
 	//Create every mesh using the data we just defined
-	meshArray[0] = new Mesh(mesh1Verts, 4, mesh1Indices, 6, dxDevice);
+	meshArray[0] = new Mesh(mesh1Verts, 4, mesh1Indices, 12, dxDevice);
 	meshCount++;
 	meshArray[1] = new Mesh(mesh2Verts, 3, mesh2Indices, 3, dxDevice);
 	meshCount++;
-	meshArray[2] = new Mesh(mesh3Verts, 4, mesh3Indices, 6, dxDevice);
+	meshArray[2] = new Mesh(mesh3Verts, 4, mesh3Indices, 12, dxDevice);
 	meshCount++;
 
+	//Create the first game object
 	gameObject1 = new Spatial("Object1");
+	//Give it a mesh renderer component
 	gameObject1->AddMeshRenderer();
+	//Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
 	gameObject1->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(meshArray[0]);
+
+	//Create the second game object
+	gameObject2 = new Spatial("Object2");
+	//We can access objects by name.  The pointer typecast is a little weird right now.  I might use overloading to auto-detect
+	//the kind of object you want.  But it does work and will be immensely useful when there are a TON of game objects
+	((Spatial*)GameObject::GetGameObject("Object2"))->AddMeshRenderer();
+	//Give it the same mesh as Object1
+	gameObject2->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(meshArray[0]);
+	//Reposition and scale it differently
+	gameObject2->transform.position.x -= 3.0f;
+	gameObject2->transform.position.y += 1.5f;
+	gameObject2->transform.scale = XMFLOAT3(0.5f, 0.5f, 0.5f);
+
+	//Create the third game object
+	//If an object is created with a duplicate unique identifier, numbers will be added to the end to make it unique
+	gameObject3 = new Spatial("Object2");
+	//Show that the object was given a unique ID despite being created with the same ID as object 2
+	std::cout << std::endl << gameObject3->GetUniqueID() << std::endl;
+	//Give object 3 a mesh
+	gameObject3->AddMeshRenderer();
+	gameObject3->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(meshArray[1]);
+	gameObject3->transform.position.x += 3.0f;
+	gameObject3->transform.rotation.z += 24.67f;
+
+	//Create game objects 4 and 5 with the same mesh
+	gameObject4 = new Spatial("Object4");
+	gameObject4->AddMeshRenderer();
+	gameObject4->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(meshArray[2]);
+	gameObject4->transform.rotation.z += 90.0f;
+	gameObject4->transform.position.y += 2.0f;
+	gameObject5 = new Spatial("Object5");
+	gameObject5->AddMeshRenderer();
+	gameObject5->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(meshArray[2]);
+	gameObject5->transform.position.y -= 2.0f;
 }
 
 
@@ -224,6 +271,21 @@ void Game::Update(float deltaTime, float totalTime) {
 	// Quit if the escape key is pressed
 	if (GetAsyncKeyState(VK_ESCAPE))
 		Quit();
+
+	//Change object transforms every frame.  Eventually this should be done manually in a scene, or via the velocity in the physics singleton
+	gameObject1->transform.rotation.z += 0.0001f;
+
+	gameObject2->transform.rotation.z += 0.001f;
+	gameObject2->transform.rotation.y += 0.0005f;
+	gameObject2->transform.rotation.x += 0.001f;
+
+	gameObject3->transform.scale.x = abs(1.0f * sin(totalTime));
+	gameObject3->transform.scale.y = abs(1.0f * sin(totalTime));
+	gameObject3->transform.scale.z = abs(1.0f * sin(totalTime));
+
+	gameObject4->transform.rotation.y += 0.0002f;
+
+	gameObject5->transform.position.x = 2.0f * sin(totalTime);
 }
 
 // --------------------------------------------------------
@@ -243,8 +305,6 @@ void Game::Draw(float deltaTime, float totalTime) {
 		1.0f,
 		0);
 
-	//transformArray[0]->rotation.z += 0.0001f;
-	
 	//Call render on the MeshManager
 	meshManager->Render(dxContext, vertexShader, pixelShader, viewMatrix, projectionMatrix);
 
