@@ -5,7 +5,9 @@
 #include "SimpleShader.h"
 #include <DirectXMath.h>
 #include "Mesh.h"
-#include "Transform.h"
+#include "MeshManager.h"
+#include "MeshRenderer.h"
+#include "Spatial.h"
 
 class Game
 	: public DXCore {
@@ -50,12 +52,16 @@ private:
 	// determining how far the mouse moved in a single frame.
 	POINT prevMousePos;
 
+	MeshManager* meshManager;
+
 	//Temporary place to keep mesh pointers until I get a resource manager
 	UINT meshCount;
 	Mesh** meshArray;
 
-	UINT transformCount;
-	Transform** transformArray;
+	Spatial* gameObject1;
+	Spatial* gameObject2;
+	Spatial* gameObject3;
+	Spatial* gameObject4;
 };
 
 #endif //GGP_GAME_H

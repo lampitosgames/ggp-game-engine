@@ -26,7 +26,9 @@ public:
 	DirectX::XMFLOAT3 rotation;
 	DirectX::XMFLOAT3 scale;
 
-	Transform();
+	Transform(DirectX::XMFLOAT3 _position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+			  DirectX::XMFLOAT3 _rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+			  DirectX::XMFLOAT3 _scale    = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 
 	DirectX::XMFLOAT4X4 GetWorldMatrix();
 };

@@ -54,3 +54,11 @@ ID3D11Buffer* Mesh::GetIndexBuffer() {
 UINT Mesh::GetIndexCount() {
 	return indexCount;
 }
+
+UINT Mesh::GetStride() {
+	return stride;
+}
+
+UINT Mesh::GetOffset() {
+	return offset;
+}

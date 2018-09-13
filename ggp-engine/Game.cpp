@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "Vertex.h"
+#include "Spatial.h"
 
 // For the DirectX Math library
 using namespace DirectX;
@@ -26,13 +27,13 @@ Game::Game(HINSTANCE hInstance)
 	vertexShader = 0;
 	pixelShader = 0;
 
+	//Get Singleton Instances
+	meshManager = MeshManager::GetInstance();
+
 	//Storing meshes in the base game class for now
 	//TODO: Move this to somewhere that makes more sense (Resource manager?)
 	meshCount = 0;
 	meshArray = new Mesh*[3];
-
-	transformCount = 0;
-	transformArray = new Transform*[3];
 
 	#if defined(DEBUG) || defined(_DEBUG)
 		// Do we want a console window?  Probably only in debug mode
@@ -58,17 +59,14 @@ Game::~Game() {
 	delete vertexShader;
 	delete pixelShader;
 
+	//Release all singletons
+	meshManager->ReleaseInstance();
+
 	//Delete all meshes
 	for (UINT i = 0; i < meshCount; i++) {
 		delete meshArray[i];
 	}
 	delete[] meshArray;
-
-	//Delete all transforms
-	for (UINT i = 0; i < transformCount; i++) {
-		delete transformArray[i];
-	}
-	delete[] transformArray;
 }
 
 // --------------------------------------------------------
@@ -191,16 +189,14 @@ void Game::CreateBasicGeometry() {
 	//Create every mesh using the data we just defined
 	meshArray[0] = new Mesh(mesh1Verts, 4, mesh1Indices, 6, dxDevice);
 	meshCount++;
-	transformArray[0] = new Transform();
-	transformCount++;
 	meshArray[1] = new Mesh(mesh2Verts, 3, mesh2Indices, 3, dxDevice);
 	meshCount++;
-	transformArray[1] = new Transform();
-	transformCount++;
 	meshArray[2] = new Mesh(mesh3Verts, 4, mesh3Indices, 6, dxDevice);
 	meshCount++;
-	transformArray[2] = new Transform();
-	transformCount++;
+
+	gameObject1 = new Spatial("Object1");
+	gameObject1->AddMeshRenderer();
+	gameObject1->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(meshArray[0]);
 }
 
 
@@ -247,49 +243,10 @@ void Game::Draw(float deltaTime, float totalTime) {
 		1.0f,
 		0);
 
-	transformArray[0]->rotation.z += 0.0001f;
-
-	// Set buffers in the input assembler for each object we are drawing
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-	for (UINT i = 0; i < meshCount; i++) {
-		// Send data to shader variables
-		//  - Do this ONCE PER OBJECT you're drawing
-		//  - This is actually a complex process of copying data to a local buffer
-		//    and then copying that entire buffer to the GPU.  
-		//  - The "SimpleShader" class handles all of that for you.
-		vertexShader->SetMatrix4x4("world", transformArray[i]->GetWorldMatrix());
-		vertexShader->SetMatrix4x4("view", viewMatrix);
-		vertexShader->SetMatrix4x4("projection", projectionMatrix);
-
-		// Once you've set all of the data you care to change for
-		// the next draw call, you need to actually send it to the GPU
-		//  - If you skip this, the "SetMatrix" calls above won't make it to the GPU!
-		vertexShader->CopyAllBufferData();
-
-		// Set the vertex and pixel shaders to use for the next Draw() command
-		//  - These don't technically need to be set every frame...YET
-		//  - Once you start applying different shaders to different objects,
-		//    you'll need to swap the current shaders before each draw
-		vertexShader->SetShader();
-		pixelShader->SetShader();
-
-		//Store the mesh's vertex buffer in a local variable
-		ID3D11Buffer* thisVertexBuffer = meshArray[i]->GetVertexBuffer();
-		//Set the active vertex/index buffers to this mesh's
-		dxContext->IASetVertexBuffers(0, 1, &thisVertexBuffer, &stride, &offset);
-		dxContext->IASetIndexBuffer(meshArray[i]->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-
-		// Finally do the actual drawing
-		//  - Do this ONCE PER OBJECT you intend to draw
-		//  - This will use all of the currently set DirectX "stuff" (shaders, buffers, etc)
-		//  - DrawIndexed() uses the currently set INDEX BUFFER to look up corresponding
-		//     vertices in the currently set VERTEX BUFFER
-		dxContext->DrawIndexed(
-			meshArray[i]->GetIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
-			0,     // Offset to the first index we want to use
-			0);    // Offset to add to each index when looking up vertices
-	}
+	//transformArray[0]->rotation.z += 0.0001f;
+	
+	//Call render on the MeshManager
+	meshManager->Render(dxContext, vertexShader, pixelShader, viewMatrix, projectionMatrix);
 
 	// Present the back buffer to the user
 	//  - Puts the final frame we're drawing into the window so the user can see it
