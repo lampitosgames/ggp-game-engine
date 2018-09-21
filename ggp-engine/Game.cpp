@@ -73,6 +73,8 @@ Game::~Game() {
 	delete gameObject3;
 	delete gameObject4;
 	delete gameObject5;
+
+	delete activeCamera;
 }
 
 // --------------------------------------------------------
@@ -148,6 +150,10 @@ void Game::CreateMatrices() {
 		0.1f,						// Near clip plane distance
 		100.0f);					// Far clip plane distance
 	XMStoreFloat4x4(&projectionMatrix, XMMatrixTranspose(P)); // Transpose for HLSL!
+
+	//TODO: Call the Resize() event on scene
+	//Give the camera the proper aspect ratio
+	//activeCamera->aspectRatio = (float)width / height;
 }
 
 
@@ -244,6 +250,11 @@ void Game::CreateBasicGeometry() {
 	gameObject5->AddMeshRenderer();
 	gameObject5->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(meshArray[2]);
 	gameObject5->transform.position.y -= 2.0f;
+
+	//Create a camera
+	activeCamera = new Camera("MainCamera");
+	activeCamera->transform.position.z = -5.0f;
+	activeCamera->CalculateViewMatrix();
 }
 
 
@@ -254,7 +265,11 @@ void Game::CreateBasicGeometry() {
 void Game::OnResize() {
 	// Handle base-level DX resize stuff
 	DXCore::OnResize();
+	//TODO: Pass a resize event to the scene
+	//Change the camera's aspect ratio
+	activeCamera->SetAspectRatio((float)width / height);
 
+	//TODO: Remove this
 	// Update our projection matrix since the window size changed
 	XMMATRIX P = XMMatrixPerspectiveFovLH(
 		0.25f * 3.1415926535f,	// Field of View Angle
@@ -306,7 +321,7 @@ void Game::Draw(float deltaTime, float totalTime) {
 		0);
 
 	//Call render on the MeshManager
-	meshManager->Render(dxContext, vertexShader, pixelShader, viewMatrix, projectionMatrix);
+	meshManager->Render(dxContext, vertexShader, pixelShader, activeCamera->GetViewMatrix(), activeCamera->GetProjectionMatrix());
 
 	// Present the back buffer to the user
 	//  - Puts the final frame we're drawing into the window so the user can see it

@@ -12,28 +12,46 @@ GameObject::GameObject(string _uniqueID) {
 	uniqueID = _uniqueID;
 	//Base constructor, this is a game object
 	type = GOType::GAME_OBJECT;
+	//Set this object as active
+	isActive = true;
 	//Store a reference to this game object in the global game object map
 	goUIDMap[uniqueID] = this;
 }
 
-GameObject::~GameObject() {
-}
+GameObject::~GameObject() { Release(); }
 
 GameObject* GameObject::GetGameObject(string _uniqueID) {
+	//Find an object in the map with this unique ID
+	//We have to use the find() function because accessing a 
+	//pair that doesn't exist directly creates an empty one for some reason
 	auto foundObject = goUIDMap.find(_uniqueID);
+	//If nothing was found, return null pointer
 	if (foundObject == goUIDMap.end()) {
 		return nullptr;
 	}
+	//Return found object
 	return foundObject->second;
 }
 
-string GameObject::GetUniqueID() {
-	return uniqueID;
+void GameObject::Start() {
+	//Do all initialization steps (adding components, setting transform, etc.) here
 }
 
-GOType GameObject::GetType() {
-	return type;
+void GameObject::Update(float _deltaTime) {
+	//If this gameObject is inactive, do nothing (and stop the child/parent propogation for this branch)
+	if (!isActive) { return; }
+	//TODO: update all children
 }
+
+string GameObject::GetUniqueID() { return uniqueID; }
+
+GOType GameObject::GetType() { return type; }
+
+bool GameObject::IsActive() { return isActive; }
+
+void GameObject::Enable() { isActive = true; }
+
+void GameObject::Disable() { isActive = false; }
 
 //Ensures the object's unique identifier is unique to prevent overlaps in the global game object map
 void GameObject::GenerateUID(string &_outString) {
@@ -56,5 +74,10 @@ void GameObject::GenerateUID(string &_outString) {
 }
 
 void GameObject::Init() {
+	//Get instances of all singletons
 	meshManager = MeshManager::GetInstance();
+}
+
+void GameObject::Release() {
+	//Remove self from the global list of gameObjects
 }

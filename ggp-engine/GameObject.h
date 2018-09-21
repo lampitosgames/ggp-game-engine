@@ -26,6 +26,8 @@ protected:
 	std::string uniqueID;
 	//Every game object (and dervived type) will have a unique type so casting can be done
 	GOType type;
+	//Is the game object active or not? Defaults to true
+	bool isActive;
 
 	//Map of this game object's components
 	//Storing the component's unique identifier helps prevent a messy solution to object slicing
@@ -38,15 +40,22 @@ protected:
 public:
 	//Constructors
 	GameObject(std::string _uniqueID = "NA");
-	//TODO: Implement copy constructor and copy asignment operator
-	//GameObject(GameObject const& other);
-	//GameObject& operator=(GameObject const& other);
+
 	//Destructor
 	~GameObject();
 
 	//Static, global get to access any game object by name
 	static GameObject* GetGameObject(std::string _uniqueID);
-	
+
+	//Start method
+	void Start();
+
+	//Update method
+	void Update(float _deltaTime);
+
+	//TODO: Input method
+	//void Input(Input _inputEvent);
+
 	//Get one of this object's components
 	template<typename T>
 	T* GetComponent(CompType _type);
@@ -55,11 +64,16 @@ public:
 	std::string GetUniqueID();
 	GOType GetType();
 
+	//GameObject active state:
+	bool IsActive();
+	void Enable();
+	void Disable();
+
 	//Ensure the string is a unique identifier.  Prevents duplicates
 	void GenerateUID(std::string &_outString);
 private:
 	void Init();
-	//void Release();
+	void Release();
 };
 
 template<typename T>

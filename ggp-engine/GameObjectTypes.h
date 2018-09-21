@@ -5,8 +5,10 @@ enum GOType {
 	GAME_OBJECT = 0,
 	SPATIAL = 1,
 	SCENE = 2,
-	CAMERA = 3,
-	LIGHT = 4
+	SHADER_OBJECT = 3,
+	CAMERA = 4,
+	LIGHT = 5,
+	GOINPUT = 6
 };
 
 #endif //GGP_GAME_OBJECT_TYPES_H
