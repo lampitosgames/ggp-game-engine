@@ -1,5 +1,6 @@
 #include "GameObject.h"
 #include "MeshManager.h"
+#include "InputManager.h"
 using namespace std;
 
 map<std::string, GameObject*> GameObject::goUIDMap = map<std::string, GameObject*>();
@@ -43,6 +44,12 @@ void GameObject::Update(float _deltaTime) {
 	//TODO: update all children
 }
 
+void GameObject::Input(InputEvent _event) {}
+
+void GameObject::AddInputListener() {
+	components[CompType::INPUT_LISTENER] = inputManager->AddInputListener(this);
+}
+
 string GameObject::GetUniqueID() { return uniqueID; }
 
 GOType GameObject::GetType() { return type; }
@@ -76,8 +83,10 @@ void GameObject::GenerateUID(string &_outString) {
 void GameObject::Init() {
 	//Get instances of all singletons
 	meshManager = MeshManager::GetInstance();
+	inputManager = InputManager::GetInstance();
 }
 
 void GameObject::Release() {
 	//Remove self from the global list of gameObjects
+	goUIDMap.erase(uniqueID);
 }

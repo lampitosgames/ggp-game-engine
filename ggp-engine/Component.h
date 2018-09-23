@@ -4,6 +4,8 @@
 #include "ComponentTypes.h"
 class GameObject;
 
+typedef unsigned int UINT;
+
 class Component {
 protected:
 	CompType type;

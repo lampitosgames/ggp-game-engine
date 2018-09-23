@@ -1,4 +1,6 @@
 #include "Camera.h"
+#include "InputManager.h"
+#include <iostream>
 
 using namespace DirectX;
 
@@ -16,6 +18,20 @@ Camera::Camera(std::string _uniqueID,
 	//First-time calculate the matrices
 	CalculateViewMatrix();
 	CalculateProjectionMatrix();
+}
+
+void Camera::Input(InputEvent _event) {
+	if (inputManager->ActionPressed("move_back", _event)) {
+		transform.position.z = -20.0f;
+		CalculateViewMatrix();
+	}
+}
+
+void Camera::Update(float _deltaTime) {
+	if (inputManager->ActionPressed("move_back")) {
+		transform.position.z -= 1.0f * _deltaTime;
+		CalculateViewMatrix();
+	}
 }
 
 void Camera::CalculateViewMatrix() {
@@ -39,10 +55,10 @@ void Camera::SetFOV(float _fovAngle) {
 	CalculateProjectionMatrix();
 }
 
-float Camera::GetFOVDegrees() {	return 180.0f * 3.14159 * fov; }
+float Camera::GetFOVDegrees() {	return 57.2958f * fov; }
 
 void Camera::SetFOVDegrees(float _fovAngle) {
-	fov = _fovAngle * (3.14159 / 180.0f);
+	fov = _fovAngle * (3.14159f / 180.0f);
 	CalculateProjectionMatrix();
 }
 

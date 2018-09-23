@@ -13,7 +13,9 @@
 #include <map>
 #include "GameObjectTypes.h"
 #include "ComponentTypes.h"
+#include "InputEvent.h"
 class MeshManager;
+class InputManager;
 
 typedef unsigned int UINT;
 
@@ -37,6 +39,7 @@ protected:
 
 	//Pointers to required singletons (used for component management)
 	MeshManager* meshManager;
+	InputManager* inputManager;
 public:
 	//Constructors
 	GameObject(std::string _uniqueID = "NA");
@@ -51,14 +54,17 @@ public:
 	void Start();
 
 	//Update method
-	void Update(float _deltaTime);
+	virtual void Update(float _deltaTime);
 
-	//TODO: Input method
-	//void Input(Input _inputEvent);
+	//Input event handler (Will only ever be called by the engine if the game object has an InputListener component)
+	virtual void Input(InputEvent _event);
 
 	//Get one of this object's components
 	template<typename T>
 	T* GetComponent(CompType _type);
+
+	//Functions to add different types of components
+	void AddInputListener();
 
 	//Gets for member variables
 	std::string GetUniqueID();
@@ -82,7 +88,7 @@ inline T* GameObject::GetComponent(CompType _type) {
 	//TODO: Ask about a better way to de-reference components
 	//Can I switch based on the class type of T?
 	switch (_type) {
-		case CompType::MESH_RENDERER:
+		case CompType::MESH_RENDERER: {
 			//Ensure the mesh renderer component exists
 			auto tempMR = components.find(_type);
 			if (tempMR != components.end()) {
@@ -90,7 +96,15 @@ inline T* GameObject::GetComponent(CompType _type) {
 				//This should always work.  If it doesn't, you called the function incorrectly
 				return (T*)meshManager->GetMeshRenderer(tempMR->second);
 			}
-			break;
+		}
+		case CompType::INPUT_LISTENER: {
+			//Ensure the input listener component exists
+			auto tempIL = components.find(_type);
+			if (tempIL != components.end()) {
+				//Similar to above, get IL from singleton and typecast based on T
+				return (T*)inputManager->GetInputListener(tempIL->second);
+			}
+		}
 	}
 	return nullptr;
 }

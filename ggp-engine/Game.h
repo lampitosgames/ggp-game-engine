@@ -6,7 +6,7 @@
 #include <DirectXMath.h>
 #include "Mesh.h"
 #include "MeshManager.h"
-#include "MeshRenderer.h"
+#include "InputManager.h"
 #include "Spatial.h"
 #include "Camera.h"
 
@@ -54,6 +54,7 @@ private:
 	POINT prevMousePos;
 
 	MeshManager* meshManager;
+	InputManager* inputManager;
 
 	//Temporary place to keep mesh pointers until I get a resource manager
 	UINT meshCount;

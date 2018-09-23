@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "Vertex.h"
 #include <iostream>
+#include "MeshRenderer.h"
 
 // For the DirectX Math library
 using namespace DirectX;
@@ -29,6 +30,7 @@ Game::Game(HINSTANCE hInstance)
 
 	//Get Singleton Instances
 	meshManager = MeshManager::GetInstance();
+	inputManager = InputManager::GetInstance();
 
 	//Storing meshes in the base game class for now
 	//TODO: Move this to somewhere that makes more sense (Resource manager?)
@@ -61,6 +63,7 @@ Game::~Game() {
 
 	//Release all singletons
 	meshManager->ReleaseInstance();
+	inputManager->ReleaseInstance();
 
 	//Delete all meshes
 	for (UINT i = 0; i < meshCount; i++) {
@@ -253,6 +256,7 @@ void Game::CreateBasicGeometry() {
 
 	//Create a camera
 	activeCamera = new Camera("MainCamera");
+	activeCamera->AddInputListener();
 	activeCamera->transform.position.z = -5.0f;
 	activeCamera->CalculateViewMatrix();
 }
@@ -286,6 +290,9 @@ void Game::Update(float deltaTime, float totalTime) {
 	// Quit if the escape key is pressed
 	if (GetAsyncKeyState(VK_ESCAPE))
 		Quit();
+
+	inputManager->Update();
+	activeCamera->Update(deltaTime);
 
 	//Change object transforms every frame.  Eventually this should be done manually in a scene, or via the velocity in the physics singleton
 	gameObject1->transform.rotation.z += 0.0001f;
@@ -339,6 +346,7 @@ void Game::Draw(float deltaTime, float totalTime) {
 // --------------------------------------------------------
 void Game::OnMouseDown(WPARAM buttonState, int x, int y) {
 	// Add any custom code here...
+	inputManager->_OnMouseDown(buttonState, x, y);
 
 	// Save the previous mouse position, so we have it for the future
 	prevMousePos.x = x;
@@ -355,6 +363,7 @@ void Game::OnMouseDown(WPARAM buttonState, int x, int y) {
 // --------------------------------------------------------
 void Game::OnMouseUp(WPARAM buttonState, int x, int y) {
 	// Add any custom code here...
+	inputManager->_OnMouseUp(buttonState, x, y);
 
 	// We don't care about the tracking the cursor outside
 	// the window anymore (we're not dragging if the mouse is up)
@@ -368,6 +377,7 @@ void Game::OnMouseUp(WPARAM buttonState, int x, int y) {
 // --------------------------------------------------------
 void Game::OnMouseMove(WPARAM buttonState, int x, int y) {
 	// Add any custom code here...
+	inputManager->_OnMouseMove(x, y);
 
 	// Save the previous mouse position, so we have it for the future
 	prevMousePos.x = x;
@@ -381,5 +391,6 @@ void Game::OnMouseMove(WPARAM buttonState, int x, int y) {
 // --------------------------------------------------------
 void Game::OnMouseWheel(float wheelDelta, int x, int y) {
 	// Add any custom code here...
+	inputManager->_OnMouseWheel(wheelDelta);
 }
 #pragma endregion
