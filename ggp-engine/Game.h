@@ -9,7 +9,7 @@
 #include "MeshManager.h"
 #include "InputManager.h"
 #include "Spatial.h"
-#include "Camera.h"
+#include "FlyingCamera.h"
 
 class Game
 	: public DXCore {
@@ -50,7 +50,7 @@ private:
 	Spatial* gameObject4;
 	Spatial* gameObject5;
 
-	Camera* activeCamera;
+	FlyingCamera* activeCamera;
 };
 
 #endif //GGP_GAME_H

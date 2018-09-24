@@ -53,7 +53,7 @@ public:
 	static GameObject* GetGameObject(std::string _uniqueID);
 
 	//Start method
-	void Start();
+	virtual void Start();
 
 	//Update method
 	virtual void Update(float _deltaTime);

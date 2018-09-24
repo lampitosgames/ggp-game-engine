@@ -42,6 +42,12 @@
     <Filter Include="Source Files\Data Structures">
       <UniqueIdentifier>{1b2ef0d0-4057-49fb-ba85-e50b904f30a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Game Code">
+      <UniqueIdentifier>{bf0159b3-b1c4-4542-8ada-04019269ad14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game Code">
+      <UniqueIdentifier>{09964b99-6688-48f1-8b74-82fb43981800}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXCore.cpp">
@@ -91,6 +97,9 @@
     </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="FlyingCamera.cpp">
+      <Filter>Source Files\Game Code</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +168,9 @@
     </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="FlyingCamera.h">
+      <Filter>Header Files\Game Code</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -21,7 +21,6 @@ static std::map<std::string, std::vector<int>> create_binds() {
 	//Back action
 	m["move_back"].push_back('S');
 	m["move_back"].push_back(VK_DOWN);
-	m["move_back"].push_back(VK_LBUTTON);
 
 	//Left action
 	m["move_left"].push_back('A');

@@ -25,6 +25,7 @@ Game::Game(HINSTANCE hInstance)
 	// Initialize fields
 	vertexBuffer = 0;
 	indexBuffer = 0;
+
 	//vertexShader = 0;
 	//pixelShader = 0;
 
@@ -193,8 +194,8 @@ void Game::CreateBasicGeometry() {
 	gameObject5->transform.position.y -= 2.0f;
 
 	//Create a camera
-	activeCamera = new Camera("MainCamera");
-	activeCamera->AddInputListener();
+	activeCamera = new FlyingCamera("MainCamera");
+	activeCamera->Start();
 	activeCamera->transform.position.z = -5.0f;
 	activeCamera->CalculateViewMatrix();
 }
