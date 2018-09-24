@@ -9,8 +9,8 @@ struct InputEvent;
 class FlyingCamera : public Camera {
 	//Hard-coded movement values
 	float camSpeed = 3.0f;
-	float horSensitivity = 0.001;
-	float vertSensitivity = 0.001;
+	float horSensitivity = 0.001f;
+	float vertSensitivity = 0.001f;
 
 public:
 	//Dummy constructor.  Simply passes values to parent
