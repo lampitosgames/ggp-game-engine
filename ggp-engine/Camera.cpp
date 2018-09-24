@@ -20,20 +20,6 @@ Camera::Camera(std::string _uniqueID,
 	CalculateProjectionMatrix();
 }
 
-void Camera::Input(InputEvent _event) {
-	if (inputManager->ActionPressed("move_back", _event)) {
-		transform.position.z = -20.0f;
-		CalculateViewMatrix();
-	}
-}
-
-void Camera::Update(float _deltaTime) {
-	if (inputManager->ActionPressed("move_back")) {
-		transform.position.z -= 1.0f * _deltaTime;
-		CalculateViewMatrix();
-	}
-}
-
 void Camera::CalculateViewMatrix() {
 	//TODO: Get this from the camera transform
 	XMFLOAT3 forwardV = transform.Forward();

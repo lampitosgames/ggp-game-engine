@@ -63,8 +63,9 @@ void MeshManager::Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 _v
 		//TODO: Also get texture from the material
 
 		//Null check on all resources
-		if (vsTemp == nullptr) { vsTemp = defaultVertexShader; }
-		if (psTemp == nullptr) { psTemp = defaultPixelShader; }
+		//NOTE: Commented out to demonstrate that my material system actually works
+		//if (vsTemp == nullptr) { vsTemp = defaultVertexShader; }
+		//if (psTemp == nullptr) { psTemp = defaultPixelShader; }
 
 		//Upload all data to vertex shader
 		vsTemp->SetMatrix4x4("world", mrTemp->GetWorldMatrix());

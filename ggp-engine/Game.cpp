@@ -83,7 +83,6 @@ void Game::Init() {
 	// Helper methods for loading shaders, creating some basic
 	// geometry to draw and some simple camera matrices.
 	//  - You'll be expanding and/or replacing these later
-	CreateMatrices();
 	CreateBasicGeometry();
 
 	// Tell the input assembler stage of the pipeline what kind of
@@ -94,52 +93,6 @@ void Game::Init() {
 	//Call start on the singletons that need it
 	meshManager->Start();
 }
-
-// --------------------------------------------------------
-// Initializes the matrices necessary to represent our geometry's 
-// transformations and our 3D camera
-// --------------------------------------------------------
-void Game::CreateMatrices() {
-	// Set up world matrix
-	// - In an actual game, each object will need one of these and they should
-	//    update when/if the object moves (every frame)
-	// - You'll notice a "transpose" happening below, which is redundant for
-	//    an identity matrix.  This is just to show that HLSL expects a different
-	//    matrix (column major vs row major) than the DirectX Math library
-	XMMATRIX W = XMMatrixIdentity();
-	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(W)); // Transpose for HLSL!
-
-	// Create the View matrix
-	// - In an actual game, recreate this matrix every time the camera 
-	//    moves (potentially every frame)
-	// - We're using the LOOK TO function, which takes the position of the
-	//    camera and the direction vector along which to look (as well as "up")
-	// - Another option is the LOOK AT function, to look towards a specific
-	//    point in 3D space
-	XMVECTOR pos = XMVectorSet(0, 0, -5, 0);
-	XMVECTOR dir = XMVectorSet(0, 0, 1, 0);
-	XMVECTOR up = XMVectorSet(0, 1, 0, 0);
-	XMMATRIX V = XMMatrixLookToLH(
-		pos,     // The position of the "camera"
-		dir,     // Direction the camera is looking
-		up);     // "Up" direction in 3D space (prevents roll)
-	XMStoreFloat4x4(&viewMatrix, XMMatrixTranspose(V)); // Transpose for HLSL!
-
-	// Create the Projection matrix
-	// - This should match the window's aspect ratio, and also update anytime
-	//    the window resizes (which is already happening in OnResize() below)
-	XMMATRIX P = XMMatrixPerspectiveFovLH(
-		0.25f * 3.1415926535f,		// Field of View Angle
-		(float)width / height,		// Aspect ratio
-		0.1f,						// Near clip plane distance
-		100.0f);					// Far clip plane distance
-	XMStoreFloat4x4(&projectionMatrix, XMMatrixTranspose(P)); // Transpose for HLSL!
-
-	//TODO: Call the Resize() event on scene
-	//Give the camera the proper aspect ratio
-	//activeCamera->aspectRatio = (float)width / height;
-}
-
 
 // --------------------------------------------------------
 // Creates the geometry we're going to draw - a single triangle for now
@@ -186,6 +139,9 @@ void Game::CreateBasicGeometry() {
 						  2, 1, 0,
 						  3, 1, 2};
 
+	//We only need a single material for all three for now
+	Material* defaultMaterial = resourceManager->AddMaterial("defaultMat", L"VertexShader.cso", L"PixelShader.cso");
+
 	Mesh* mesh1 = resourceManager->CreateMeshFromData(mesh1Verts, 4, mesh1Indices, 12, "mesh1");
 	Mesh* mesh2 = resourceManager->CreateMeshFromData(mesh2Verts, 3, mesh2Indices, 3, "mesh2");
 	Mesh* mesh3 = resourceManager->CreateMeshFromData(mesh3Verts, 4, mesh3Indices, 12, "mesh3");
@@ -196,6 +152,7 @@ void Game::CreateBasicGeometry() {
 	gameObject1->AddMeshRenderer();
 	//Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
 	gameObject1->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh1);
+	gameObject1->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(defaultMaterial);
 
 	//Create the second game object
 	gameObject2 = new Spatial("Object2");
@@ -204,6 +161,7 @@ void Game::CreateBasicGeometry() {
 	((Spatial*)GameObject::GetGameObject("Object2"))->AddMeshRenderer();
 	//Give it the same mesh as Object1
 	gameObject2->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh1);
+	gameObject2->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(defaultMaterial);
 	//Reposition and scale it differently
 	gameObject2->transform.position.x -= 3.0f;
 	gameObject2->transform.position.y += 1.5f;
@@ -217,6 +175,7 @@ void Game::CreateBasicGeometry() {
 	//Give object 3 a mesh
 	gameObject3->AddMeshRenderer();
 	gameObject3->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh2);
+	gameObject3->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(defaultMaterial);
 	gameObject3->transform.position.x += 3.0f;
 	gameObject3->transform.rotation.z += 24.67f;
 
@@ -224,11 +183,13 @@ void Game::CreateBasicGeometry() {
 	gameObject4 = new Spatial("Object4");
 	gameObject4->AddMeshRenderer();
 	gameObject4->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh3);
+	gameObject4->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(defaultMaterial);
 	gameObject4->transform.rotation.z += 90.0f;
 	gameObject4->transform.position.y += 2.0f;
 	gameObject5 = new Spatial("Object5");
 	gameObject5->AddMeshRenderer();
 	gameObject5->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh3);
+	gameObject5->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(defaultMaterial);
 	gameObject5->transform.position.y -= 2.0f;
 
 	//Create a camera
@@ -249,15 +210,6 @@ void Game::OnResize() {
 	//TODO: Pass a resize event to the scene
 	//Change the camera's aspect ratio
 	activeCamera->SetAspectRatio((float)width / height);
-
-	//TODO: Remove this
-	// Update our projection matrix since the window size changed
-	XMMATRIX P = XMMatrixPerspectiveFovLH(
-		0.25f * 3.1415926535f,	// Field of View Angle
-		(float)width / height,	// Aspect ratio
-		0.1f,				  	// Near clip plane distance
-		100.0f);			  	// Far clip plane distance
-	XMStoreFloat4x4(&projectionMatrix, XMMatrixTranspose(P)); // Transpose for HLSL!
 }
 
 // --------------------------------------------------------
@@ -269,6 +221,8 @@ void Game::Update(float deltaTime, float totalTime) {
 		Quit();
 
 	inputManager->Update();
+	
+	//TODO: Move most of this to the active scene
 	activeCamera->Update(deltaTime);
 
 	//Change object transforms every frame.  Eventually this should be done manually in a scene, or via the velocity in the physics singleton
@@ -322,12 +276,8 @@ void Game::Draw(float deltaTime, float totalTime) {
 // been created to provide basic mouse input if you want it.
 // --------------------------------------------------------
 void Game::OnMouseDown(WPARAM buttonState, int x, int y) {
-	// Add any custom code here...
+	//Pass event to the input manager
 	inputManager->_OnMouseDown(buttonState, x, y);
-
-	// Save the previous mouse position, so we have it for the future
-	prevMousePos.x = x;
-	prevMousePos.y = y;
 
 	// Caputure the mouse so we keep getting mouse move
 	// events even if the mouse leaves the window.  we'll be
@@ -339,7 +289,7 @@ void Game::OnMouseDown(WPARAM buttonState, int x, int y) {
 // Helper method for mouse release
 // --------------------------------------------------------
 void Game::OnMouseUp(WPARAM buttonState, int x, int y) {
-	// Add any custom code here...
+	//Pass event to the input manager
 	inputManager->_OnMouseUp(buttonState, x, y);
 
 	// We don't care about the tracking the cursor outside
@@ -353,12 +303,8 @@ void Game::OnMouseUp(WPARAM buttonState, int x, int y) {
 // currently capturing the mouse.
 // --------------------------------------------------------
 void Game::OnMouseMove(WPARAM buttonState, int x, int y) {
-	// Add any custom code here...
+	//Pass event to the input manager
 	inputManager->_OnMouseMove(x, y);
-
-	// Save the previous mouse position, so we have it for the future
-	prevMousePos.x = x;
-	prevMousePos.y = y;
 }
 
 // --------------------------------------------------------
@@ -367,7 +313,7 @@ void Game::OnMouseMove(WPARAM buttonState, int x, int y) {
 // on the direction of the scroll
 // --------------------------------------------------------
 void Game::OnMouseWheel(float wheelDelta, int x, int y) {
-	// Add any custom code here...
+	//Pass event to the input manager
 	inputManager->_OnMouseWheel(wheelDelta);
 }
 #pragma endregion

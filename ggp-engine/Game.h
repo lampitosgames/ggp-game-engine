@@ -33,30 +33,17 @@ public:
 private:
 
 	// Initialization helper methods - feel free to customize, combine, etc.
-	void CreateMatrices();
 	void CreateBasicGeometry();
 
 	// Buffers to hold actual geometry data
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
 
-	// The matrices to go from model space to screen space
-	DirectX::XMFLOAT4X4 worldMatrix;
-	DirectX::XMFLOAT4X4 viewMatrix;
-	DirectX::XMFLOAT4X4 projectionMatrix;
-
-	// Keeps track of the old mouse position.  Useful for 
-	// determining how far the mouse moved in a single frame.
-	POINT prevMousePos;
-
 	ResourceManager* resourceManager;
 	MeshManager* meshManager;
 	InputManager* inputManager;
 
-	//Temporary place to keep mesh pointers until I get a resource manager
-	UINT meshCount;
-	Mesh** meshArray;
-
+	//Temporary game object storage until I implement scenes
 	Spatial* gameObject1;
 	Spatial* gameObject2;
 	Spatial* gameObject3;

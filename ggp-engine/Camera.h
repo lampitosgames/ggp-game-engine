@@ -25,11 +25,6 @@ public:
 		   DirectX::XMFLOAT3 _rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 		   DirectX::XMFLOAT3 _scale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 
-	//TEMP: Input override
-	void Input(InputEvent _event);
-	//TEMP: Update override
-	void Update(float _deltaTime);
-
 	//Build view matrix from member data and return it
 	void CalculateViewMatrix();
 	//Build projection matrix from member data and return it
