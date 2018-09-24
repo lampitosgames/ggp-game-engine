@@ -14,6 +14,7 @@
 #include "GameObjectTypes.h"
 #include "ComponentTypes.h"
 #include "InputEvent.h"
+class ResourceManager;
 class MeshManager;
 class InputManager;
 
@@ -40,6 +41,7 @@ protected:
 	//Pointers to required singletons (used for component management)
 	MeshManager* meshManager;
 	InputManager* inputManager;
+	ResourceManager* resourceManager;
 public:
 	//Constructors
 	GameObject(std::string _uniqueID = "NA");

@@ -6,25 +6,32 @@
 class Mesh;
 class MeshRenderer;
 class Spatial;
+class ResourceManager;
 
 class MeshManager {
 	//Singleton pointer
 	static MeshManager* instance;
 
+	ResourceManager* resourceManager;
+
+	//Default shaders for materials without them (Or MeshRenderers without materials)
+	SimpleVertexShader* defaultVertexShader;
+	SimplePixelShader* defaultPixelShader;
+
 	//Unique number given to each mesh renderer
 	UINT mrUID = 0;
 	//Map of all mesh renderers
 	std::map<UINT, MeshRenderer*> meshRendererUIDMap;
-
-	//Map of all meshes
-	std::map<std::string, Mesh*> meshUIDMap;
 public:
 	//Static Singleton get/release for the single MeshManager instance
 	static MeshManager* GetInstance();
 	static void ReleaseInstance();
 
+	//Start method.  Called once when we can safely assume the entire engine has been initialized
+	void Start();
+
 	//TODO: Refactor so this requires fewer arguments. Grab the data inside the render function (like a camera object or the material component of each object)
-	void Render(ID3D11DeviceContext* _dxContext, SimpleVertexShader* _vertexShader, SimplePixelShader* pixelShader, DirectX::XMFLOAT4X4 viewMatrix, DirectX::XMFLOAT4X4 projectionMatrix);
+	void Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 viewMatrix, DirectX::XMFLOAT4X4 projectionMatrix);
 
 	/*
 		MESH RENDERER HELPERS
@@ -37,15 +44,7 @@ public:
 	//Delete a mesh renderer
 	void DeleteMeshRenderer(UINT _uniqueID);
 
-	/*
-		MESH HELPERS
-		TODO: primitive generation. Once generated, store the result and reuse as needed
-		TODO: Mesh loading from files
-		TODO: Automatically detect if a requested mesh is already loaded and reuse the same asset
-	*/
-	//Mesh* LoadMesh(std::string _filepath, std::string _uniqueID);
-	//Mesh* GetMesh(std::string _uniqueID);
-	//void DeleteMesh(std::string _uniqueID);
+	//TODO: Mesh primitive generation.  Works together with the resourceManager
 private:
 	MeshManager();
 	~MeshManager();

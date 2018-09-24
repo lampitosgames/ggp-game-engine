@@ -1,4 +1,6 @@
 #include "MeshRenderer.h"
+#include "SimpleShader.h"
+#include "Material.h"
 #include "Mesh.h"
 #include "Spatial.h"
 
@@ -7,12 +9,25 @@ MeshRenderer::MeshRenderer(UINT _uniqueID, Spatial* _gameObject) {
 	uniqueID = _uniqueID;
 	gameObject = _gameObject;
 	mesh = nullptr;
+	material = nullptr;
+}
+
+MeshRenderer::MeshRenderer(UINT _uniqueID, Spatial* _gameObject, Mesh* _mesh, Material* _material) {
+	type = CompType::MESH_RENDERER;
+	uniqueID = _uniqueID;
+	gameObject = _gameObject;
+	mesh = _mesh;
+	material = _material;
 }
 
 MeshRenderer::~MeshRenderer() {}
 
 void MeshRenderer::SetMesh(Mesh* _mesh) {
 	mesh = _mesh;
+}
+
+void MeshRenderer::SetMaterial(Material* _material) {
+	material = _material;
 }
 
 void MeshRenderer::Draw(ID3D11DeviceContext* _dxContext) {
@@ -35,4 +50,23 @@ DirectX::XMFLOAT4X4 MeshRenderer::GetWorldMatrix() {
 
 Mesh* MeshRenderer::GetMesh() {
 	return mesh;
+}
+
+Material* MeshRenderer::GetMaterial() {
+	return material;
+}
+
+SimpleVertexShader* MeshRenderer::GetVertexShader() {
+	if (material == nullptr) { return nullptr; }
+	return material->GetVertexShader();
+}
+
+SimplePixelShader* MeshRenderer::GetPixelShader() {
+	if (material == nullptr) { return nullptr; }
+	return material->GetPixelShader();
+}
+
+DirectX::XMFLOAT4 MeshRenderer::GetColor() {
+	if (material == nullptr) { return DirectX::XMFLOAT4(); }
+	return material->GetColor();
 }

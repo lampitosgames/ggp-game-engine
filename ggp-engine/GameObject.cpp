@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "ResourceManager.h"
 #include "MeshManager.h"
 #include "InputManager.h"
 using namespace std;
@@ -84,6 +85,7 @@ void GameObject::Init() {
 	//Get instances of all singletons
 	meshManager = MeshManager::GetInstance();
 	inputManager = InputManager::GetInstance();
+	resourceManager = ResourceManager::GetInstance();
 }
 
 void GameObject::Release() {

@@ -25,17 +25,13 @@ Game::Game(HINSTANCE hInstance)
 	// Initialize fields
 	vertexBuffer = 0;
 	indexBuffer = 0;
-	vertexShader = 0;
-	pixelShader = 0;
+	//vertexShader = 0;
+	//pixelShader = 0;
 
 	//Get Singleton Instances
+	resourceManager = ResourceManager::GetInstance();
 	meshManager = MeshManager::GetInstance();
 	inputManager = InputManager::GetInstance();
-
-	//Storing meshes in the base game class for now
-	//TODO: Move this to somewhere that makes more sense (Resource manager?)
-	meshCount = 0;
-	meshArray = new Mesh*[3];
 
 	#if defined(DEBUG) || defined(_DEBUG)
 		// Do we want a console window?  Probably only in debug mode
@@ -58,18 +54,13 @@ Game::~Game() {
 
 	// Delete our simple shader objects, which
 	// will clean up their own internal DirectX stuff
-	delete vertexShader;
-	delete pixelShader;
+	//delete vertexShader;
+	//delete pixelShader;
 
 	//Release all singletons
+	resourceManager->ReleaseInstance();
 	meshManager->ReleaseInstance();
 	inputManager->ReleaseInstance();
-
-	//Delete all meshes
-	for (UINT i = 0; i < meshCount; i++) {
-		delete meshArray[i];
-	}
-	delete[] meshArray;
 
 	delete gameObject1;
 	delete gameObject2;
@@ -85,10 +76,13 @@ Game::~Game() {
 // are initialized but before the game loop.
 // --------------------------------------------------------
 void Game::Init() {
+	//Give the device and context to the resource manager
+	ResourceManager::SetDevicePointer(dxDevice);
+	ResourceManager::SetContextPointer(dxContext);
+
 	// Helper methods for loading shaders, creating some basic
 	// geometry to draw and some simple camera matrices.
 	//  - You'll be expanding and/or replacing these later
-	LoadShaders();
 	CreateMatrices();
 	CreateBasicGeometry();
 
@@ -96,23 +90,10 @@ void Game::Init() {
 	// geometric primitives (points, lines or triangles) we want to draw.  
 	// Essentially: "What kind of shape should the GPU draw with our data?"
 	dxContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	//Call start on the singletons that need it
+	meshManager->Start();
 }
-
-// --------------------------------------------------------
-// Loads shaders from compiled shader object (.cso) files using
-// my SimpleShader wrapper for DirectX shader manipulation.
-// - SimpleShader provides helpful methods for sending
-//   data to individual variables on the GPU
-// --------------------------------------------------------
-void Game::LoadShaders() {
-	vertexShader = new SimpleVertexShader(dxDevice, dxContext);
-	vertexShader->LoadShaderFile(L"VertexShader.cso");
-
-	pixelShader = new SimplePixelShader(dxDevice, dxContext);
-	pixelShader->LoadShaderFile(L"PixelShader.cso");
-}
-
-
 
 // --------------------------------------------------------
 // Initializes the matrices necessary to represent our geometry's 
@@ -205,20 +186,16 @@ void Game::CreateBasicGeometry() {
 						  2, 1, 0,
 						  3, 1, 2};
 
-	//Create every mesh using the data we just defined
-	meshArray[0] = new Mesh(mesh1Verts, 4, mesh1Indices, 12, dxDevice);
-	meshCount++;
-	meshArray[1] = new Mesh(mesh2Verts, 3, mesh2Indices, 3, dxDevice);
-	meshCount++;
-	meshArray[2] = new Mesh(mesh3Verts, 4, mesh3Indices, 12, dxDevice);
-	meshCount++;
+	Mesh* mesh1 = resourceManager->CreateMeshFromData(mesh1Verts, 4, mesh1Indices, 12, "mesh1");
+	Mesh* mesh2 = resourceManager->CreateMeshFromData(mesh2Verts, 3, mesh2Indices, 3, "mesh2");
+	Mesh* mesh3 = resourceManager->CreateMeshFromData(mesh3Verts, 4, mesh3Indices, 12, "mesh3");
 
 	//Create the first game object
 	gameObject1 = new Spatial("Object1");
 	//Give it a mesh renderer component
 	gameObject1->AddMeshRenderer();
 	//Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
-	gameObject1->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(meshArray[0]);
+	gameObject1->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh1);
 
 	//Create the second game object
 	gameObject2 = new Spatial("Object2");
@@ -226,7 +203,7 @@ void Game::CreateBasicGeometry() {
 	//the kind of object you want.  But it does work and will be immensely useful when there are a TON of game objects
 	((Spatial*)GameObject::GetGameObject("Object2"))->AddMeshRenderer();
 	//Give it the same mesh as Object1
-	gameObject2->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(meshArray[0]);
+	gameObject2->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh1);
 	//Reposition and scale it differently
 	gameObject2->transform.position.x -= 3.0f;
 	gameObject2->transform.position.y += 1.5f;
@@ -239,19 +216,19 @@ void Game::CreateBasicGeometry() {
 	std::cout << std::endl << gameObject3->GetUniqueID() << std::endl;
 	//Give object 3 a mesh
 	gameObject3->AddMeshRenderer();
-	gameObject3->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(meshArray[1]);
+	gameObject3->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh2);
 	gameObject3->transform.position.x += 3.0f;
 	gameObject3->transform.rotation.z += 24.67f;
 
 	//Create game objects 4 and 5 with the same mesh
 	gameObject4 = new Spatial("Object4");
 	gameObject4->AddMeshRenderer();
-	gameObject4->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(meshArray[2]);
+	gameObject4->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh3);
 	gameObject4->transform.rotation.z += 90.0f;
 	gameObject4->transform.position.y += 2.0f;
 	gameObject5 = new Spatial("Object5");
 	gameObject5->AddMeshRenderer();
-	gameObject5->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(meshArray[2]);
+	gameObject5->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh3);
 	gameObject5->transform.position.y -= 2.0f;
 
 	//Create a camera
@@ -328,7 +305,7 @@ void Game::Draw(float deltaTime, float totalTime) {
 		0);
 
 	//Call render on the MeshManager
-	meshManager->Render(dxContext, vertexShader, pixelShader, activeCamera->GetViewMatrix(), activeCamera->GetProjectionMatrix());
+	meshManager->Render(dxContext, activeCamera->GetViewMatrix(), activeCamera->GetProjectionMatrix());
 
 	// Present the back buffer to the user
 	//  - Puts the final frame we're drawing into the window so the user can see it

@@ -5,6 +5,7 @@
 #include "SimpleShader.h"
 #include <DirectXMath.h>
 #include "Mesh.h"
+#include "ResourceManager.h"
 #include "MeshManager.h"
 #include "InputManager.h"
 #include "Spatial.h"
@@ -32,17 +33,12 @@ public:
 private:
 
 	// Initialization helper methods - feel free to customize, combine, etc.
-	void LoadShaders();
 	void CreateMatrices();
 	void CreateBasicGeometry();
 
 	// Buffers to hold actual geometry data
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
-
-	// Wrappers for DirectX shaders to provide simplified functionality
-	SimpleVertexShader* vertexShader;
-	SimplePixelShader* pixelShader;
 
 	// The matrices to go from model space to screen space
 	DirectX::XMFLOAT4X4 worldMatrix;
@@ -53,6 +49,7 @@ private:
 	// determining how far the mouse moved in a single frame.
 	POINT prevMousePos;
 
+	ResourceManager* resourceManager;
 	MeshManager* meshManager;
 	InputManager* inputManager;
 

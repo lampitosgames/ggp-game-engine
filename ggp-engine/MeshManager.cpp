@@ -1,6 +1,7 @@
 #include "MeshManager.h"
 #include "Spatial.h"
 #include "MeshRenderer.h"
+#include "ResourceManager.h"
 
 MeshManager* MeshManager::instance = nullptr;
 
@@ -16,6 +17,12 @@ void MeshManager::ReleaseInstance() {
 		delete instance;
 		instance = nullptr;
 	}
+}
+
+void MeshManager::Start() {
+	//Load default shaders
+	defaultVertexShader = resourceManager->GetVertexShader(L"VertexShader.cso");
+	defaultPixelShader = resourceManager->GetPixelShader(L"PixelShader.cso");
 }
 
 UINT MeshManager::AddMeshRenderer(Spatial* _gameObject) {
@@ -42,18 +49,33 @@ void MeshManager::DeleteMeshRenderer(UINT _uniqueID) {
 	}
 }
 
-void MeshManager::Render(ID3D11DeviceContext* _dxContext, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, DirectX::XMFLOAT4X4 _viewMatrix, DirectX::XMFLOAT4X4 _projectionMatrix) {
+void MeshManager::Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 _viewMatrix, DirectX::XMFLOAT4X4 _projectionMatrix) {
 	//Loop through and render every object
 	std::map<UINT, MeshRenderer*>::iterator mrIterator;
 	for (mrIterator = meshRendererUIDMap.begin(); mrIterator != meshRendererUIDMap.end(); ++mrIterator) {
 		MeshRenderer* mrTemp = mrIterator->second;
-		_vertexShader->SetMatrix4x4("world", mrTemp->GetWorldMatrix());
-		_vertexShader->SetMatrix4x4("view", _viewMatrix);
-		_vertexShader->SetMatrix4x4("projection", _projectionMatrix);
-		_vertexShader->CopyAllBufferData();
+		//If the mesh renderer doesn't have a mesh to render, continue
+		if (mrTemp->GetMesh() == nullptr) { continue; }
+
+		//Get the material's shaders
+		SimpleVertexShader* vsTemp = mrTemp->GetVertexShader();
+		SimplePixelShader* psTemp = mrTemp->GetPixelShader();
+		//TODO: Also get texture from the material
+
+		//Null check on all resources
+		if (vsTemp == nullptr) { vsTemp = defaultVertexShader; }
+		if (psTemp == nullptr) { psTemp = defaultPixelShader; }
+
+		//Upload all data to vertex shader
+		vsTemp->SetMatrix4x4("world", mrTemp->GetWorldMatrix());
+		vsTemp->SetMatrix4x4("view", _viewMatrix);
+		vsTemp->SetMatrix4x4("projection", _projectionMatrix);
+		//TODO: Implement a way to upload color-based material data
+		//TODO: Standardize what data all shaders can accept
+		vsTemp->CopyAllBufferData();
 		
-		_vertexShader->SetShader();
-		_pixelShader->SetShader();
+		vsTemp->SetShader();
+		psTemp->SetShader();
 
 		mrTemp->Draw(_dxContext);
 	}
@@ -61,6 +83,8 @@ void MeshManager::Render(ID3D11DeviceContext* _dxContext, SimpleVertexShader* _v
 
 MeshManager::MeshManager() {
 	mrUID = 0;
+	//Get an instance of the resource manager
+	resourceManager = ResourceManager::GetInstance();
 }
 
 MeshManager::~MeshManager() {
