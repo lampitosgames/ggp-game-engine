@@ -2,6 +2,9 @@
 #include "Spatial.h"
 #include "MeshRenderer.h"
 #include "ResourceManager.h"
+#include <DirectXMath.h>
+
+using namespace DirectX;
 
 RenderManager* RenderManager::instance = nullptr;
 
@@ -23,6 +26,9 @@ void RenderManager::Start() {
 	//Load default shaders
 	defaultVertexShader = resourceManager->GetVertexShader(L"VertexShader.cso");
 	defaultPixelShader = resourceManager->GetPixelShader(L"PixelShader.cso");
+
+	light1 = {XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 0.0f)};
+	light2 = {XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT3(0.0f, +0.0f, 1.0f)};
 }
 
 UINT RenderManager::AddMeshRenderer(Spatial* _gameObject) {
@@ -74,6 +80,10 @@ void RenderManager::Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 
 		//TODO: Implement a way to upload color-based material data
 		//TODO: Standardize what data all shaders can accept
 		vsTemp->CopyAllBufferData();
+
+		psTemp->SetData("light1", &light1, sizeof(DirectionalLight));
+		psTemp->SetData("light2", &light2, sizeof(DirectionalLight));
+		psTemp->CopyAllBufferData();
 		
 		vsTemp->SetShader();
 		psTemp->SetShader();

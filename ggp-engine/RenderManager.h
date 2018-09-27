@@ -3,6 +3,7 @@
 
 #include <map>
 #include "SimpleShader.h"
+#include "Light.h"
 class Mesh;
 class MeshRenderer;
 class Spatial;
@@ -22,6 +23,10 @@ class RenderManager {
 	UINT mrUID = 0;
 	//Map of all mesh renderers
 	std::map<UINT, MeshRenderer*> meshRendererUIDMap;
+
+	//TEMP: Lights until they are moved into game objects
+	DirectionalLight light1;
+	DirectionalLight light2;
 public:
 	//Static Singleton get/release for the single renderManager instance
 	static RenderManager* GetInstance();
