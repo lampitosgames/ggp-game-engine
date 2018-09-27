@@ -48,6 +48,9 @@
     <Filter Include="Source Files\Game Code">
       <UniqueIdentifier>{09964b99-6688-48f1-8b74-82fb43981800}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Shader Helpers">
+      <UniqueIdentifier>{5e0fa5a3-c74e-4bb8-a303-e1f7b197a02e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXCore.cpp">
@@ -186,5 +189,16 @@
     <FxCompile Include="VertexShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="LambertPShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LightStructs.hlsli">
+      <Filter>Shaders\Shader Helpers</Filter>
+    </None>
+    <None Include="InputOutputStructs.hlsli">
+      <Filter>Shaders\Shader Helpers</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -25,8 +25,8 @@ class RenderManager {
 	std::map<UINT, MeshRenderer*> meshRendererUIDMap;
 
 	//TEMP: Lights until they are moved into game objects
-	DirectionalLight light1;
-	DirectionalLight light2;
+	DirectionalLight lightArray[9];
+	UINT lightCount;
 public:
 	//Static Singleton get/release for the single renderManager instance
 	static RenderManager* GetInstance();

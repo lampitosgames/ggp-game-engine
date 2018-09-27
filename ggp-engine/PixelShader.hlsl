@@ -1,19 +1,5 @@
-
-// Struct representing the data we expect to receive from earlier pipeline stages
-// - Should match the output of our corresponding vertex shader
-// - The name of the struct itself is unimportant
-// - The variable names don't have to match other shaders (just the semantics)
-// - Each variable must have a semantic, which defines its usage
-struct VertexToPixel {
-	float4 position		: SV_POSITION;	// XYZW position (System Value Position)
-	float3 normal		: NORMAL;       // Normal vector
-};
-
-struct DirectionalLight {
-	float4 ambientColor;
-	float4 diffuseColor;
-	float3 direction;
-};
+#include "LightStructs.hlsli"
+#include "InputOutputStructs.hlsli"
 
 cbuffer lightData : register(b0) {
 	DirectionalLight light1;
