@@ -2,6 +2,7 @@
 #define GGP_RESOURCE_MANAGER
 
 #include <map>
+#include <vector>
 #include <string>
 #include <d3d11.h>
 #include <DirectXMath.h>
@@ -45,24 +46,51 @@ public:
 	Material* AddMaterial(std::string _uniqueID, DirectX::XMFLOAT4 _color);
 
 	/*
-		MESH RESOURCE MANAGEMENT
-		TODO: Loading mesh resources
-	*/
-	Mesh* CreateMeshFromData(Vertex _vertexArray[], UINT _vertexCount, int _indexArray[], UINT _indexCount, std::string _uniqueID = "NA");
-	//Mesh* LoadMesh(std::string _filepath, std::string _uniqueID = "NA");
-	//Mesh* GetMesh(std::string _uniqueID);
-	//void DeleteMesh(std::string _uniqueID);
-
-	/*
 		SHADER MANAGEMENT
 	*/
 	//Load vertex shader
 	SimpleVertexShader* GetVertexShader(LPCWSTR _filepath);
 	SimplePixelShader* GetPixelShader(LPCWSTR _filepath);
+
+	/*
+		MESH RESOURCE MANAGEMENT
+		TODO: Loading mesh resources
+	*/
+	Mesh* CreateMeshFromData(Vertex* _vertexArray, UINT _vertexCount, UINT* _indexArray, UINT _indexCount, std::string _uniqueID = "NA");
+	Mesh* GetMesh(std::string _uniqueID);
+	//void DeleteMesh(std::string _uniqueID);
 private:
 	ResourceManager();
 	~ResourceManager();
 	void Release();
+
+	/*
+		Mesh loading/building variable storage
+	*/
+	//Temporary storage for loading vertex data
+	std::vector<DirectX::XMFLOAT3> mPositions;
+	std::vector<DirectX::XMFLOAT3> mNormals;
+	std::vector<DirectX::XMFLOAT2> mUVs;
+	//Temporary storage for final constructed vertices/indices
+	std::vector<Vertex> mVerts;
+	std::vector<UINT> mIndices;
+
+	//Private function to load a mesh from a file
+	Mesh* LoadMesh(std::string _filepath);
+
+	//Mesh* GenerateCube(float _size);
+	//Mesh* GenerateSphere(float _radius, int _subdivisions);
+};
+
+//Enum of mesh primitive types
+enum MeshPrimitives {
+	SPHERE = 0,
+	CUBE = 1,
+	CUBOID = 2,
+	CONE = 3,
+	CYLINDER = 4,
+	TUBE = 5,
+	TORUS = 6
 };
 
 #endif //GGP_RESOURCE_MANAGER

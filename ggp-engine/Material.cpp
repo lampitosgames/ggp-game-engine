@@ -6,7 +6,7 @@ using namespace std;
 Material::Material(std::string _uniqueID) {
 	uniqueID = _uniqueID;
 	color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	//With the default constructor, the object will use the MeshManager's default shaders
+	//With the default constructor, the object will use the renderManager's default shaders
 	vertexShader = nullptr;
 	pixelShader = nullptr;
 }

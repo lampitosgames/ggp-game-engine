@@ -62,12 +62,11 @@ public:
 	int* GetMousePos();
 
 	/*
-		Input data functions
-		These accept data from the OS level for certain things (Mouse input, mostly)
+		Mouse handling functions
 	*/
 	void _OnMouseUp(WPARAM _buttonState, int _x, int _y);
 	void _OnMouseDown(WPARAM _buttonState, int _x, int _y);
-	void _OnMouseMove(int _x, int _y);
+	void _OnMouseMove(int _prevX, int _prevY, int _x, int _y);
 	void _OnMouseWheel(float _delta);
 private:
 	InputManager();

@@ -1,5 +1,5 @@
 #include "Spatial.h"
-#include "MeshManager.h"
+#include "RenderManager.h"
 
 using namespace DirectX;
 
@@ -8,5 +8,5 @@ Spatial::Spatial(std::string _uniqueID, XMFLOAT3 _position, XMFLOAT3 _rotation, 
 }
 
 void Spatial::AddMeshRenderer() {
-	components[CompType::MESH_RENDERER] = meshManager->AddMeshRenderer(this);
+	components[CompType::MESH_RENDERER] = renderManager->AddMeshRenderer(this);
 }

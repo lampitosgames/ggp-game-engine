@@ -17,13 +17,9 @@ cbuffer externalData : register(b0) {
 // - The name of the struct itself is unimportant, but should be descriptive
 // - Each variable must have a semantic, which defines its usage
 struct VertexShaderInput {
-	// Data type
-	//  |
-	//  |   Name          Semantic
-	//  |    |                |
-	//  v    v                v
 	float3 position		: POSITION;     // XYZ position
-	float4 color		: COLOR;        // RGBA color
+	float3 normal       : NORMAL;       // Normal vector
+	float2 uv           : TEXCOORD;     // UV Coordinates for main texture
 };
 
 // Struct representing the data we're sending down the pipeline
@@ -32,13 +28,8 @@ struct VertexShaderInput {
 // - The name of the struct itself is unimportant, but should be descriptive
 // - Each variable must have a semantic, which defines its usage
 struct VertexToPixel {
-	// Data type
-	//  |
-	//  |   Name          Semantic
-	//  |    |                |
-	//  v    v                v
 	float4 position		: SV_POSITION;	// XYZW position (System Value Position)
-	float4 color		: COLOR;        // RGBA color
+	float3 normal		: NORMAL;       // Normal vector
 };
 
 // --------------------------------------------------------
@@ -68,10 +59,7 @@ VertexToPixel main(VertexShaderInput input) {
 	// screen and the distance (Z) from the camera (the "depth" of the pixel)
 	output.position = mul(float4(input.position, 1.0f), worldViewProj);
 
-	// Pass the color through 
-	// - The values will be interpolated per-pixel by the rasterizer
-	// - We don't need to alter it here, but we do need to send it to the pixel shader
-	output.color = input.color;
+	output.normal = input.normal;
 
 	// Whatever we return will make its way through the pipeline to the
 	// next programmable stage we're using (the pixel shader for now)

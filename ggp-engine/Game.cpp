@@ -26,12 +26,14 @@ Game::Game(HINSTANCE hInstance)
 	vertexBuffer = 0;
 	indexBuffer = 0;
 
-	//vertexShader = 0;
-	//pixelShader = 0;
+	//Is the cursor locked (Default yes)
+	//TODO: Make this toggle-able and have more functionality in the System singleton
+	mouseLocked = true;
+	ShowCursor(false);
 
 	//Get Singleton Instances
 	resourceManager = ResourceManager::GetInstance();
-	meshManager = MeshManager::GetInstance();
+	renderManager = RenderManager::GetInstance();
 	inputManager = InputManager::GetInstance();
 
 	#if defined(DEBUG) || defined(_DEBUG)
@@ -60,7 +62,7 @@ Game::~Game() {
 
 	//Release all singletons
 	resourceManager->ReleaseInstance();
-	meshManager->ReleaseInstance();
+	renderManager->ReleaseInstance();
 	inputManager->ReleaseInstance();
 
 	delete gameObject1;
@@ -92,25 +94,19 @@ void Game::Init() {
 	dxContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//Call start on the singletons that need it
-	meshManager->Start();
+	renderManager->Start();
 }
 
 // --------------------------------------------------------
 // Creates the geometry we're going to draw - a single triangle for now
 // --------------------------------------------------------
 void Game::CreateBasicGeometry() {
-	// Create some temporary variables to represent colors
-	// - Not necessary, just makes things more readable
-	XMFLOAT4 red = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	XMFLOAT4 green = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	XMFLOAT4 blue = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-
 	//Mesh1 Vertex Array
 	Vertex mesh1Verts[] = {
-		{ XMFLOAT3(-1.0f, +1.0f, +0.0f), red },
-		{ XMFLOAT3(+1.0f, +1.0f, +0.0f), red },
-		{ XMFLOAT3(-1.0f, -1.0f, +0.0f), red },
-		{ XMFLOAT3(+1.0f, -1.0f, +0.0f), red },
+		{ XMFLOAT3(-1.0f, +1.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+		{ XMFLOAT3(+1.0f, +1.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+		{ XMFLOAT3(-1.0f, -1.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+		{ XMFLOAT3(+1.0f, -1.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
 	};
 	//Mesh1 indices
 	int mesh1Indices[] = {0, 1, 2,
@@ -120,19 +116,19 @@ void Game::CreateBasicGeometry() {
 
 	//Mesh2 Vertex Array
 	Vertex mesh2Verts[] = {
-		{XMFLOAT3(-1.0f, +1.0f, +0.0f), blue},
-		{XMFLOAT3(-1.0f, -1.0f, +0.0f), blue},
-		{XMFLOAT3(+1.0f, -1.0f, +0.0f), blue},
+		{XMFLOAT3(-1.0f, +1.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+		{XMFLOAT3(-1.0f, -1.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+		{XMFLOAT3(+1.0f, -1.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
 	};
 	//Mesh2 indices
 	int mesh2Indices[] = {0, 2, 1};
 
 	//Mesh3 Vertex Array
 	Vertex mesh3Verts[] = {
-		{XMFLOAT3(-1.0f, +2.0f, +0.0f), green},
-		{XMFLOAT3(+1.0f, +2.0f, +0.0f), green},
-		{XMFLOAT3(-1.0f, -2.0f, +0.0f), green},
-		{XMFLOAT3(+1.0f, -2.0f, +0.0f), green},
+		{XMFLOAT3(-1.0f, +2.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+		{XMFLOAT3(+1.0f, +2.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+		{XMFLOAT3(-1.0f, -2.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+		{XMFLOAT3(+1.0f, -2.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
 	};
 	//Mesh3 indices
 	int mesh3Indices[] = {0, 1, 2,
@@ -143,9 +139,9 @@ void Game::CreateBasicGeometry() {
 	//We only need a single material for all three for now
 	Material* defaultMaterial = resourceManager->AddMaterial("defaultMat", L"VertexShader.cso", L"PixelShader.cso");
 
-	Mesh* mesh1 = resourceManager->CreateMeshFromData(mesh1Verts, 4, mesh1Indices, 12, "mesh1");
-	Mesh* mesh2 = resourceManager->CreateMeshFromData(mesh2Verts, 3, mesh2Indices, 3, "mesh2");
-	Mesh* mesh3 = resourceManager->CreateMeshFromData(mesh3Verts, 4, mesh3Indices, 12, "mesh3");
+	Mesh* mesh1 = resourceManager->GetMesh("assets/cube.obj");
+	Mesh* mesh2 = resourceManager->GetMesh("assets/helix.obj");
+	Mesh* mesh3 = resourceManager->GetMesh("assets/sphere.obj");
 
 	//Create the first game object
 	gameObject1 = new Spatial("Object1");
@@ -221,6 +217,9 @@ void Game::Update(float deltaTime, float totalTime) {
 	if (GetAsyncKeyState(VK_ESCAPE))
 		Quit();
 
+	//Handle mouse movement
+	HandleMouseMove();
+
 	inputManager->Update();
 	
 	//TODO: Move most of this to the active scene
@@ -259,13 +258,45 @@ void Game::Draw(float deltaTime, float totalTime) {
 		1.0f,
 		0);
 
-	//Call render on the MeshManager
-	meshManager->Render(dxContext, activeCamera->GetViewMatrix(), activeCamera->GetProjectionMatrix());
+	//Call render on the renderManager
+	renderManager->Render(dxContext, activeCamera->GetViewMatrix(), activeCamera->GetProjectionMatrix());
 
 	// Present the back buffer to the user
 	//  - Puts the final frame we're drawing into the window so the user can see it
 	//  - Do this exactly ONCE PER FRAME (always at the very end of the frame)
 	swapChain->Present(0, 0);
+}
+
+void Game::HandleMouseMove() {
+	if (mouseLocked) {
+		//Get the new mouse position
+		GetCursorPos(&mousePos);
+		//Store window rect
+		RECT windowRect;
+		GetWindowRect(hWnd, &windowRect);
+		//Previous position is always the window's center when the cursor is locked
+		prevMousePos.x = windowRect.left + width / 2;
+		prevMousePos.y = windowRect.top + height / 2;
+		//Get mouse displacement
+		int displaceX = mousePos.x - prevMousePos.x;
+		int displaceY = mousePos.y - prevMousePos.y;
+		//Pass data to input manager if mouse moved
+		if (displaceX != 0 || displaceY != 0) {
+			inputManager->_OnMouseMove(prevMousePos.x, prevMousePos.y, mousePos.x, mousePos.y);
+		}
+		//Reset cursor position
+		SetCursorPos(prevMousePos.x, prevMousePos.y);
+	} else {
+		//Store previous mouse position
+		prevMousePos.x = mousePos.x;
+		prevMousePos.y = mousePos.y;
+		//Get new mouse position
+		GetCursorPos(&mousePos);
+		//Pass to input manager if there was movement
+		if (prevMousePos.x != mousePos.x || prevMousePos.y != mousePos.y) {
+			inputManager->_OnMouseMove(prevMousePos.x, prevMousePos.y, mousePos.x, mousePos.y);
+		}
+	}
 }
 
 
@@ -304,8 +335,7 @@ void Game::OnMouseUp(WPARAM buttonState, int x, int y) {
 // currently capturing the mouse.
 // --------------------------------------------------------
 void Game::OnMouseMove(WPARAM buttonState, int x, int y) {
-	//Pass event to the input manager
-	inputManager->_OnMouseMove(x, y);
+	//Currently does nothing
 }
 
 // --------------------------------------------------------

@@ -8,9 +8,9 @@ class MeshRenderer;
 class Spatial;
 class ResourceManager;
 
-class MeshManager {
+class RenderManager {
 	//Singleton pointer
-	static MeshManager* instance;
+	static RenderManager* instance;
 
 	ResourceManager* resourceManager;
 
@@ -23,8 +23,8 @@ class MeshManager {
 	//Map of all mesh renderers
 	std::map<UINT, MeshRenderer*> meshRendererUIDMap;
 public:
-	//Static Singleton get/release for the single MeshManager instance
-	static MeshManager* GetInstance();
+	//Static Singleton get/release for the single renderManager instance
+	static RenderManager* GetInstance();
 	static void ReleaseInstance();
 
 	//Start method.  Called once when we can safely assume the entire engine has been initialized
@@ -46,8 +46,8 @@ public:
 
 	//TODO: Mesh primitive generation.  Works together with the resourceManager
 private:
-	MeshManager();
-	~MeshManager();
+	RenderManager();
+	~RenderManager();
 	void Release();
 };
 

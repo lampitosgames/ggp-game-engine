@@ -6,7 +6,7 @@
 #include <DirectXMath.h>
 #include "Mesh.h"
 #include "ResourceManager.h"
-#include "MeshManager.h"
+#include "RenderManager.h"
 #include "InputManager.h"
 #include "Spatial.h"
 #include "FlyingCamera.h"
@@ -25,12 +25,21 @@ public:
 	void Update(float deltaTime, float totalTime);
 	void Draw(float deltaTime, float totalTime);
 
+	//Mouse move
+	void HandleMouseMove();
+
 	// Overridden mouse input helper methods
 	void OnMouseDown(WPARAM buttonState, int x, int y);
 	void OnMouseUp(WPARAM buttonState, int x, int y);
 	void OnMouseMove(WPARAM buttonState, int x, int y);
 	void OnMouseWheel(float wheelDelta, int x, int y);
 private:
+	//MOUSE VARIABLES
+	//TODO: Move things like this to a system singleton
+	//Is mouse cursor locked to the window?
+	bool mouseLocked;
+	POINT mousePos;
+	POINT prevMousePos;
 
 	// Initialization helper methods - feel free to customize, combine, etc.
 	void CreateBasicGeometry();
@@ -40,7 +49,7 @@ private:
 	ID3D11Buffer* indexBuffer;
 
 	ResourceManager* resourceManager;
-	MeshManager* meshManager;
+	RenderManager* renderManager;
 	InputManager* inputManager;
 
 	//Temporary game object storage until I implement scenes

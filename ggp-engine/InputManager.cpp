@@ -189,10 +189,10 @@ void InputManager::_OnMouseDown(WPARAM _buttonState, int _x, int _y) {
 	}
 }
 
-void InputManager::_OnMouseMove(int _x, int _y) {
+void InputManager::_OnMouseMove(int _prevX, int _prevY, int _x, int _y) {
 	//Store previous mouse position
-	prevMousePos[0] = mousePos[0];
-	prevMousePos[1] = mousePos[1];
+	prevMousePos[0] = _prevX;
+	prevMousePos[1] = _prevY;
 
 	//Store new mouse position
 	mousePos[0] = _x;

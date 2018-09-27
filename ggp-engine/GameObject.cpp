@@ -1,6 +1,6 @@
 #include "GameObject.h"
 #include "ResourceManager.h"
-#include "MeshManager.h"
+#include "RenderManager.h"
 #include "InputManager.h"
 using namespace std;
 
@@ -83,7 +83,7 @@ void GameObject::GenerateUID(string &_outString) {
 
 void GameObject::Init() {
 	//Get instances of all singletons
-	meshManager = MeshManager::GetInstance();
+	renderManager = RenderManager::GetInstance();
 	inputManager = InputManager::GetInstance();
 	resourceManager = ResourceManager::GetInstance();
 }

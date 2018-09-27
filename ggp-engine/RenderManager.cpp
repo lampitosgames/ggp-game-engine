@@ -1,38 +1,38 @@
-#include "MeshManager.h"
+#include "RenderManager.h"
 #include "Spatial.h"
 #include "MeshRenderer.h"
 #include "ResourceManager.h"
 
-MeshManager* MeshManager::instance = nullptr;
+RenderManager* RenderManager::instance = nullptr;
 
-MeshManager* MeshManager::GetInstance() {
+RenderManager* RenderManager::GetInstance() {
 	if (instance == nullptr) {
-		instance = new MeshManager();
+		instance = new RenderManager();
 	}
 	return instance;
 }
 
-void MeshManager::ReleaseInstance() {
+void RenderManager::ReleaseInstance() {
 	if (instance != nullptr) {
 		delete instance;
 		instance = nullptr;
 	}
 }
 
-void MeshManager::Start() {
+void RenderManager::Start() {
 	//Load default shaders
 	defaultVertexShader = resourceManager->GetVertexShader(L"VertexShader.cso");
 	defaultPixelShader = resourceManager->GetPixelShader(L"PixelShader.cso");
 }
 
-UINT MeshManager::AddMeshRenderer(Spatial* _gameObject) {
+UINT RenderManager::AddMeshRenderer(Spatial* _gameObject) {
 	MeshRenderer* tempMR = new MeshRenderer(mrUID, _gameObject);
 	meshRendererUIDMap[mrUID] = tempMR;
 	mrUID++;
 	return mrUID - 1;
 }
 
-MeshRenderer* MeshManager::GetMeshRenderer(UINT _uniqueID) {
+MeshRenderer* RenderManager::GetMeshRenderer(UINT _uniqueID) {
 	auto thisMR = meshRendererUIDMap.find(_uniqueID);
 	//If found, return it.  Else, return nullptr
 	if (thisMR != meshRendererUIDMap.end()) {
@@ -41,7 +41,7 @@ MeshRenderer* MeshManager::GetMeshRenderer(UINT _uniqueID) {
 	return nullptr;
 }
 
-void MeshManager::DeleteMeshRenderer(UINT _uniqueID) {
+void RenderManager::DeleteMeshRenderer(UINT _uniqueID) {
 	MeshRenderer* mrTemp = GetMeshRenderer(_uniqueID);
 	if (mrTemp) {
 		delete mrTemp;
@@ -49,7 +49,7 @@ void MeshManager::DeleteMeshRenderer(UINT _uniqueID) {
 	}
 }
 
-void MeshManager::Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 _viewMatrix, DirectX::XMFLOAT4X4 _projectionMatrix) {
+void RenderManager::Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 _viewMatrix, DirectX::XMFLOAT4X4 _projectionMatrix) {
 	//Loop through and render every object
 	std::map<UINT, MeshRenderer*>::iterator mrIterator;
 	for (mrIterator = meshRendererUIDMap.begin(); mrIterator != meshRendererUIDMap.end(); ++mrIterator) {
@@ -82,18 +82,18 @@ void MeshManager::Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 _v
 	}
 }
 
-MeshManager::MeshManager() {
+RenderManager::RenderManager() {
 	mrUID = 0;
 	//Get an instance of the resource manager
 	resourceManager = ResourceManager::GetInstance();
 }
 
-MeshManager::~MeshManager() {
+RenderManager::~RenderManager() {
 	//Destructor is the same as clearing the singleton
 	Release();
 }
 
-void MeshManager::Release() {
+void RenderManager::Release() {
 	//Loop through and delete every mesh renderer
 	std::map<UINT, MeshRenderer*>::iterator mrIterator;
 	for (mrIterator = meshRendererUIDMap.begin(); mrIterator != meshRendererUIDMap.end(); ++mrIterator) {

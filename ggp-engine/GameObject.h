@@ -15,7 +15,7 @@
 #include "ComponentTypes.h"
 #include "InputEvent.h"
 class ResourceManager;
-class MeshManager;
+class RenderManager;
 class InputManager;
 
 typedef unsigned int UINT;
@@ -39,7 +39,7 @@ protected:
 	std::map<CompType, UINT> components;
 
 	//Pointers to required singletons (used for component management)
-	MeshManager* meshManager;
+	RenderManager* renderManager;
 	InputManager* inputManager;
 	ResourceManager* resourceManager;
 public:
@@ -96,7 +96,7 @@ inline T* GameObject::GetComponent(CompType _type) {
 			if (tempMR != components.end()) {
 				//Get the mesh renderer using its stored unique ID. Typecast it since this is a template function
 				//This should always work.  If it doesn't, you called the function incorrectly
-				return (T*)meshManager->GetMeshRenderer(tempMR->second);
+				return (T*)renderManager->GetMeshRenderer(tempMR->second);
 			}
 		}
 		case CompType::INPUT_LISTENER: {

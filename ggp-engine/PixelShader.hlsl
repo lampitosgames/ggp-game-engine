@@ -5,13 +5,8 @@
 // - The variable names don't have to match other shaders (just the semantics)
 // - Each variable must have a semantic, which defines its usage
 struct VertexToPixel {
-	// Data type
-	//  |
-	//  |   Name          Semantic
-	//  |    |                |
-	//  v    v                v
-	float4 position		: SV_POSITION;
-	float4 color		: COLOR;
+	float4 position		: SV_POSITION;	// XYZW position (System Value Position)
+	float3 normal		: NORMAL;       // Normal vector
 };
 
 // --------------------------------------------------------
@@ -29,5 +24,5 @@ float4 main(VertexToPixel input) : SV_TARGET
 	// - This color (like most values passing through the rasterizer) is 
 	//   interpolated for each pixel between the corresponding vertices 
 	//   of the triangle we're rendering
-	return input.color;
+	return float4(1.0, 1.0, 1.0, 1.0);
 }

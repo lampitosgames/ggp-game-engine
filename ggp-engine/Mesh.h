@@ -17,7 +17,7 @@ class Mesh {
 	UINT offset = 0;
 public:
 	//Constructor
-	Mesh(Vertex vertexArray[], UINT vertexCount, int vertexIndicesArray[], UINT indexCount, ID3D11Device* dxDevice);
+	Mesh(Vertex* vertexArray, UINT vertexCount, UINT* vertexIndicesArray, UINT indexCount, ID3D11Device* dxDevice);
 	//Destructor
 	~Mesh(void);
 
