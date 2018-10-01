@@ -20,5 +20,5 @@ float4 main(VertexToPixel input) : SV_TARGET {
 
 	dirLightColorSum = saturate(dirLightColorSum);
 
-	return dirLights[0].diffuseColor;
+	return dirLightColorSum;
 }

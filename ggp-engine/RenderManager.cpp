@@ -28,8 +28,16 @@ void RenderManager::Start() {
 	defaultPixelShader = resourceManager->GetPixelShader(L"LambertPShader.cso");
 
 	lightCount = 2;
-	lightArray[0] = {XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 0.0f)};
-	lightArray[1]= {XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT3(0.0f, +0.0f, 1.0f)};
+	lightArray[0] = {XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 0.0f), 0.0f};
+	lightArray[1]= {XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT3(0.0f, +0.0f, 1.0f), 0.0f};
+	lightArray[2] = {};
+	lightArray[3] = {};
+	lightArray[4] = {};
+	lightArray[5] = {};
+	lightArray[6] = {};
+	lightArray[7] = {};
+	lightArray[8] = {};
+
 }
 
 UINT RenderManager::AddMeshRenderer(Spatial* _gameObject) {
@@ -71,8 +79,8 @@ void RenderManager::Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 
 
 		//Null check on all resources
 		//NOTE: Commented out to demonstrate that my material system actually works
-		//if (vsTemp == nullptr) { vsTemp = defaultVertexShader; }
-		//if (psTemp == nullptr) { psTemp = defaultPixelShader; }
+		if (vsTemp == nullptr) { vsTemp = defaultVertexShader; }
+		if (psTemp == nullptr) { psTemp = defaultPixelShader; }
 
 		//Upload all data to vertex shader
 		vsTemp->SetMatrix4x4("world", mrTemp->GetWorldMatrix());
