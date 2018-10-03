@@ -3,7 +3,7 @@
 
 #include <map>
 #include "SimpleShader.h"
-#include "Light.h"
+#include "LightStructs.h"
 class Mesh;
 class MeshRenderer;
 class Spatial;
@@ -25,7 +25,7 @@ class RenderManager {
 	std::map<UINT, MeshRenderer*> meshRendererUIDMap;
 
 	//TEMP: Lights until they are moved into game objects
-	DirectionalLight lightArray[9];
+	DirLight lightArray[9];
 	UINT lightCount;
 public:
 	//Static Singleton get/release for the single renderManager instance
@@ -48,8 +48,6 @@ public:
 	MeshRenderer* GetMeshRenderer(UINT _uniqueID);
 	//Delete a mesh renderer
 	void DeleteMeshRenderer(UINT _uniqueID);
-
-	//TODO: Mesh primitive generation.  Works together with the resourceManager
 private:
 	RenderManager();
 	~RenderManager();

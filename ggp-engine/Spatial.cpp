@@ -1,5 +1,6 @@
 #include "Spatial.h"
 #include "RenderManager.h"
+#include "LightManager.h"
 
 using namespace DirectX;
 
@@ -9,4 +10,8 @@ Spatial::Spatial(std::string _uniqueID, XMFLOAT3 _position, XMFLOAT3 _rotation, 
 
 void Spatial::AddMeshRenderer() {
 	components[CompType::MESH_RENDERER] = renderManager->AddMeshRenderer(this);
+}
+
+void Spatial::AddPointLight() {
+	components[CompType::POINT_LIGHT] = lightManager->AddPointLight(this);
 }

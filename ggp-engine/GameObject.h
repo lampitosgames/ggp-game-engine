@@ -17,6 +17,7 @@
 class ResourceManager;
 class RenderManager;
 class InputManager;
+class LightManager;
 
 typedef unsigned int UINT;
 
@@ -42,6 +43,7 @@ protected:
 	RenderManager* renderManager;
 	InputManager* inputManager;
 	ResourceManager* resourceManager;
+	LightManager* lightManager;
 public:
 	//Constructors
 	GameObject(std::string _uniqueID = "NA");

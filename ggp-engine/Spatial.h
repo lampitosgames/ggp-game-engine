@@ -16,6 +16,8 @@ public:
 			DirectX::XMFLOAT3 _scale    = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 
 	void AddMeshRenderer();
+	void AddPointLight();
+	//void AddDirectionalLight();
 };
 
 #endif //GGP_SPATIAL_H

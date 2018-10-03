@@ -90,7 +90,7 @@ void RenderManager::Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 
 		//TODO: Standardize what data all shaders can accept
 		vsTemp->CopyAllBufferData();
 
-		psTemp->SetData("dirLights", &lightArray, sizeof(DirectionalLight)*9);
+		psTemp->SetData("dirLights", &lightArray, sizeof(DirLight)*9);
 		psTemp->SetData("dirLightCount", &lightCount, sizeof(UINT));
 		psTemp->CopyAllBufferData();
 		

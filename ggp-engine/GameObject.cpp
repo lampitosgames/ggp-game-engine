@@ -2,6 +2,7 @@
 #include "ResourceManager.h"
 #include "RenderManager.h"
 #include "InputManager.h"
+#include "LightManager.h"
 using namespace std;
 
 map<std::string, GameObject*> GameObject::goUIDMap = map<std::string, GameObject*>();
@@ -86,6 +87,7 @@ void GameObject::Init() {
 	renderManager = RenderManager::GetInstance();
 	inputManager = InputManager::GetInstance();
 	resourceManager = ResourceManager::GetInstance();
+	lightManager = LightManager::GetInstance();
 }
 
 void GameObject::Release() {

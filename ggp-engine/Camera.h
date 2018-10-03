@@ -1,9 +1,9 @@
 #ifndef GGP_CAMERA_H
 #define GGP_CAMERA_H
 
-#include "ShaderObject.h"
+#include "Spatial.h"
 
-class Camera : public ShaderObject {
+class Camera : public Spatial {
 protected:
 	float fov = 1.3962634f; //80 degree FOV
 	float aspectRatio = 1.777777777f; //1920 / 1080
@@ -50,9 +50,6 @@ public:
 	DirectX::XMFLOAT4X4 GetViewMatrix();
 	//Get the projection matrix
 	DirectX::XMFLOAT4X4 GetProjectionMatrix();
-	
-	//Upload relevant camera data to the currently active shader
-	void uploadShaderVariables(ID3D11DeviceContext* _dxContext);
 };
 
 #endif //GGP_CAMERA_H

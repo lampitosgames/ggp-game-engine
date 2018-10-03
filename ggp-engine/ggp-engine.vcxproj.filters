@@ -107,6 +107,15 @@
     <ClCompile Include="Light.cpp">
       <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
+    <ClCompile Include="LightManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLight.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="DirLight.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DXCore.h">
@@ -142,9 +151,6 @@
     <ClInclude Include="Camera.h">
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderObject.h">
-      <Filter>Header Files\GameObjects</Filter>
-    </ClInclude>
     <ClInclude Include="Basis.h">
       <Filter>Header Files\Data Structures</Filter>
     </ClInclude>
@@ -178,8 +184,17 @@
     <ClInclude Include="RenderManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="Light.h">
+    <ClInclude Include="LightManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="LightStructs.h">
       <Filter>Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLight.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="DirLight.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -11,7 +11,7 @@ Camera::Camera(std::string _uniqueID,
 			   float _farPlane, 
 			   XMFLOAT3 _position, 
 			   XMFLOAT3 _rotation, 
-			   XMFLOAT3 _scale) : ShaderObject(_uniqueID, _position, _rotation, _scale) {
+			   XMFLOAT3 _scale) : Spatial(_uniqueID, _position, _rotation, _scale) {
 	//This is a camera object
 	type = GOType::CAMERA;
 
@@ -72,7 +72,3 @@ void Camera::SetFar(float _far) {
 DirectX::XMFLOAT4X4 Camera::GetViewMatrix() { return viewMatrix; }
 
 DirectX::XMFLOAT4X4 Camera::GetProjectionMatrix() { return projMatrix; }
-
-void Camera::uploadShaderVariables(ID3D11DeviceContext* _dxContext) {
-	//Upload camera data to shader
-}
