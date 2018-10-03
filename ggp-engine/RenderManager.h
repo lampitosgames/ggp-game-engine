@@ -8,12 +8,14 @@ class Mesh;
 class MeshRenderer;
 class Spatial;
 class ResourceManager;
+class LightManager;
 
 class RenderManager {
 	//Singleton pointer
 	static RenderManager* instance;
 
 	ResourceManager* resourceManager;
+	LightManager* lightManager;
 
 	//Default shaders for materials without them (Or MeshRenderers without materials)
 	SimpleVertexShader* defaultVertexShader;
@@ -23,10 +25,6 @@ class RenderManager {
 	UINT mrUID = 0;
 	//Map of all mesh renderers
 	std::map<UINT, MeshRenderer*> meshRendererUIDMap;
-
-	//TEMP: Lights until they are moved into game objects
-	DirLight lightArray[9];
-	UINT lightCount;
 public:
 	//Static Singleton get/release for the single renderManager instance
 	static RenderManager* GetInstance();

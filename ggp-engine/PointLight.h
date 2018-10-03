@@ -1,20 +1,10 @@
 #ifndef GGP_POINT_LIGHT_H
 #define GGP_POINT_LIGHT_H
 
-#include "Component.h"
 #include <DirectXMath.h>
+#include "Component.h"
+#include "LightStructs.h"
 class Spatial;
-
-struct PointLightStruct {
-	DirectX::XMFLOAT4 color;
-	DirectX::XMFLOAT3 position;
-	float ambientColor;
-	float diffuseColor;
-	// L = (AmbientColor + diffuseColor)/(constAtten + linearAtten*dist + expAtten*dist*dist)
-	float constAtten;
-	float linearAtten;
-	float expAtten;
-};
 
 class PointLight : public Component {
 	PointLightStruct lightData;

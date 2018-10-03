@@ -2,6 +2,7 @@
 #include "Spatial.h"
 #include "MeshRenderer.h"
 #include "ResourceManager.h"
+#include "LightManager.h"
 #include <DirectXMath.h>
 
 using namespace DirectX;
@@ -26,18 +27,6 @@ void RenderManager::Start() {
 	//Load default shaders
 	defaultVertexShader = resourceManager->GetVertexShader(L"VertexShader.cso");
 	defaultPixelShader = resourceManager->GetPixelShader(L"LambertPShader.cso");
-
-	lightCount = 2;
-	lightArray[0] = {XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 0.0f), 0.0f};
-	lightArray[1]= {XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT3(0.0f, +0.0f, 1.0f), 0.0f};
-	lightArray[2] = {};
-	lightArray[3] = {};
-	lightArray[4] = {};
-	lightArray[5] = {};
-	lightArray[6] = {};
-	lightArray[7] = {};
-	lightArray[8] = {};
-
 }
 
 UINT RenderManager::AddMeshRenderer(Spatial* _gameObject) {
@@ -90,8 +79,9 @@ void RenderManager::Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 
 		//TODO: Standardize what data all shaders can accept
 		vsTemp->CopyAllBufferData();
 
-		psTemp->SetData("dirLights", &lightArray, sizeof(DirLight)*9);
-		psTemp->SetData("dirLightCount", &lightCount, sizeof(UINT));
+		//Upload lighting data from the light manager
+		lightManager->UploadAllLights(psTemp);
+
 		psTemp->CopyAllBufferData();
 		
 		vsTemp->SetShader();
@@ -105,6 +95,7 @@ RenderManager::RenderManager() {
 	mrUID = 0;
 	//Get an instance of the resource manager
 	resourceManager = ResourceManager::GetInstance();
+	lightManager = LightManager::GetInstance();
 }
 
 RenderManager::~RenderManager() {

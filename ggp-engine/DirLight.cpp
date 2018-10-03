@@ -2,7 +2,7 @@
 
 using namespace DirectX;
 
-DirLight::DirLight(UINT _uniqueID, Spatial* _gameObject, XMFLOAT4 _ambientColor, XMFLOAT4 _diffuseColor, XMFLOAT3 _direction) {
+DirLight::DirLight(UINT _uniqueID, GameObject* _gameObject, XMFLOAT4 _ambientColor, XMFLOAT4 _diffuseColor, XMFLOAT3 _direction) {
 	type = CompType::DIRECTIONAL_LIGHT;
 	uniqueID = _uniqueID;
 	gameObject = _gameObject;
@@ -16,6 +16,6 @@ DirLight::DirLight(UINT _uniqueID, Spatial* _gameObject, XMFLOAT4 _ambientColor,
 
 DirLight::~DirLight() {}
 
-DirectionalLightStruct DirLight::buildLightStruct() {
+DirLightStruct DirLight::buildLightStruct() {
 	return lightData;
 }

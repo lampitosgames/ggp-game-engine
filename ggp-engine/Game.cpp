@@ -35,6 +35,7 @@ Game::Game(HINSTANCE hInstance)
 	resourceManager = ResourceManager::GetInstance();
 	renderManager = RenderManager::GetInstance();
 	inputManager = InputManager::GetInstance();
+	lightManager = LightManager::GetInstance();
 
 	#if defined(DEBUG) || defined(_DEBUG)
 		// Do we want a console window?  Probably only in debug mode
@@ -64,6 +65,7 @@ Game::~Game() {
 	resourceManager->ReleaseInstance();
 	renderManager->ReleaseInstance();
 	inputManager->ReleaseInstance();
+	lightManager->ReleaseInstance();
 
 	delete gameObject1;
 	delete gameObject2;
@@ -188,6 +190,15 @@ void Game::CreateBasicGeometry() {
 	gameObject5->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh3);
 	gameObject5->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(defaultMaterial);
 	gameObject5->transform.position.y -= 2.0f;
+
+	//Create a light
+	lightObject = new Spatial("light1");
+	lightObject->AddDirLight(XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT3(0.0f, +0.0f, 1.0f));
+	lightObject2 = new Spatial("light2");
+	lightObject2->AddDirLight(XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, +0.0f, 0.0f));
+	lightObject3 = new Spatial("light3");
+	lightObject3->AddPointLight(XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
+	lightObject3->transform.position.y += 2.5f;
 
 	//Create a camera
 	activeCamera = new FlyingCamera("MainCamera");

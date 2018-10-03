@@ -10,6 +10,7 @@
 */
 
 #include <string>
+#include <DirectXMath.h>
 #include <map>
 #include "GameObjectTypes.h"
 #include "ComponentTypes.h"
@@ -69,6 +70,7 @@ public:
 
 	//Functions to add different types of components
 	void AddInputListener();
+	void AddDirLight(DirectX::XMFLOAT4 _ambientColor = DirectX::XMFLOAT4(0.05f, 0.05f, 0.05f, 1.0f), DirectX::XMFLOAT4 _diffuseColor = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3 _direction = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 
 	//Gets for member variables
 	std::string GetUniqueID();
@@ -107,6 +109,22 @@ inline T* GameObject::GetComponent(CompType _type) {
 			if (tempIL != components.end()) {
 				//Similar to above, get IL from singleton and typecast based on T
 				return (T*)inputManager->GetInputListener(tempIL->second);
+			}
+		}
+		case CompType::DIRECTIONAL_LIGHT: {
+			//Ensure the component exists
+			auto tempDL = components.find(_type);
+			if (tempDL != components.end()) {
+				//typecast
+				return (T*)lightManager->GetDirLight(tempDL->second);
+			}
+		}
+		case CompType::POINT_LIGHT: {
+			//Ensure the component exists
+			auto tempPL = components.find(_type);
+			if (tempPL != components.end()) {
+				//typecast
+				return (T*)lightManager->GetPointLight(tempPL->second);
 			}
 		}
 	}

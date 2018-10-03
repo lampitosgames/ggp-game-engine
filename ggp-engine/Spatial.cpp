@@ -12,6 +12,6 @@ void Spatial::AddMeshRenderer() {
 	components[CompType::MESH_RENDERER] = renderManager->AddMeshRenderer(this);
 }
 
-void Spatial::AddPointLight() {
-	components[CompType::POINT_LIGHT] = lightManager->AddPointLight(this);
+void Spatial::AddPointLight(XMFLOAT4 _color) {
+	components[CompType::POINT_LIGHT] = lightManager->AddPointLight(this, _color);
 }

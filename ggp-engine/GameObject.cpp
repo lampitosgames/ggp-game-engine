@@ -52,6 +52,10 @@ void GameObject::AddInputListener() {
 	components[CompType::INPUT_LISTENER] = inputManager->AddInputListener(this);
 }
 
+void GameObject::AddDirLight(DirectX::XMFLOAT4 _ambientColor, DirectX::XMFLOAT4 _diffuseColor, DirectX::XMFLOAT3 _direction) {
+	components[CompType::DIRECTIONAL_LIGHT] = lightManager->AddDirLight(this, _ambientColor, _diffuseColor, _direction);
+}
+
 string GameObject::GetUniqueID() { return uniqueID; }
 
 GOType GameObject::GetType() { return type; }

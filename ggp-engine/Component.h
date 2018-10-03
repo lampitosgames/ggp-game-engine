@@ -1,11 +1,12 @@
-#ifndef GGP_COMPONENT_H
-#define GPP_COMPONENT_H
+#ifndef GGP_ABSTRACT_COMPONENT_H
+#define GGP_ABSTRACT_COMPONENT_H
 
 #include "ComponentTypes.h"
 class GameObject;
 
 typedef unsigned int UINT;
 
+//Abstract base class for all components.
 class Component {
 protected:
 	CompType type;
@@ -14,4 +15,4 @@ public:
 	UINT uniqueID;
 };
 
-#endif //GGP_COMPONENT_H
+#endif //GGP_ABSTRACT_COMPONENT_H

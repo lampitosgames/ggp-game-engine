@@ -5,7 +5,9 @@
 #include <DirectXMath.h>
 #include "PointLight.h"
 #include "DirLight.h"
+#include "LightStructs.h"
 #include "SimpleShader.h"
+class GameObject;
 
 class LightManager {
 	//Singleton pointer
@@ -14,7 +16,10 @@ class LightManager {
 	//Unique ids given to each directional light
 	UINT dlUID = 0;
 	//Map of all directional lights
-	std::map<UINT, DirLight*> directionLightUIDMap;
+	std::map<UINT, DirLight*> dirLightUIDMap;
+	//Directional light struct array of fixed length. Helsp upload to the shader
+	DirLightStruct dirLights[9];
+	const UINT maxDirLights = 9;
 
 	//Unique ids given to each point light
 	UINT plUID = 0;
@@ -22,21 +27,25 @@ class LightManager {
 	std::map<UINT, PointLight*> pointLightUIDMap;
 	//Point light struct array of fixed length. Helps upload to the shader
 	PointLightStruct pointLights[9];
+	const UINT maxPointLights = 9;
 public:
 	//Static singleton get/release
 	static LightManager* GetInstance();
 	static void ReleaseInstance();
 
+	void UploadAllLights(SimplePixelShader* _pixelShader);
+
 	/*
 		DIRECTIONAL LIGHT HELPERS
 		Useful for managing directional light components
 	*/
-	UINT AddDirLight(Spatial* _gameObject, 
+	UINT AddDirLight(GameObject* _gameObject, 
 							 DirectX::XMFLOAT4 _ambientColor = DirectX::XMFLOAT4(0.05f, 0.05f, 0.05f, 1.0f), 
 							 DirectX::XMFLOAT4 _diffuseColor = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 
 							 DirectX::XMFLOAT3 _direction = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 	DirLight* GetDirLight(UINT _uniqueID);
-	DirectionalLightStruct GetDirLightStruct(UINT _uniqueID);
+	DirLightStruct GetDirLightStruct(UINT _uniqueID);
+	void DeleteDirLight(UINT _uniqueID);
 
 	/*
 		POINT LIGHT HELPERS

@@ -8,6 +8,7 @@
 #include "ResourceManager.h"
 #include "RenderManager.h"
 #include "InputManager.h"
+#include "LightManager.h"
 #include "Spatial.h"
 #include "FlyingCamera.h"
 
@@ -51,6 +52,7 @@ private:
 	ResourceManager* resourceManager;
 	RenderManager* renderManager;
 	InputManager* inputManager;
+	LightManager* lightManager;
 
 	//Temporary game object storage until I implement scenes
 	Spatial* gameObject1;
@@ -58,6 +60,10 @@ private:
 	Spatial* gameObject3;
 	Spatial* gameObject4;
 	Spatial* gameObject5;
+
+	Spatial* lightObject;
+	Spatial* lightObject2;
+	Spatial* lightObject3;
 
 	FlyingCamera* activeCamera;
 };
