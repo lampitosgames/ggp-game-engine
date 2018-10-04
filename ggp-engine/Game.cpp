@@ -198,7 +198,7 @@ void Game::CreateBasicGeometry() {
 	lightObject2->AddDirLight(XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, +0.0f, 0.0f));
 	lightObject3 = new Spatial("light3");
 	lightObject3->AddPointLight(XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
-	lightObject3->transform.position.y += 2.5f;
+	lightObject3->transform.position.z += 1.0f;
 
 	//Create a camera
 	activeCamera = new FlyingCamera("MainCamera");

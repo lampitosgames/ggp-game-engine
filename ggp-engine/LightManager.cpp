@@ -31,7 +31,7 @@ void LightManager::UploadAllLights(SimplePixelShader* _pixelShader) {
 		//Break out of loop if we've hit the max number of lights
 		if (dirLightCount >= maxDirLights) { break; }
 	}
-	_pixelShader->SetData("dirLights", &dirLights, sizeof(DirLightStruct) * 9);
+	_pixelShader->SetData("dirLights", &dirLights, sizeof(DirLightStruct) * maxDirLights);
 	_pixelShader->SetData("dirLightCount", &dirLightCount, sizeof(UINT));
 
 	//Loop through and get every point light
@@ -41,7 +41,7 @@ void LightManager::UploadAllLights(SimplePixelShader* _pixelShader) {
 		pointLightCount += 1;
 		if (pointLightCount >= maxPointLights) { break; }
 	}
-	_pixelShader->SetData("pointLights", &pointLights, sizeof(PointLightStruct) * 9);
+	_pixelShader->SetData("pointLights", &pointLights, sizeof(PointLightStruct) * maxPointLights);
 	_pixelShader->SetData("pointLightCount", &pointLightCount, sizeof(UINT));
 }
 

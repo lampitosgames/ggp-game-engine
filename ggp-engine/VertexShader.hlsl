@@ -38,6 +38,9 @@ VertexToPixel main(VertexShaderInput input) {
 	// screen and the distance (Z) from the camera (the "depth" of the pixel)
 	output.position = mul(float4(input.position, 1.0f), worldViewProj);
 
+	//Calculate world position of this vertex
+	output.worldPos = mul(float4(input.position, 1.0f), world).xyz;
+
 	//TODO: This won't work if we have non-uniform scaling going on. See slides
 	//for details
 	output.normal = mul(input.normal, (float3x3)world);

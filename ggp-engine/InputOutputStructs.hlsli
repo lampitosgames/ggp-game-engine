@@ -17,4 +17,5 @@ struct VertexShaderInput {
 struct VertexToPixel {
 	float4 position		: SV_POSITION;	// XYZW position (System Value Position)
 	float3 normal		: NORMAL;       // Normal vector
+	float3 worldPos     : POSITION;
 };
