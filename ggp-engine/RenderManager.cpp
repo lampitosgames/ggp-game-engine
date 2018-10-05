@@ -3,6 +3,8 @@
 #include "MeshRenderer.h"
 #include "ResourceManager.h"
 #include "LightManager.h"
+#include "Texture.h"
+#include "Material.h"
 #include <DirectXMath.h>
 
 using namespace DirectX;
@@ -64,7 +66,7 @@ void RenderManager::Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 
 		//Get the material's shaders
 		SimpleVertexShader* vsTemp = mrTemp->GetVertexShader();
 		SimplePixelShader* psTemp = mrTemp->GetPixelShader();
-		//TODO: Also get texture from the material
+		Material* matTemp = mrTemp->GetMaterial();
 
 		//Null check on all resources
 		//NOTE: Commented out to demonstrate that my material system actually works
@@ -81,7 +83,9 @@ void RenderManager::Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 
 
 		//Upload lighting data from the light manager
 		lightManager->UploadAllLights(psTemp);
-
+		//Upload material texture
+		psTemp->SetSamplerState("basicSampler", matTemp->GetTexSS());
+		psTemp->SetShaderResourceView("diffuseTexture", matTemp->GetTexSRV());
 		psTemp->CopyAllBufferData();
 		
 		vsTemp->SetShader();

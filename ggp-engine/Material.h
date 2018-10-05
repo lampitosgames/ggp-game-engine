@@ -4,19 +4,24 @@
 #include <string>
 #include <DirectXMath.h>
 #include "SimpleShader.h"
+class Texture;
 
 class Material {
 	std::string uniqueID;
 	SimpleVertexShader* vertexShader;
 	SimplePixelShader* pixelShader;
 	DirectX::XMFLOAT4 color;
-	//Texture* texture;
+	Texture* texture;
 public:
 	Material(std::string _uniqueID);
 	Material(std::string _uniqueID, 
 			 SimpleVertexShader* _vertexShader, 
 			 SimplePixelShader* _pixelShader, 
 			 DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+	Material(std::string _uniqueID,
+			 SimpleVertexShader* _vertexShader,
+			 SimplePixelShader* _pixelShader,
+			 Texture* _texture);
 	~Material();
 
 	//Shader setters
@@ -29,6 +34,13 @@ public:
 	//Color get/set
 	DirectX::XMFLOAT4 GetColor();
 	void SetColor(DirectX::XMFLOAT4 _newColor);
+
+	//Texture get/set
+	Texture* GetTexture();
+	ID3D11Resource* GetTexResource();
+	ID3D11ShaderResourceView* GetTexSRV();
+	ID3D11SamplerState* GetTexSS();
+	void SetTexture(Texture* _newTexture);
 };
 
 #endif //GGP_MATERIAL_H

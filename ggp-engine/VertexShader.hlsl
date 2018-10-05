@@ -45,6 +45,7 @@ VertexToPixel main(VertexShaderInput input) {
 	//for details
 	output.normal = mul(input.normal, (float3x3)world);
 
+	output.uv = input.uv;
 	// Whatever we return will make its way through the pipeline to the
 	// next programmable stage we're using (the pixel shader for now)
 	return output;

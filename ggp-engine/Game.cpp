@@ -139,11 +139,11 @@ void Game::CreateBasicGeometry() {
 						  3, 1, 2};
 
 	//We only need a single material for all three for now
-	Material* defaultMaterial = resourceManager->AddMaterial("defaultMat", L"VertexShader.cso", L"LambertPShader.cso");
+	Material* defaultMaterial = resourceManager->AddMaterial("defaultMat", L"VertexShader.cso", L"LambertPShader.cso", L"assets/textures/stone01_c.png");
 
-	Mesh* mesh1 = resourceManager->GetMesh("assets/cube.obj");
-	Mesh* mesh2 = resourceManager->GetMesh("assets/helix.obj");
-	Mesh* mesh3 = resourceManager->GetMesh("assets/sphere.obj");
+	Mesh* mesh1 = resourceManager->GetMesh("assets/meshes/cube.obj");
+	Mesh* mesh2 = resourceManager->GetMesh("assets/meshes/helix.obj");
+	Mesh* mesh3 = resourceManager->GetMesh("assets/meshes/sphere.obj");
 
 	//Create the first game object
 	gameObject1 = new Spatial("Object1");

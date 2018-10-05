@@ -116,6 +116,9 @@
     <ClCompile Include="DirLight.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DXCore.h">
@@ -196,6 +199,9 @@
     <ClInclude Include="DirLight.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl">
@@ -207,6 +213,9 @@
     <FxCompile Include="LambertPShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="PhongPShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="LightStructs.hlsli">
@@ -215,5 +224,6 @@
     <None Include="InputOutputStructs.hlsli">
       <Filter>Shaders\Shader Helpers</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

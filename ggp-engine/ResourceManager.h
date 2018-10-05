@@ -8,6 +8,7 @@
 #include <DirectXMath.h>
 class Material;
 class Mesh;
+class Texture;
 struct Vertex;
 class SimpleVertexShader;
 class SimplePixelShader;
@@ -21,6 +22,8 @@ class ResourceManager {
 	std::map<std::string, Material*> materialUIDMap;
 	//Map of unique mesh resources
 	std::map<std::string, Mesh*> meshUIDMap;
+	//Map of unique texture resources
+	std::map<LPCWSTR, Texture*> textureUIDMap;
 	//Map of unique vertex shaders
 	std::map<LPCWSTR, SimpleVertexShader*> vertexShaderUIDMap;
 	//Map of unique pixel shaders
@@ -42,8 +45,12 @@ public:
 	Material* AddMaterial(std::string _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
 	//Same as above, but it fetches the shaders from their filepaths
 	Material* AddMaterial(std::string _uniqueID, LPCWSTR _vertexFilestring, LPCWSTR _pixelFilestring, DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+	//Same as above, but it uses a texture instead of a color
+	Material* AddMaterial(std::string _uniqueID, LPCWSTR _vertexFilestring, LPCWSTR _pixelFilestring, LPCWSTR _textureFilestring);
 	//Create and return a new color material with this UID (If the id already exists, the existing mat gets returned)
 	Material* AddMaterial(std::string _uniqueID, DirectX::XMFLOAT4 _color);
+	//Create and return a new basic texture material without shaders
+	Material* AddMaterial(std::string _uniqueID, LPCWSTR _textureFilestring);
 
 	/*
 		SHADER MANAGEMENT
@@ -59,6 +66,11 @@ public:
 	Mesh* CreateMeshFromData(Vertex* _vertexArray, UINT _vertexCount, UINT* _indexArray, UINT _indexCount, std::string _uniqueID = "NA");
 	Mesh* GetMesh(std::string _uniqueID);
 	//void DeleteMesh(std::string _uniqueID);
+
+	/*
+		TEXTURE RESOURCE MANAGEMENT
+	*/
+	Texture* GetTexture(LPCWSTR _filepath);
 private:
 	ResourceManager();
 	~ResourceManager();

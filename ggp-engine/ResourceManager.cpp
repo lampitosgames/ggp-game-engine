@@ -2,6 +2,7 @@
 #include "SimpleShader.h"
 #include "Material.h"
 #include "Mesh.h"
+#include "Texture.h"
 #include <fstream>
 #include <iostream>
 
@@ -77,6 +78,20 @@ Material* ResourceManager::AddMaterial(string _uniqueID, LPCWSTR _vertexFilestri
 	return newMaterial;
 }
 
+Material * ResourceManager::AddMaterial(std::string _uniqueID, LPCWSTR _vertexFilestring, LPCWSTR _pixelFilestring, LPCWSTR _textureFilestring) {
+	//First, look up this material.  If it exists, just return it
+	auto thisMaterial = materialUIDMap.find(_uniqueID);
+	if (thisMaterial != materialUIDMap.end()) {
+		return thisMaterial->second;
+	}
+	//Create a new material. Fetch shaders inline
+	Material* newMaterial = new Material(_uniqueID, GetVertexShader(_vertexFilestring), GetPixelShader(_pixelFilestring), GetTexture(_textureFilestring));
+	//Add it to the map
+	materialUIDMap[_uniqueID] = newMaterial;
+	//Return new material
+	return newMaterial;
+}
+
 Material* ResourceManager::AddMaterial(string _uniqueID, DirectX::XMFLOAT4 _color) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
@@ -88,6 +103,19 @@ Material* ResourceManager::AddMaterial(string _uniqueID, DirectX::XMFLOAT4 _colo
 	//Set the material's color
 	newMaterial->SetColor(_color);
 	//Add the material to the material map
+	materialUIDMap[_uniqueID] = newMaterial;
+	//Return new material
+	return newMaterial;
+}
+Material * ResourceManager::AddMaterial(std::string _uniqueID, LPCWSTR _textureFilestring) {
+	//First, look up this material.  If it exists, just return it
+	auto thisMaterial = materialUIDMap.find(_uniqueID);
+	if (thisMaterial != materialUIDMap.end()) {
+		return thisMaterial->second;
+	}
+	//Create a new material. Fetch shaders inline
+	Material* newMaterial = new Material(_uniqueID, nullptr, nullptr, GetTexture(_textureFilestring));
+	//Add it to the map
 	materialUIDMap[_uniqueID] = newMaterial;
 	//Return new material
 	return newMaterial;
@@ -301,6 +329,18 @@ Mesh* ResourceManager::LoadMesh(string _filepath) {// File input object
 	return newMesh;
 }
 #pragma endregion
+
+Texture* ResourceManager::GetTexture(LPCWSTR _uniqueID) {
+	//If the mesh already exists, return it
+	auto thisTex = textureUIDMap.find(_uniqueID);
+	if (thisTex != textureUIDMap.end()) {
+		return thisTex->second;
+	}
+
+	Texture* newTex = new Texture(_uniqueID, dxDevice, dxContext);
+	textureUIDMap[_uniqueID] = newTex;
+	return newTex;
+}
 
 ResourceManager::ResourceManager() {
 }
