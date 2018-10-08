@@ -179,7 +179,7 @@ void Game::CreateBasicGeometry() {
 	lightObject2->transform.position.x += 2.0f;
 	lightObject2->transform.position.z -= 1.0f;
 	lightObject3 = new Spatial("light3");
-	lightObject3->AddPointLight(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+	lightObject3->AddPointLight(XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
 	lightObject3->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetAmbientStrength(0.0f);
 	lightObject3->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetLinearAtten(0.5f);
 	lightObject3->transform.position.z += 1.0f;
@@ -221,17 +221,17 @@ void Game::Update(float deltaTime, float totalTime) {
 	activeCamera->Update(deltaTime);
 
 	//Change object transforms every frame.  Eventually this should be done manually in a scene, or via the velocity in the physics singleton
-	gameObject1->transform.rotation.z += 0.0001f;
+	gameObject1->transform.rotation.z += 0.1f * deltaTime;
 
-	gameObject2->transform.rotation.z += 0.001f;
-	gameObject2->transform.rotation.y += 0.0005f;
-	gameObject2->transform.rotation.x += 0.001f;
+	gameObject2->transform.rotation.z += 1.0f * deltaTime;
+	gameObject2->transform.rotation.y += 0.5f * deltaTime;
+	gameObject2->transform.rotation.x += 1.0f * deltaTime;
 
 	gameObject3->transform.scale.x = abs(1.0f * sin(totalTime));
 	gameObject3->transform.scale.y = abs(1.0f * sin(totalTime));
 	gameObject3->transform.scale.z = abs(1.0f * sin(totalTime));
 
-	gameObject4->transform.rotation.y += 0.0002f;
+	gameObject4->transform.rotation.y += 0.2f * deltaTime;
 
 	gameObject5->transform.position.x = 2.0f * sin(totalTime);
 
