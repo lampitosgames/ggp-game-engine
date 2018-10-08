@@ -5,8 +5,9 @@
 // - Each variable must have a semantic, which defines its usage
 struct VertexShaderInput {
 	float3 position		: POSITION;     // XYZ position
-	float3 normal       : NORMAL;       // Normal vector
 	float2 uv           : TEXCOORD;     // UV Coordinates for main texture
+	float3 normal       : NORMAL;       // Normal vector
+	float3 tangent      : TANGENT;      // Tangent vector
 };
 
 // Struct representing the data we're sending down the pipeline
@@ -17,6 +18,7 @@ struct VertexShaderInput {
 struct VertexToPixel {
 	float4 position		: SV_POSITION;	// XYZW position (System Value Position)
 	float3 normal		: NORMAL;       // Normal vector
-	float3 worldPos     : POSITION;
-	float2 uv           : TEXCOORD;
+	float2 uv           : TEXCOORD;     // UV Coordinates
+	float3 tangent      : TANGENT;      // Tangent vector
+	float3 worldPos     : POSITION;     // World-space position of the vertex
 };

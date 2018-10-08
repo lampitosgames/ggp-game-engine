@@ -10,8 +10,9 @@
 // --------------------------------------------------------
 struct Vertex {
 	DirectX::XMFLOAT3 position;	    // The position of the vertex
-	DirectX::XMFLOAT3 normal;
-	DirectX::XMFLOAT2 uv;
+	DirectX::XMFLOAT2 uv;           // UV Coordinates
+	DirectX::XMFLOAT3 normal;       // Normal vector
+	DirectX::XMFLOAT3 tangent;      // Tangent vector
 };
 
 #endif //GGP_VERTEX_H

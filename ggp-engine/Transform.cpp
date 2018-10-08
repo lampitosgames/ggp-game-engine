@@ -40,6 +40,18 @@ XMFLOAT4X4 Transform::GetRotationMatrix() {
 	return rotMatrix;
 }
 
+DirectX::XMFLOAT4X4 Transform::GetWorldInvTransMatrix() {
+	//Get the transformation matrix
+	XMFLOAT4X4 tempWorld = GetWorldMatrix();
+	//Invert and transpose the matrix
+	XMMATRIX tempInvTrans = XMMatrixTranspose(XMMatrixInverse(0, XMLoadFloat4x4(&tempWorld)));
+	//Store it into an output matrix
+	XMFLOAT4X4 worldInvTrans;
+	XMStoreFloat4x4(&worldInvTrans, tempInvTrans);
+	//Return the result
+	return worldInvTrans;
+}
+
 DirectX::XMFLOAT3 Transform::XFormVector(DirectX::XMFLOAT3 _vector) {
 	//Get initial rotation matrix and up unit vector
 	XMFLOAT4X4 tempRotMat = GetRotationMatrix();

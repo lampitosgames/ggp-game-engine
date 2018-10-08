@@ -204,9 +204,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShader.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="VertexShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
@@ -218,12 +215,21 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="LightStructs.hlsli">
-      <Filter>Shaders\Shader Helpers</Filter>
-    </None>
     <None Include="InputOutputStructs.hlsli">
       <Filter>Shaders\Shader Helpers</Filter>
     </None>
     <None Include="packages.config" />
+    <None Include="LightGlobals.hlsli">
+      <Filter>Shaders\Shader Helpers</Filter>
+    </None>
+    <None Include="TextureGlobals.hlsli">
+      <Filter>Shaders\Shader Helpers</Filter>
+    </None>
+    <None Include="PixelShaderGlobals.hlsli">
+      <Filter>Shaders\Shader Helpers</Filter>
+    </None>
+    <None Include="VertexShaderGlobals.hlsli">
+      <Filter>Shaders\Shader Helpers</Filter>
+    </None>
   </ItemGroup>
 </Project>

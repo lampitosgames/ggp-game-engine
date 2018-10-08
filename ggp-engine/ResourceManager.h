@@ -6,6 +6,7 @@
 #include <string>
 #include <d3d11.h>
 #include <DirectXMath.h>
+//Forward declaration
 class Material;
 class Mesh;
 class Texture;
@@ -34,6 +35,8 @@ public:
 	//Sets the device and context needed to actually interact with the window
 	static void SetDevicePointer(ID3D11Device* _dxDevice);
 	static void SetContextPointer(ID3D11DeviceContext* _dxContext);
+	static ID3D11Device* GetDevicePointer();
+	static ID3D11DeviceContext* GetContextPointer();
 
 	/*
 		MATERIAL RESOURCE MANAGEMENT
@@ -42,13 +45,15 @@ public:
 	Material* GetMaterial(std::string _uniqueID);
 	//Creates a material with this unique ID (If the id already exists, that material gets returned).
 	//Has space for extra materials.
-	Material* AddMaterial(std::string _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+	Material* AddMaterial(std::string _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float _specular = 0.0f);
 	//Same as above, but it fetches the shaders from their filepaths
-	Material* AddMaterial(std::string _uniqueID, LPCWSTR _vertexFilestring, LPCWSTR _pixelFilestring, DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+	Material* AddMaterial(std::string _uniqueID, LPCWSTR _vertexFilestring, LPCWSTR _pixelFilestring, DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float _specular = 0.0f);
 	//Same as above, but it uses a texture instead of a color
 	Material* AddMaterial(std::string _uniqueID, LPCWSTR _vertexFilestring, LPCWSTR _pixelFilestring, LPCWSTR _textureFilestring);
+	//Same as above, but has all 3 texture channels (diffuse, normal, specular)
+	Material* AddMaterial(std::string _uniqueID, LPCWSTR _vertexFilestring, LPCWSTR _pixelFilestring, LPCWSTR _diffuseFilestring, LPCWSTR _normalFilestring, LPCWSTR _specularFilestring);
 	//Create and return a new color material with this UID (If the id already exists, the existing mat gets returned)
-	Material* AddMaterial(std::string _uniqueID, DirectX::XMFLOAT4 _color);
+	Material* AddMaterial(std::string _uniqueID, DirectX::XMFLOAT4 _color, float _specular = 0.0f);
 	//Create and return a new basic texture material without shaders
 	Material* AddMaterial(std::string _uniqueID, LPCWSTR _textureFilestring);
 
@@ -89,6 +94,7 @@ private:
 
 	//Private function to load a mesh from a file
 	Mesh* LoadMesh(std::string _filepath);
+	void CalculateTangents(int numVerts, int numIndices);
 
 	//Mesh* GenerateCube(float _size);
 	//Mesh* GenerateSphere(float _radius, int _subdivisions);

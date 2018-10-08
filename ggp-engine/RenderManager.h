@@ -9,6 +9,7 @@ class MeshRenderer;
 class Spatial;
 class ResourceManager;
 class LightManager;
+struct ID3D11SamplerState;
 
 class RenderManager {
 	//Singleton pointer
@@ -16,6 +17,9 @@ class RenderManager {
 
 	ResourceManager* resourceManager;
 	LightManager* lightManager;
+
+	//Texture sampler used for all textures currently (Add more later for different settings)
+	ID3D11SamplerState* samplerState;
 
 	//Default shaders for materials without them (Or MeshRenderers without materials)
 	SimpleVertexShader* defaultVertexShader;

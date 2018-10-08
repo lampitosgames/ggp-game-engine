@@ -35,6 +35,14 @@ void ResourceManager::SetContextPointer(ID3D11DeviceContext* _dxContext) {
 	ResourceManager::dxContext = _dxContext;
 }
 
+ID3D11Device* ResourceManager::GetDevicePointer() {
+	return ResourceManager::dxDevice;
+}
+
+ID3D11DeviceContext* ResourceManager::GetContextPointer() {
+	return ResourceManager::dxContext;
+}
+
 #pragma region Material Creation/Loading
 Material* ResourceManager::GetMaterial(string _uniqueID) {
 	//First, look up this material.  If it exists, just return it
@@ -50,35 +58,35 @@ Material* ResourceManager::GetMaterial(string _uniqueID) {
 	return newMaterial;
 }
 
-Material* ResourceManager::AddMaterial(string _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, XMFLOAT4 _color) {
+Material* ResourceManager::AddMaterial(string _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, XMFLOAT4 _color, float _specular) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
 		return thisMaterial->second;
 	}
 	//Create new material with shaders
-	Material* newMaterial = new Material(_uniqueID, _vertexShader, _pixelShader, _color);
+	Material* newMaterial = new Material(_uniqueID, _vertexShader, _pixelShader, _color, _specular);
 	//Add it to the map
 	materialUIDMap[_uniqueID] = newMaterial;
 	//Return new material
 	return newMaterial;
 }
 
-Material* ResourceManager::AddMaterial(string _uniqueID, LPCWSTR _vertexFilestring, LPCWSTR _pixelFilestring, XMFLOAT4 _color) {
+Material* ResourceManager::AddMaterial(string _uniqueID, LPCWSTR _vertexFilestring, LPCWSTR _pixelFilestring, XMFLOAT4 _color, float _specular) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
 		return thisMaterial->second;
 	}
 	//Create a new material. Fetch shaders inline
-	Material* newMaterial = new Material(_uniqueID, GetVertexShader(_vertexFilestring), GetPixelShader(_pixelFilestring), _color);
+	Material* newMaterial = new Material(_uniqueID, GetVertexShader(_vertexFilestring), GetPixelShader(_pixelFilestring), _color, _specular);
 	//Add it to the map
 	materialUIDMap[_uniqueID] = newMaterial;
 	//Return new material
 	return newMaterial;
 }
 
-Material * ResourceManager::AddMaterial(std::string _uniqueID, LPCWSTR _vertexFilestring, LPCWSTR _pixelFilestring, LPCWSTR _textureFilestring) {
+Material* ResourceManager::AddMaterial(std::string _uniqueID, LPCWSTR _vertexFilestring, LPCWSTR _pixelFilestring, LPCWSTR _textureFilestring) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
@@ -92,7 +100,21 @@ Material * ResourceManager::AddMaterial(std::string _uniqueID, LPCWSTR _vertexFi
 	return newMaterial;
 }
 
-Material* ResourceManager::AddMaterial(string _uniqueID, DirectX::XMFLOAT4 _color) {
+Material* ResourceManager::AddMaterial(std::string _uniqueID, LPCWSTR _vertexFilestring, LPCWSTR _pixelFilestring, LPCWSTR _diffuseFilestring, LPCWSTR _normalFilestring, LPCWSTR _specularFilestring) {
+	//First, look up this material.  If it exists, just return it
+	auto thisMaterial = materialUIDMap.find(_uniqueID);
+	if (thisMaterial != materialUIDMap.end()) {
+		return thisMaterial->second;
+	}
+	//Create a new material. Fetch shaders inline
+	Material* newMaterial = new Material(_uniqueID, GetVertexShader(_vertexFilestring), GetPixelShader(_pixelFilestring), GetTexture(_diffuseFilestring), GetTexture(_normalFilestring), GetTexture(_specularFilestring));
+	//Add it to the map
+	materialUIDMap[_uniqueID] = newMaterial;
+	//Return new material
+	return newMaterial;
+}
+
+Material* ResourceManager::AddMaterial(string _uniqueID, DirectX::XMFLOAT4 _color, float _specular) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
@@ -102,12 +124,14 @@ Material* ResourceManager::AddMaterial(string _uniqueID, DirectX::XMFLOAT4 _colo
 	Material* newMaterial = new Material(_uniqueID);
 	//Set the material's color
 	newMaterial->SetColor(_color);
+	//Set the material's specular
+	newMaterial->SetBaseSpecular(_specular);
 	//Add the material to the material map
 	materialUIDMap[_uniqueID] = newMaterial;
 	//Return new material
-	return newMaterial;
+ 	return newMaterial;
 }
-Material * ResourceManager::AddMaterial(std::string _uniqueID, LPCWSTR _textureFilestring) {
+Material* ResourceManager::AddMaterial(std::string _uniqueID, LPCWSTR _textureFilestring) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
@@ -318,6 +342,9 @@ Mesh* ResourceManager::LoadMesh(string _filepath) {// File input object
 	// Close the file and create the actual buffers
 	obj.close();
 
+	//Calculate vertex tangents
+	CalculateTangents(vertCounter, vertCounter);
+
 	Mesh* newMesh = new Mesh(&mVerts[0], vertCounter, &mIndices[0], vertCounter, dxDevice);
 	//Clean up structs
 	mPositions.clear();
@@ -327,6 +354,76 @@ Mesh* ResourceManager::LoadMesh(string _filepath) {// File input object
 	mIndices.clear();
 	//Return the newly created mesh
 	return newMesh;
+}
+
+// Calculates the tangents of the vertices in a mesh
+// Code adapted from: http://www.terathon.com/code/tangent.html
+// Taken from the demo on mycourses (Game Graphics Programming)
+void ResourceManager::CalculateTangents(int numVerts, int numIndices) {
+	// Reset tangents
+	for (int i = 0; i < numVerts; i++) {
+		mVerts[i].tangent = XMFLOAT3(0, 0, 0);
+	}
+
+	// Calculate tangents one whole triangle at a time
+	for (int i = 0; i < numVerts;) {
+		// Grab indices and vertices of first triangle
+		unsigned int i1 = mIndices[i++];
+		unsigned int i2 = mIndices[i++];
+		unsigned int i3 = mIndices[i++];
+		Vertex* v1 = &mVerts[i1];
+		Vertex* v2 = &mVerts[i2];
+		Vertex* v3 = &mVerts[i3];
+
+		// Calculate vectors relative to triangle positions
+		float x1 = v2->position.x - v1->position.x;
+		float y1 = v2->position.y - v1->position.y;
+		float z1 = v2->position.z - v1->position.z;
+
+		float x2 = v3->position.x - v1->position.x;
+		float y2 = v3->position.y - v1->position.y;
+		float z2 = v3->position.z - v1->position.z;
+
+		// Do the same for vectors relative to triangle uv's
+		float s1 = v2->uv.x - v1->uv.x;
+		float t1 = v2->uv.y - v1->uv.y;
+
+		float s2 = v3->uv.x - v1->uv.x;
+		float t2 = v3->uv.y - v1->uv.y;
+
+		// Create vectors for tangent calculation
+		float r = 1.0f / (s1 * t2 - s2 * t1);
+
+		float tx = (t2 * x1 - t1 * x2) * r;
+		float ty = (t2 * y1 - t1 * y2) * r;
+		float tz = (t2 * z1 - t1 * z2) * r;
+
+		// Adjust tangents of each vert of the triangle
+		v1->tangent.x += tx;
+		v1->tangent.y += ty;
+		v1->tangent.z += tz;
+
+		v2->tangent.x += tx;
+		v2->tangent.y += ty;
+		v2->tangent.z += tz;
+
+		v3->tangent.x += tx;
+		v3->tangent.y += ty;
+		v3->tangent.z += tz;
+	}
+
+	// Ensure all of the tangents are orthogonal to the normals
+	for (int i = 0; i < numVerts; i++) {
+		// Grab the two vectors
+		XMVECTOR normal = XMLoadFloat3(&mVerts[i].normal);
+		XMVECTOR tangent = XMLoadFloat3(&mVerts[i].tangent);
+
+		// Use Gram-Schmidt orthogonalize
+		tangent = XMVector3Normalize(tangent - normal * XMVector3Dot(normal, tangent));
+
+		// Store the tangent
+		XMStoreFloat3(&mVerts[i].tangent, tangent);
+	}
 }
 #pragma endregion
 
@@ -387,4 +484,13 @@ void ResourceManager::Release() {
 		}
 	}
 	materialUIDMap.clear();
+	//Clean up textures
+	map<LPCWSTR, Texture*>::iterator texIt;
+	for (texIt = textureUIDMap.begin(); texIt != textureUIDMap.end(); ++texIt) {
+		Texture* tempTex = texIt->second;
+		if (tempTex != nullptr) {
+			delete tempTex;
+		}
+	}
+	textureUIDMap.clear();
 }

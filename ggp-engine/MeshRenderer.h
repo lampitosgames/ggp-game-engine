@@ -26,6 +26,7 @@ public:
 	void Draw(ID3D11DeviceContext* _dxContext);
 
 	DirectX::XMFLOAT4X4 GetWorldMatrix();
+	DirectX::XMFLOAT4X4 GetWorldInvTransMatrix();
 	Mesh* GetMesh();
 	Material* GetMaterial();
 	//Quick access to the material's members

@@ -1,7 +1,7 @@
 #include "Game.h"
 #include "Vertex.h"
-#include <iostream>
 #include "MeshRenderer.h"
+#include "PointLight.h"
 
 // For the DirectX Math library
 using namespace DirectX;
@@ -56,11 +56,6 @@ Game::~Game() {
 	if (vertexBuffer) { vertexBuffer->Release(); }
 	if (indexBuffer) { indexBuffer->Release(); }
 
-	// Delete our simple shader objects, which
-	// will clean up their own internal DirectX stuff
-	//delete vertexShader;
-	//delete pixelShader;
-
 	//Release all singletons
 	resourceManager->ReleaseInstance();
 	renderManager->ReleaseInstance();
@@ -72,6 +67,10 @@ Game::~Game() {
 	delete gameObject3;
 	delete gameObject4;
 	delete gameObject5;
+
+	delete lightObject;
+	delete lightObject2;
+	delete lightObject3;
 
 	delete activeCamera;
 }
@@ -103,43 +102,22 @@ void Game::Init() {
 // Creates the geometry we're going to draw - a single triangle for now
 // --------------------------------------------------------
 void Game::CreateBasicGeometry() {
-	//Mesh1 Vertex Array
-	Vertex mesh1Verts[] = {
-		{ XMFLOAT3(-1.0f, +1.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{ XMFLOAT3(+1.0f, +1.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{ XMFLOAT3(-1.0f, -1.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{ XMFLOAT3(+1.0f, -1.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-	};
-	//Mesh1 indices
-	int mesh1Indices[] = {0, 1, 2,
-	                      2, 1, 3,
-	                      2, 1, 0,
-	                      3, 1, 2};
-
-	//Mesh2 Vertex Array
-	Vertex mesh2Verts[] = {
-		{XMFLOAT3(-1.0f, +1.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(-1.0f, -1.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(+1.0f, -1.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-	};
-	//Mesh2 indices
-	int mesh2Indices[] = {0, 2, 1};
-
-	//Mesh3 Vertex Array
-	Vertex mesh3Verts[] = {
-		{XMFLOAT3(-1.0f, +2.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(+1.0f, +2.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(-1.0f, -2.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(+1.0f, -2.0f, +0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-	};
-	//Mesh3 indices
-	int mesh3Indices[] = {0, 1, 2,
-						  2, 1, 3,
-						  2, 1, 0,
-						  3, 1, 2};
-
 	//We only need a single material for all three for now
-	Material* defaultMaterial = resourceManager->AddMaterial("defaultMat", L"VertexShader.cso", L"LambertPShader.cso", L"assets/textures/stone01_c.png");
+	Material* stoneMaterial = resourceManager->AddMaterial("stoneMat", 
+															 L"VertexShader.cso", 
+															 L"LambertPShader.cso", 
+															 L"assets/textures/stone01_c.png", 
+															 L"assets/textures/stone01_n.png", 
+															 L"assets/textures/stone01_s.png");
+	Material* metalMaterial = resourceManager->AddMaterial("metalMat",
+														   L"VertexShader.cso",
+														   L"LambertPShader.cso",
+														   L"assets/textures/floor01_c.png",
+														   L"assets/textures/floor01_n.png",
+														   L"assets/textures/floor01_s.png");
+
+	Material* redShiny = resourceManager->AddMaterial("redShiny", XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), 0.8f);
+	Material* blueMatte = resourceManager->AddMaterial("blueMatte", XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), 0.0f);
 
 	Mesh* mesh1 = resourceManager->GetMesh("assets/meshes/cube.obj");
 	Mesh* mesh2 = resourceManager->GetMesh("assets/meshes/helix.obj");
@@ -151,7 +129,7 @@ void Game::CreateBasicGeometry() {
 	gameObject1->AddMeshRenderer();
 	//Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
 	gameObject1->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh1);
-	gameObject1->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(defaultMaterial);
+	gameObject1->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(stoneMaterial);
 
 	//Create the second game object
 	gameObject2 = new Spatial("Object2");
@@ -160,7 +138,7 @@ void Game::CreateBasicGeometry() {
 	((Spatial*)GameObject::GetGameObject("Object2"))->AddMeshRenderer();
 	//Give it the same mesh as Object1
 	gameObject2->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh1);
-	gameObject2->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(defaultMaterial);
+	gameObject2->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(metalMaterial);
 	//Reposition and scale it differently
 	gameObject2->transform.position.x -= 3.0f;
 	gameObject2->transform.position.y += 1.5f;
@@ -169,12 +147,10 @@ void Game::CreateBasicGeometry() {
 	//Create the third game object
 	//If an object is created with a duplicate unique identifier, numbers will be added to the end to make it unique
 	gameObject3 = new Spatial("Object2");
-	//Show that the object was given a unique ID despite being created with the same ID as object 2
-	std::cout << std::endl << gameObject3->GetUniqueID() << std::endl;
 	//Give object 3 a mesh
 	gameObject3->AddMeshRenderer();
 	gameObject3->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh2);
-	gameObject3->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(defaultMaterial);
+	gameObject3->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(redShiny);
 	gameObject3->transform.position.x += 3.0f;
 	gameObject3->transform.rotation.z += 24.67f;
 
@@ -182,22 +158,29 @@ void Game::CreateBasicGeometry() {
 	gameObject4 = new Spatial("Object4");
 	gameObject4->AddMeshRenderer();
 	gameObject4->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh3);
-	gameObject4->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(defaultMaterial);
+	gameObject4->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(blueMatte);
 	gameObject4->transform.rotation.z += 90.0f;
 	gameObject4->transform.position.y += 2.0f;
 	gameObject5 = new Spatial("Object5");
 	gameObject5->AddMeshRenderer();
 	gameObject5->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh3);
-	gameObject5->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(defaultMaterial);
+	gameObject5->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(stoneMaterial);
 	gameObject5->transform.position.y -= 2.0f;
+	gameObject5->transform.scale.x += 4.0f;
 
 	//Create a light
 	lightObject = new Spatial("light1");
-	lightObject->AddDirLight(XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT3(0.0f, +0.0f, 1.0f));
+	lightObject->AddDirLight(XMFLOAT4(0.05f, 0.05f, 0.05f, 1.0f), XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), XMFLOAT3(0.0f, +0.0f, 1.0f));
 	lightObject2 = new Spatial("light2");
-	lightObject2->AddDirLight(XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, +0.0f, 0.0f));
+	lightObject2->AddPointLight(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+	lightObject2->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetAmbientStrength(0.0f);
+	lightObject2->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetExpAtten(0.1f);
+	lightObject2->transform.position.x += 2.0f;
+	lightObject2->transform.position.z -= 1.0f;
 	lightObject3 = new Spatial("light3");
 	lightObject3->AddPointLight(XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
+	lightObject3->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetAmbientStrength(0.0f);
+	lightObject3->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetLinearAtten(0.5f);
 	lightObject3->transform.position.z += 1.0f;
 
 	//Create a camera
@@ -250,6 +233,8 @@ void Game::Update(float deltaTime, float totalTime) {
 	gameObject4->transform.rotation.y += 0.0002f;
 
 	gameObject5->transform.position.x = 2.0f * sin(totalTime);
+
+	lightObject2->transform.position.z = 2.0f * sin(totalTime);
 }
 
 // --------------------------------------------------------

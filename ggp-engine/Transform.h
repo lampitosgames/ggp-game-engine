@@ -19,6 +19,7 @@ public:
 
 	DirectX::XMFLOAT4X4 GetWorldMatrix();
 	DirectX::XMFLOAT4X4 GetRotationMatrix();
+	DirectX::XMFLOAT4X4 GetWorldInvTransMatrix();
 private:
 	//Rotates a given vector by this transform's rotation matrix
 	DirectX::XMFLOAT3 XFormVector(DirectX::XMFLOAT3 _vector);

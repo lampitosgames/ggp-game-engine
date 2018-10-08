@@ -48,6 +48,10 @@ DirectX::XMFLOAT4X4 MeshRenderer::GetWorldMatrix() {
 	return gameObject->transform.GetWorldMatrix();
 }
 
+DirectX::XMFLOAT4X4 MeshRenderer::GetWorldInvTransMatrix() {
+	return gameObject->transform.GetWorldInvTransMatrix();
+}
+
 Mesh* MeshRenderer::GetMesh() {
 	return mesh;
 }

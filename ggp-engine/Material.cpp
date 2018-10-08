@@ -4,28 +4,52 @@
 using namespace DirectX;
 using namespace std;
 
+#pragma region Constructors
 Material::Material(std::string _uniqueID) {
 	uniqueID = _uniqueID;
-	color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	baseColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	baseSpecular = 0.0f;
 	//With the default constructor, the object will use the renderManager's default shaders
 	vertexShader = nullptr;
 	pixelShader = nullptr;
-	texture = nullptr;
+	diffuse = nullptr;
+	normal = nullptr;
+	specular = nullptr;
 }
 
-Material::Material(string _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, XMFLOAT4 _color) {
+Material::Material(string _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, XMFLOAT4 _color, float _specular) {
 	uniqueID = _uniqueID;
 	vertexShader = _vertexShader;
 	pixelShader = _pixelShader;
-	color = _color;
+	baseColor = _color;
+	baseSpecular = _specular;
+	diffuse = nullptr;
+	normal = nullptr;
+	specular = nullptr;
 }
 
-Material::Material(std::string _uniqueID, SimpleVertexShader * _vertexShader, SimplePixelShader * _pixelShader, Texture * _texture) {
+Material::Material(std::string _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, Texture* _texture, float _specular) {
 	uniqueID = _uniqueID;
 	vertexShader = _vertexShader;
 	pixelShader = _pixelShader;
-	texture = _texture;
+	baseColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	baseSpecular = _specular;
+	diffuse = _texture;
+	normal = nullptr;
+	specular = nullptr;
 }
+
+Material::Material(std::string _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, Texture* _diffuse, Texture* _normal, Texture* _specular) {
+	uniqueID = _uniqueID;
+	vertexShader = _vertexShader;
+	pixelShader = _pixelShader;
+	baseColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	baseSpecular = 0.0f;
+	diffuse = _diffuse;
+	normal = _normal;
+	specular = _specular;
+}
+#pragma endregion
 
 Material::~Material() {}
 
@@ -37,25 +61,49 @@ SimpleVertexShader* Material::GetVertexShader() { return vertexShader; }
 
 SimplePixelShader* Material::GetPixelShader() { return pixelShader; }
 
-DirectX::XMFLOAT4 Material::GetColor() { return color; }
+DirectX::XMFLOAT4 Material::GetColor() { return baseColor; }
 
-void Material::SetColor(DirectX::XMFLOAT4 _newColor) { color = _newColor; }
+void Material::SetColor(DirectX::XMFLOAT4 _newColor) { baseColor = _newColor; }
 
-Texture* Material::GetTexture() { return texture; }
+float Material::GetBaseSpecular() {	return baseSpecular; }
 
-ID3D11Resource* Material::GetTexResource() {
-	if (texture == nullptr) { return nullptr; }
-	return texture->GetTexResource();
-}
+void Material::SetBaseSpecular(float _newSpecular) { baseSpecular = _newSpecular; }
+
+#pragma region Diffuse Texture
+Texture* Material::GetTexture() { return diffuse; }
 
 ID3D11ShaderResourceView* Material::GetTexSRV() {
-	if (texture == nullptr) { return nullptr; }
-	return texture->GetShaderResourceView();
+	if (diffuse == nullptr) { return nullptr; }
+	return diffuse->GetShaderResourceView();
 }
 
-ID3D11SamplerState* Material::GetTexSS() {
-	if (texture == nullptr) { return nullptr; }
-	return texture->GetSamplerState();
+void Material::SetTexture(Texture* _newTexture) { diffuse = _newTexture; }
+
+bool Material::HasDiffuseTexture() { return diffuse != nullptr; }
+#pragma endregion
+
+#pragma region Normal Map
+Texture* Material::GetNormalMap() { return normal; }
+
+ID3D11ShaderResourceView* Material::GetNormalSRV() {
+	if (normal == nullptr) { return nullptr; }
+	return normal->GetShaderResourceView();
 }
 
-void Material::SetTexture(Texture * _newTexture) { texture = _newTexture; }
+void Material::SetNormalMap(Texture* _newNormal) { normal = _newNormal; }
+
+bool Material::HasNormalMap() { return normal != nullptr; }
+#pragma endregion
+
+#pragma region Specular Map
+Texture* Material::GetSpecularMap() { return specular; }
+
+ID3D11ShaderResourceView* Material::GetSpecularSRV() {
+	if (specular == nullptr) { return nullptr; }
+	return specular->GetShaderResourceView();
+}
+
+void Material::SetSpecularMap(Texture* _newSpecular) { specular = _newSpecular; }
+
+bool Material::HasSpecularMap() { return specular != nullptr; }
+#pragma endregion
