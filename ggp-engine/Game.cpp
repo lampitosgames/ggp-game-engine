@@ -105,18 +105,19 @@ void Game::CreateBasicGeometry() {
 	//We only need a single material for all three for now
 	Material* stoneMaterial = resourceManager->AddMaterial("stoneMat", 
 															 L"VertexShader.cso", 
-															 L"LambertPShader.cso", 
+															 L"PhongPShader.cso", 
 															 L"assets/textures/stone01_c.png", 
 															 L"assets/textures/stone01_n.png", 
 															 L"assets/textures/stone01_s.png");
 	Material* metalMaterial = resourceManager->AddMaterial("metalMat",
 														   L"VertexShader.cso",
-														   L"LambertPShader.cso",
+														   L"PhongPShader.cso",
 														   L"assets/textures/floor01_c.png",
 														   L"assets/textures/floor01_n.png",
 														   L"assets/textures/floor01_s.png");
 
-	Material* redShiny = resourceManager->AddMaterial("redShiny", XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), 0.8f);
+	Material* redShiny = resourceManager->AddMaterial("redShiny", L"VertexShader.cso", L"PhongPShader.cso", XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), 0.5f);
+
 	Material* blueMatte = resourceManager->AddMaterial("blueMatte", XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), 0.0f);
 
 	Mesh* mesh1 = resourceManager->GetMesh("assets/meshes/cube.obj");
@@ -129,7 +130,7 @@ void Game::CreateBasicGeometry() {
 	gameObject1->AddMeshRenderer();
 	//Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
 	gameObject1->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh1);
-	gameObject1->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(stoneMaterial);
+	gameObject1->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(metalMaterial);
 
 	//Create the second game object
 	gameObject2 = new Spatial("Object2");
@@ -138,7 +139,7 @@ void Game::CreateBasicGeometry() {
 	((Spatial*)GameObject::GetGameObject("Object2"))->AddMeshRenderer();
 	//Give it the same mesh as Object1
 	gameObject2->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh1);
-	gameObject2->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(metalMaterial);
+	gameObject2->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(stoneMaterial);
 	//Reposition and scale it differently
 	gameObject2->transform.position.x -= 3.0f;
 	gameObject2->transform.position.y += 1.5f;
@@ -178,7 +179,7 @@ void Game::CreateBasicGeometry() {
 	lightObject2->transform.position.x += 2.0f;
 	lightObject2->transform.position.z -= 1.0f;
 	lightObject3 = new Spatial("light3");
-	lightObject3->AddPointLight(XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
+	lightObject3->AddPointLight(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
 	lightObject3->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetAmbientStrength(0.0f);
 	lightObject3->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetLinearAtten(0.5f);
 	lightObject3->transform.position.z += 1.0f;
@@ -255,7 +256,7 @@ void Game::Draw(float deltaTime, float totalTime) {
 		0);
 
 	//Call render on the renderManager
-	renderManager->Render(dxContext, activeCamera->GetViewMatrix(), activeCamera->GetProjectionMatrix());
+	renderManager->Render(dxContext, activeCamera->GetViewMatrix(), activeCamera->GetProjectionMatrix(), activeCamera->transform.position);
 
 	// Present the back buffer to the user
 	//  - Puts the final frame we're drawing into the window so the user can see it

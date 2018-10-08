@@ -30,27 +30,12 @@ float4 main(VertexToPixel input) : SV_TARGET {
 	//Re-normalize the lerped coordinate vectors
 	input.normal = normalize(input.normal);
     input.tangent = normalize(input.tangent);
-	//If there is a normal map, modify the normal vector
-	float3 pixNormal;
+	//If there is a normal map, calculate a new normal from the normal map
     if (texChanToggle.y == 1) {
-		//Get normal map from texture
-		float3 mapNormal = normalMap.Sample(basicSampler, input.uv).rgb * 2 - 1;
-		//Construct TBN matrix
-		//NOTE: I followed the demo on mycourses for this (Game Graphics Programming)
-		//Normal
-		float3 N = input.normal;
-		//Tangent
-		float3 T = normalize(input.tangent - N * dot(input.tangent, N));
-		//Bi-tangent
-		float3 B = cross(T, N);
-		//TBN Matrix
-		float3x3 TBN = float3x3(T, B, N);
-		//Adjust normal vector using the data from the normal map
-		//Transform the normal map vector into local pixel space
-		input.normal = normalize(mul(mapNormal, TBN));
+		input.normal = applyNormalMap(input.normal, input.tangent, input.uv);
 	}
 
-    //Variable to store summed light strength on this pixel
+    //Variable to store summed light strength for this pixel
 	float4 lightColorSum = float4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	//Loop through direcitonal lights
@@ -66,15 +51,13 @@ float4 main(VertexToPixel input) : SV_TARGET {
 		lightColorSum += calcPointLight(input.normal, input.worldPos, pointLights[j]);
 	}
 	
-	//If there is a diffuse texture, use it
-	float4 surfaceColor;
+	//Grab the surface color
+	float4 surfaceColor = baseColor;
+	//If there is a diffuse texture, use the texture color instead of the baseColor
 	if (texChanToggle.x == 1) {
 		surfaceColor = diffuseTexture.Sample(basicSampler, input.uv);
-	//Else, just use the material color
-	} else {
-		surfaceColor = baseColor;
 	}
 	
-	//Return the mesh's surface color multiplied by lighting
+	//Return the mesh's surface color multiplied by the calculated light data
 	return surfaceColor * saturate(lightColorSum);
 }

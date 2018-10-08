@@ -23,7 +23,7 @@ cbuffer dirLightData : register(b1) {
 	uint dirLightCount;
 }
 
-static const uint maxPointLightCount = 6;
+static const uint maxPointLightCount = 4;
 cbuffer pointLightData : register(b2) {
 	PointLight pointLights[maxPointLightCount];
 	uint pointLightCount;

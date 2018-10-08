@@ -69,7 +69,7 @@ void RenderManager::DeleteMeshRenderer(UINT _uniqueID) {
 	}
 }
 
-void RenderManager::Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 _viewMatrix, DirectX::XMFLOAT4X4 _projectionMatrix) {
+void RenderManager::Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 _viewMatrix, DirectX::XMFLOAT4X4 _projectionMatrix, DirectX::XMFLOAT3 _camPos) {
 	//Loop through and render every object
 	std::map<UINT, MeshRenderer*>::iterator mrIterator;
 	for (mrIterator = meshRendererUIDMap.begin(); mrIterator != meshRendererUIDMap.end(); ++mrIterator) {
@@ -115,6 +115,7 @@ void RenderManager::Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 
 		if (channelToggle.z) { psTemp->SetShaderResourceView("specularMap", matTemp->GetSpecularSRV()); }
 
 		//Upload material data
+		psTemp->SetFloat3("cameraPosition", _camPos);
 		psTemp->SetFloat4("baseColor", matTemp->GetColor());
 		psTemp->SetFloat("baseSpec", matTemp->GetBaseSpecular());
 		psTemp->CopyAllBufferData();
