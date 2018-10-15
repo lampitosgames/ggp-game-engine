@@ -61,6 +61,14 @@ void DebugScene::Init() {
 	gameObject2->transform.position.y += 1.5f;
 	gameObject2->transform.scale = XMFLOAT3(0.5f, 0.5f, 0.5f);
 
+
+	gameObject2->AddChild(new Spatial("Object2Child"));
+	Spatial* gameObject2Child = (Spatial*)gameObject2->GetChild("Object2Child");
+	gameObject2Child->AddMeshRenderer();
+	gameObject2Child->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh3);
+	gameObject2Child->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(redShiny);
+	gameObject2Child->transform.position.x = 1.0f;
+
 	//Create the third game object
 	//If an object is created with a duplicate unique identifier, numbers will be added to the end to make it unique
 	gameObject1->AddChild(new Spatial("Object3"));

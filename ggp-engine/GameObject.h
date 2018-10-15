@@ -77,12 +77,12 @@ public:
 	virtual void Input(InputEvent _event);
 
 	//Get/Set parent for this object
-	void SetParent(GameObject* _newParent);
+	virtual void SetParent(GameObject* _newParent);
 	GameObject* GetParent();
 
 	//Children methods for this object
 	//Adds a child
-	void AddChild(GameObject* _newChild);
+	virtual void AddChild(GameObject* _newChild);
 	//Removes a child without deleting the object
 	void RemoveChild(std::string _uniqueID);
 	void RemoveChild(UINT _index);

@@ -58,6 +58,7 @@ GameObject* GameObject::GetParent() {
 }
 
 void GameObject::AddChild(GameObject* _newChild) {
+	_newChild->SetParent(this);
 	children.push_back(_newChild);
 	childCount++;
 }

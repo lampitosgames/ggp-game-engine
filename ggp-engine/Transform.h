@@ -5,6 +5,8 @@
 
 class Transform {
 public:
+	Transform* parent;
+
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 rotation;
 	DirectX::XMFLOAT3 scale;
@@ -17,7 +19,7 @@ public:
 	DirectX::XMFLOAT3 Forward();
 	DirectX::XMFLOAT3 Right();
 
-	DirectX::XMFLOAT4X4 GetWorldMatrix();
+	DirectX::XMFLOAT4X4 GetWorldMatrix(bool _transposed = true);
 	DirectX::XMFLOAT4X4 GetRotationMatrix();
 	DirectX::XMFLOAT4X4 GetWorldInvTransMatrix();
 private:

@@ -6,6 +6,7 @@ Transform::Transform(DirectX::XMFLOAT3 _position, DirectX::XMFLOAT3 _rotation, D
 	position = _position;
 	rotation = _rotation;
 	scale = _scale;
+	parent = nullptr;
 }
 
 DirectX::XMFLOAT3 Transform::Up() {
@@ -20,23 +21,43 @@ DirectX::XMFLOAT3 Transform::Right() {
 	return XFormVector(XMFLOAT3(1.0f, 0.0f, 0.0f));
 }
 
-XMFLOAT4X4 Transform::GetWorldMatrix() {
+XMFLOAT4X4 Transform::GetWorldMatrix(bool _transposed) {
+	//Include parent in calculation
+	XMMATRIX parentWorld = XMMatrixIdentity();
+	if (parent != nullptr) {
+		XMFLOAT4X4 parentWorldMat = parent->GetWorldMatrix(false);
+		parentWorld = XMLoadFloat4x4(&parentWorldMat);
+	}
 	//Create 3 transformation matrices from position data
 	XMMATRIX tempTrans = XMMatrixTranslation(position.x, position.y, position.z);
 	XMMATRIX tempRot = XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
 	XMMATRIX tempScale = XMMatrixScaling(scale.x, scale.y, scale.z);
 	//Create world matrix by combining all 3 transformation matrices
 	XMMATRIX world = XMMatrixMultiply(XMMatrixMultiply(tempScale, tempRot), tempTrans);
+	//Multiply by the parent's world matrix
+	world = XMMatrixMultiply(world, parentWorld);
 	//Convert back to float matrix
 	XMFLOAT4X4 worldMatrix;
-	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(world));
+	if (_transposed) {
+		XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(world));
+	} else {
+		XMStoreFloat4x4(&worldMatrix, world);
+	}
 	//Return float matrix
 	return worldMatrix;
 }
 
 XMFLOAT4X4 Transform::GetRotationMatrix() {
+	//Include parent in calculation
+	XMMATRIX parentRot = XMMatrixIdentity();
+	if (parent != nullptr) {
+		XMFLOAT4X4 parentRotMat = parent->GetRotationMatrix();
+		parentRot = XMLoadFloat4x4(&parentRotMat);
+	}
+
 	XMFLOAT4X4 rotMatrix;
-	XMStoreFloat4x4(&rotMatrix, XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z));
+	//Calculate and store final rotation matrix, incluing parent rotations
+	XMStoreFloat4x4(&rotMatrix, XMMatrixMultiply(XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z), parentRot));
 	return rotMatrix;
 }
 

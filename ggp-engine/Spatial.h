@@ -15,6 +15,11 @@ public:
 			DirectX::XMFLOAT3 _rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 			DirectX::XMFLOAT3 _scale    = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 
+	bool HasTransform();
+
+	void SetParent(GameObject* _newParent);
+	void AddChild(GameObject* _newChild);
+
 	void AddMeshRenderer();
 	void AddPointLight(DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
 	//void AddDirectionalLight();
