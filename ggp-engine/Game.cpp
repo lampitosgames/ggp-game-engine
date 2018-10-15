@@ -1,7 +1,6 @@
 #include "Game.h"
 #include "Vertex.h"
-#include "MeshRenderer.h"
-#include "PointLight.h"
+#include "DebugScene.h"
 
 // For the DirectX Math library
 using namespace DirectX;
@@ -62,17 +61,7 @@ Game::~Game() {
 	inputManager->ReleaseInstance();
 	lightManager->ReleaseInstance();
 
-	delete gameObject1;
-	delete gameObject2;
-	delete gameObject3;
-	delete gameObject4;
-	delete gameObject5;
-
-	delete lightObject;
-	delete lightObject2;
-	delete lightObject3;
-
-	delete activeCamera;
+	delete activeScene;
 }
 
 // --------------------------------------------------------
@@ -84,10 +73,9 @@ void Game::Init() {
 	ResourceManager::SetDevicePointer(dxDevice);
 	ResourceManager::SetContextPointer(dxContext);
 
-	// Helper methods for loading shaders, creating some basic
-	// geometry to draw and some simple camera matrices.
-	//  - You'll be expanding and/or replacing these later
-	CreateBasicGeometry();
+	//Create and init the active scene
+	activeScene = new DebugScene("DebugSceneObject");
+	activeScene->Init();
 
 	// Tell the input assembler stage of the pipeline what kind of
 	// geometric primitives (points, lines or triangles) we want to draw.  
@@ -96,101 +84,9 @@ void Game::Init() {
 
 	//Call start on the singletons that need it
 	renderManager->Start();
+	//Call start on the active scene
+	activeScene->Start();
 }
-
-// --------------------------------------------------------
-// Creates the geometry we're going to draw - a single triangle for now
-// --------------------------------------------------------
-void Game::CreateBasicGeometry() {
-	//We only need a single material for all three for now
-	Material* stoneMaterial = resourceManager->AddMaterial("stoneMat", 
-															 L"VertexShader.cso", 
-															 L"PhongPShader.cso", 
-															 L"assets/textures/stone01_c.png", 
-															 L"assets/textures/stone01_n.png", 
-															 L"assets/textures/stone01_s.png");
-	Material* metalMaterial = resourceManager->AddMaterial("metalMat",
-														   L"VertexShader.cso",
-														   L"PhongPShader.cso",
-														   L"assets/textures/floor01_c.png",
-														   L"assets/textures/floor01_n.png",
-														   L"assets/textures/floor01_s.png");
-
-	Material* redShiny = resourceManager->AddMaterial("redShiny", L"VertexShader.cso", L"PhongPShader.cso", XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), 0.5f);
-
-	Material* blueMatte = resourceManager->AddMaterial("blueMatte", XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), 0.0f);
-
-	Mesh* mesh1 = resourceManager->GetMesh("assets/meshes/cube.obj");
-	Mesh* mesh2 = resourceManager->GetMesh("assets/meshes/helix.obj");
-	Mesh* mesh3 = resourceManager->GetMesh("assets/meshes/sphere.obj");
-
-	//Create the first game object
-	gameObject1 = new Spatial("Object1");
-	//Give it a mesh renderer component
-	gameObject1->AddMeshRenderer();
-	//Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
-	gameObject1->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh1);
-	gameObject1->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(metalMaterial);
-
-	//Create the second game object
-	gameObject2 = new Spatial("Object2");
-	//We can access objects by name.  The pointer typecast is a little weird right now.  I might use overloading to auto-detect
-	//the kind of object you want.  But it does work and will be immensely useful when there are a TON of game objects
-	((Spatial*)GameObject::GetGameObject("Object2"))->AddMeshRenderer();
-	//Give it the same mesh as Object1
-	gameObject2->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh1);
-	gameObject2->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(stoneMaterial);
-	//Reposition and scale it differently
-	gameObject2->transform.position.x -= 3.0f;
-	gameObject2->transform.position.y += 1.5f;
-	gameObject2->transform.scale = XMFLOAT3(0.5f, 0.5f, 0.5f);
-
-	//Create the third game object
-	//If an object is created with a duplicate unique identifier, numbers will be added to the end to make it unique
-	gameObject3 = new Spatial("Object2");
-	//Give object 3 a mesh
-	gameObject3->AddMeshRenderer();
-	gameObject3->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh2);
-	gameObject3->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(redShiny);
-	gameObject3->transform.position.x += 3.0f;
-	gameObject3->transform.rotation.z += 24.67f;
-
-	//Create game objects 4 and 5 with the same mesh
-	gameObject4 = new Spatial("Object4");
-	gameObject4->AddMeshRenderer();
-	gameObject4->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh3);
-	gameObject4->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(blueMatte);
-	gameObject4->transform.rotation.z += 90.0f;
-	gameObject4->transform.position.y += 2.0f;
-	gameObject5 = new Spatial("Object5");
-	gameObject5->AddMeshRenderer();
-	gameObject5->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh3);
-	gameObject5->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(stoneMaterial);
-	gameObject5->transform.position.y -= 2.0f;
-	gameObject5->transform.scale.x += 4.0f;
-
-	//Create a light
-	lightObject = new Spatial("light1");
-	lightObject->AddDirLight(XMFLOAT4(0.05f, 0.05f, 0.05f, 1.0f), XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), XMFLOAT3(0.0f, +0.0f, 1.0f));
-	lightObject2 = new Spatial("light2");
-	lightObject2->AddPointLight(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
-	lightObject2->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetAmbientStrength(0.0f);
-	lightObject2->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetExpAtten(0.1f);
-	lightObject2->transform.position.x += 2.0f;
-	lightObject2->transform.position.z -= 1.0f;
-	lightObject3 = new Spatial("light3");
-	lightObject3->AddPointLight(XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
-	lightObject3->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetAmbientStrength(0.0f);
-	lightObject3->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetLinearAtten(0.5f);
-	lightObject3->transform.position.z += 1.0f;
-
-	//Create a camera
-	activeCamera = new FlyingCamera("MainCamera");
-	activeCamera->Start();
-	activeCamera->transform.position.z = -5.0f;
-	activeCamera->CalculateViewMatrix();
-}
-
 
 // --------------------------------------------------------
 // Handle resizing DirectX "stuff" to match the new window size.
@@ -199,9 +95,8 @@ void Game::CreateBasicGeometry() {
 void Game::OnResize() {
 	// Handle base-level DX resize stuff
 	DXCore::OnResize();
-	//TODO: Pass a resize event to the scene
-	//Change the camera's aspect ratio
-	activeCamera->SetAspectRatio((float)width / height);
+	//Pass resize event to scene
+	activeScene->OnResize((float)width, (float)height);
 }
 
 // --------------------------------------------------------
@@ -216,26 +111,8 @@ void Game::Update(float deltaTime, float totalTime) {
 	HandleMouseMove();
 
 	inputManager->Update();
-	
-	//TODO: Move most of this to the active scene
-	activeCamera->Update(deltaTime);
 
-	//Change object transforms every frame.  Eventually this should be done manually in a scene, or via the velocity in the physics singleton
-	gameObject1->transform.rotation.z += 0.1f * deltaTime;
-
-	gameObject2->transform.rotation.z += 1.0f * deltaTime;
-	gameObject2->transform.rotation.y += 0.5f * deltaTime;
-	gameObject2->transform.rotation.x += 1.0f * deltaTime;
-
-	gameObject3->transform.scale.x = abs(1.0f * sin(totalTime));
-	gameObject3->transform.scale.y = abs(1.0f * sin(totalTime));
-	gameObject3->transform.scale.z = abs(1.0f * sin(totalTime));
-
-	gameObject4->transform.rotation.y += 0.2f * deltaTime;
-
-	gameObject5->transform.position.x = 2.0f * sin(totalTime);
-
-	lightObject2->transform.position.z = 2.0f * sin(totalTime);
+	activeScene->Update(deltaTime);
 }
 
 // --------------------------------------------------------
@@ -256,7 +133,7 @@ void Game::Draw(float deltaTime, float totalTime) {
 		0);
 
 	//Call render on the renderManager
-	renderManager->Render(dxContext, activeCamera->GetViewMatrix(), activeCamera->GetProjectionMatrix(), activeCamera->transform.position);
+	renderManager->Render(dxContext);
 
 	// Present the back buffer to the user
 	//  - Puts the final frame we're drawing into the window so the user can see it

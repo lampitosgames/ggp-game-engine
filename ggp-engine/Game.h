@@ -4,13 +4,11 @@
 #include "DXCore.h"
 #include "SimpleShader.h"
 #include <DirectXMath.h>
-#include "Mesh.h"
 #include "ResourceManager.h"
 #include "RenderManager.h"
 #include "InputManager.h"
 #include "LightManager.h"
-#include "Spatial.h"
-#include "FlyingCamera.h"
+#include "Scene.h"
 
 class Game
 	: public DXCore {
@@ -54,18 +52,8 @@ private:
 	InputManager* inputManager;
 	LightManager* lightManager;
 
-	//Temporary game object storage until I implement scenes
-	Spatial* gameObject1;
-	Spatial* gameObject2;
-	Spatial* gameObject3;
-	Spatial* gameObject4;
-	Spatial* gameObject5;
-
-	Spatial* lightObject;
-	Spatial* lightObject2;
-	Spatial* lightObject3;
-
-	FlyingCamera* activeCamera;
+	//Active scene
+	Scene* activeScene;
 };
 
 #endif //GGP_GAME_H

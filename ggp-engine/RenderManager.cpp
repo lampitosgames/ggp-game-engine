@@ -8,6 +8,7 @@
 #include "LightManager.h"
 #include "Texture.h"
 #include "Material.h"
+#include "Camera.h"
 
 using namespace DirectX;
 
@@ -69,7 +70,7 @@ void RenderManager::DeleteMeshRenderer(UINT _uniqueID) {
 	}
 }
 
-void RenderManager::Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 _viewMatrix, DirectX::XMFLOAT4X4 _projectionMatrix, DirectX::XMFLOAT3 _camPos) {
+void RenderManager::Render(ID3D11DeviceContext* _dxContext) {
 	//Loop through and render every object
 	std::map<UINT, MeshRenderer*>::iterator mrIterator;
 	for (mrIterator = meshRendererUIDMap.begin(); mrIterator != meshRendererUIDMap.end(); ++mrIterator) {
@@ -88,8 +89,8 @@ void RenderManager::Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 
 
 		//Upload all data to vertex shader
 		vsTemp->SetMatrix4x4("world", mrTemp->GetWorldMatrix());
-		vsTemp->SetMatrix4x4("view", _viewMatrix);
-		vsTemp->SetMatrix4x4("projection", _projectionMatrix);
+		vsTemp->SetMatrix4x4("view", activeCamera->GetViewMatrix());
+		vsTemp->SetMatrix4x4("projection", activeCamera->GetProjectionMatrix());
 		vsTemp->SetMatrix4x4("worldInvTrans", mrTemp->GetWorldInvTransMatrix());
 		//TODO: Implement a way to upload color-based material data
 		//TODO: Standardize what data all shaders can accept
@@ -115,7 +116,7 @@ void RenderManager::Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 
 		if (channelToggle.z) { psTemp->SetShaderResourceView("specularMap", matTemp->GetSpecularSRV()); }
 
 		//Upload material data
-		psTemp->SetFloat3("cameraPosition", _camPos);
+		psTemp->SetFloat3("cameraPosition", activeCamera->transform.position);
 		psTemp->SetFloat4("baseColor", matTemp->GetColor());
 		psTemp->SetFloat("baseSpec", matTemp->GetBaseSpecular());
 		psTemp->CopyAllBufferData();
@@ -125,6 +126,14 @@ void RenderManager::Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 
 
 		mrTemp->Draw(_dxContext);
 	}
+}
+
+Camera* RenderManager::GetActiveCamera() {
+	return activeCamera;
+}
+
+void RenderManager::SetActiveCamera(Camera* _newCamera) {
+	activeCamera = _newCamera;
 }
 
 RenderManager::RenderManager() {

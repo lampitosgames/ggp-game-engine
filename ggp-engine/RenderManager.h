@@ -10,6 +10,7 @@ class Spatial;
 class ResourceManager;
 class LightManager;
 struct ID3D11SamplerState;
+class Camera;
 
 class RenderManager {
 	//Singleton pointer
@@ -25,6 +26,9 @@ class RenderManager {
 	SimpleVertexShader* defaultVertexShader;
 	SimplePixelShader* defaultPixelShader;
 
+	//Active camera
+	Camera* activeCamera;
+
 	//Unique number given to each mesh renderer
 	UINT mrUID = 0;
 	//Map of all mesh renderers
@@ -38,7 +42,11 @@ public:
 	void Start();
 
 	//TODO: Refactor so this requires fewer arguments. Grab the data inside the render function (like a camera object or the material component of each object)
-	void Render(ID3D11DeviceContext* _dxContext, DirectX::XMFLOAT4X4 _viewMatrix, DirectX::XMFLOAT4X4 _projectionMatrix, DirectX::XMFLOAT3 _camPos);
+	void Render(ID3D11DeviceContext* _dxContext);
+
+	//Active camera get/set
+	Camera* GetActiveCamera();
+	void SetActiveCamera(Camera* _newCamera);
 
 	/*
 		MESH RENDERER HELPERS

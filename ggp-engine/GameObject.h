@@ -12,13 +12,14 @@
 #include <string>
 #include <DirectXMath.h>
 #include <map>
+#include <vector>
 #include "GameObjectTypes.h"
 #include "ComponentTypes.h"
 #include "InputEvent.h"
+#include "InputManager.h"
+#include "LightManager.h"
 class ResourceManager;
 class RenderManager;
-class InputManager;
-class LightManager;
 
 typedef unsigned int UINT;
 
@@ -33,6 +34,14 @@ protected:
 	GOType type;
 	//Is the game object active or not? Defaults to true
 	bool isActive;
+
+	//Parent pointer
+	GameObject* parent;
+	bool parentHasTransform;
+	
+	//Array of children pointers
+	std::vector<GameObject*> children;
+	UINT childCount;
 
 	//Map of this game object's components
 	//Storing the component's unique identifier helps prevent a messy solution to object slicing
@@ -53,7 +62,10 @@ public:
 	~GameObject();
 
 	//Static, global get to access any game object by name
-	static GameObject* GetGameObject(std::string _uniqueID);
+	//static GameObject* GetGameObject(std::string _uniqueID);
+	//Override of GetGameObject that lets you pass in a type
+	template<typename T>
+	static T* GetGameObject(std::string _uniqueID);
 
 	//Start method
 	virtual void Start();
@@ -63,6 +75,28 @@ public:
 
 	//Input event handler (Will only ever be called by the engine if the game object has an InputListener component)
 	virtual void Input(InputEvent _event);
+
+	//Get/Set parent for this object
+	void SetParent(GameObject* _newParent);
+	GameObject* GetParent();
+
+	//Children methods for this object
+	//Adds a child
+	void AddChild(GameObject* _newChild);
+	//Removes a child without deleting the object
+	void RemoveChild(std::string _uniqueID);
+	void RemoveChild(UINT _index);
+	//Removes and deletes a child object
+	void DeleteChild(std::string _uniqueID);
+	void DeleteChild(UINT _index);
+	//Check if a child exists
+	bool HasChild(std::string _uniqueID);
+	//Get the child
+	GameObject* GetChild(std::string _uniqueID);
+	GameObject* GetChild(UINT _index);
+
+	//Does this object have a transform? Always returns false on the base class, but it needs to exist so parent/child transform relationships aren't broken
+	virtual bool HasTransform();
 
 	//Get one of this object's components
 	template<typename T>
@@ -87,6 +121,20 @@ private:
 	void Init();
 	void Release();
 };
+
+template<typename T>
+inline T* GameObject::GetGameObject(std::string _uniqueID) {
+	//Find an object in the map with this unique ID
+	//We have to use the find() function because accessing a 
+	//pair that doesn't exist directly creates an empty one for some reason
+	auto foundObject = goUIDMap.find(_uniqueID);
+	//If nothing was found, return null pointer
+	if (foundObject == goUIDMap.end()) {
+		return nullptr;
+	}
+	//Return found object
+	return (T*)foundObject->second;
+}
 
 template<typename T>
 inline T* GameObject::GetComponent(CompType _type) {
