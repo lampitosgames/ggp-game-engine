@@ -31,6 +31,10 @@ public:
 	static InputManager* GetInstance();
 	static void ReleaseInstance();
 
+    // We don't want anything making copies of this class so delete these operators
+    InputManager( InputManager const& ) = delete;
+    void operator=( InputManager const& ) = delete;
+
 	//Main update function
 	void Update();
 
