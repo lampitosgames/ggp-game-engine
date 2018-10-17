@@ -38,6 +38,10 @@ public:
 	static RenderManager* GetInstance();
 	static void ReleaseInstance();
 
+    // We don't want anything making copies of this class so delete these operators
+    RenderManager( RenderManager const& ) = delete;
+    void operator=( RenderManager const& ) = delete;
+
 	//Start method.  Called once when we can safely assume the entire engine has been initialized
 	void Start();
 

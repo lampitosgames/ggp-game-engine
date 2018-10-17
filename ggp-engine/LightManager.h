@@ -33,6 +33,10 @@ public:
 	static LightManager* GetInstance();
 	static void ReleaseInstance();
 
+    // We don't want anything making copies of this class so delete these operators
+    LightManager( LightManager const& ) = delete;
+    void operator=( LightManager const& ) = delete;
+
 	void UploadAllLights(SimplePixelShader* _pixelShader);
 
 	/*
