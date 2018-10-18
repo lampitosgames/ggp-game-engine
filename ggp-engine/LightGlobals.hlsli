@@ -17,13 +17,13 @@ struct PointLight {
 };
 
 //LIGHTING DATA REGISTERS
-static const uint maxDirLightCount = 2;
+static const uint maxDirLightCount = 4;
 cbuffer dirLightData : register(b1) {
 	DirectionalLight dirLights[maxDirLightCount];
 	uint dirLightCount;
 }
 
-static const uint maxPointLightCount = 4;
+static const uint maxPointLightCount = 128;
 cbuffer pointLightData : register(b2) {
 	PointLight pointLights[maxPointLightCount];
 	uint pointLightCount;

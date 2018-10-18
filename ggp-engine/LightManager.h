@@ -18,16 +18,16 @@ class LightManager {
 	//Map of all directional lights
 	std::map<UINT, DirLight*> dirLightUIDMap;
 	//Directional light struct array of fixed length. Helsp upload to the shader
-	const UINT maxDirLights = 2;
-	DirLightStruct dirLights[2];
+	const UINT maxDirLights = 4;
+	DirLightStruct dirLights[4];
 
 	//Unique ids given to each point light
 	UINT plUID = 0;
 	//Map of all point lights
 	std::map<UINT, PointLight*> pointLightUIDMap;
 	//Point light struct array of fixed length. Helps upload to the shader
-	const UINT maxPointLights = 4;
-	PointLightStruct pointLights[4];
+	const UINT maxPointLights = 128;
+	PointLightStruct pointLights[128];
 public:
 	//Static singleton get/release
 	static LightManager* GetInstance();
