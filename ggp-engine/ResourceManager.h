@@ -32,6 +32,11 @@ class ResourceManager {
 public:
 	static ResourceManager* GetInstance();
 	static void ReleaseInstance();
+
+    // We don't want anything making copies of this class so delete these operators
+    ResourceManager( ResourceManager const& ) = delete;
+    void operator=( ResourceManager const& ) = delete;
+
 	//Sets the device and context needed to actually interact with the window
 	static void SetDevicePointer(ID3D11Device* _dxDevice);
 	static void SetContextPointer(ID3D11DeviceContext* _dxContext);
