@@ -29,6 +29,9 @@ class RenderManager {
 	//Active camera
 	Camera* activeCamera;
 
+	//Gamma correction value
+	float gammaCorrection;
+
 	//Unique number given to each mesh renderer
 	UINT mrUID = 0;
 	//Map of all mesh renderers
@@ -45,8 +48,12 @@ public:
 	//Start method.  Called once when we can safely assume the entire engine has been initialized
 	void Start();
 
-	//TODO: Refactor so this requires fewer arguments. Grab the data inside the render function (like a camera object or the material component of each object)
+	//Called once per frame from the Game.cpp. Renders the active scene
 	void Render(ID3D11DeviceContext* _dxContext);
+
+	//Gamma correction get/set
+	float GetGammaCorrection();
+	void SetGammaCorrection(float _newGamma);
 
 	//Active camera get/set
 	Camera* GetActiveCamera();

@@ -23,19 +23,17 @@ float4 main(VertexToPixel input) : SV_TARGET {
 	//Grab the surface color
 	float4 surfaceColor = baseColor;
 	//If there is a diffuse texture, use the texture color instead of the baseColor
-	if (useDiffuseTex == 1) {
+	if (useDiffuseTex == 1) { 
 		surfaceColor = diffuseTexture.Sample(basicSampler, input.uv);
+		//Gamma corrections
+		pow(surfaceColor, gammaModifier);
 	}
-
 	//Grab shininess
 	float shininess = baseSpec;
-	if (useSpecularTex == 1) {
-		shininess = specularMap.Sample(basicSampler, input.uv).r;
-	}
+	if (useSpecularTex == 1) { shininess = specularMap.Sample(basicSampler, input.uv).r; }
 
 	//Variable to store summed light strength for this pixel
-	float3 lightColorSum = float4(0.0f, 0.0f, 0.0f, 1.0f);
-
+	float3 lightColorSum = float3(0.0f, 0.0f, 0.0f);
 	//Loop through direcitonal lights
 	for (uint i = 0; i < maxDirLightCount; i++) {
 		if (i >= dirLightCount) { break; }
@@ -49,6 +47,9 @@ float4 main(VertexToPixel input) : SV_TARGET {
 		lightColorSum += calcPointLight(pointLights[j], input.normal, surfaceColor, cameraPosition, input.worldPos, shininess);
 	}
 
+	//Gamma correction
+	float3 gammaCorrect = pow(lightColorSum, 1.0f / gammaModifier);
+
 	//Return the mesh's surface color multiplied by the calculated light data
-	return saturate(float4(lightColorSum, 1.0f));
+	return saturate(float4(gammaCorrect, 1.0f));
 }

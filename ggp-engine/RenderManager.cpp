@@ -101,6 +101,8 @@ void RenderManager::Render(ID3D11DeviceContext* _dxContext) {
 
 		//Upload data from the material
 		matTemp->UploadPSData(activeCamera->transform.position, samplerState, psTemp);
+		//Upload gamma correction
+		psTemp->SetFloat("gammaModifier", gammaCorrection);
 		//Copy all buffer data
 		psTemp->CopyAllBufferData();
 		
@@ -109,6 +111,14 @@ void RenderManager::Render(ID3D11DeviceContext* _dxContext) {
 		psTemp->SetShader();
 		mrTemp->Draw(_dxContext);
 	}
+}
+
+float RenderManager::GetGammaCorrection() {
+	return gammaCorrection;
+}
+
+void RenderManager::SetGammaCorrection(float _newGamma) {
+	gammaCorrection = _newGamma;
 }
 
 Camera* RenderManager::GetActiveCamera() {
@@ -121,6 +131,8 @@ void RenderManager::SetActiveCamera(Camera* _newCamera) {
 
 RenderManager::RenderManager() {
 	mrUID = 0;
+	//Gamma correction value should default to 2.2
+	gammaCorrection = 2.2f;
 	//Get an instance of the resource manager
 	resourceManager = ResourceManager::GetInstance();
 	lightManager = LightManager::GetInstance();
