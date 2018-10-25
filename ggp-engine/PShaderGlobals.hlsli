@@ -7,8 +7,7 @@ cbuffer externalData : register(b0) {
 	float baseSpec;
 	float4 baseColor;
 	//Boolean for using each texture channel
-	// x - Diffuse texture
-	// y - Normal map texture
-	// z - Specular map texture
-	int3 texChanToggle;
+	int useDiffuseTex;
+	int useNormalTex;
+	int useSpecularTex;
 }

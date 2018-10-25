@@ -61,6 +61,31 @@ SimpleVertexShader* Material::GetVertexShader() { return vertexShader; }
 
 SimplePixelShader* Material::GetPixelShader() { return pixelShader; }
 
+void Material::UploadPSData(DirectX::XMFLOAT3 _cameraPos, ID3D11SamplerState* _samplerState, SimplePixelShader* _pixelShader) {
+	//Build texture channel toggle array
+	XMINT3 channelToggle = XMINT3(HasDiffuseTexture(),
+								  HasNormalMap(),
+								  HasSpecularMap());
+	//Upload to pixel shader
+	_pixelShader->SetData("useDiffuseTex", &channelToggle.x, sizeof(int));
+	_pixelShader->SetData("useNormalTex", &channelToggle.y, sizeof(int));
+	_pixelShader->SetData("useSpecularTex", &channelToggle.z, sizeof(int));
+
+	//If any textures exist, upload the sampler state
+	if (channelToggle.x || channelToggle.y || channelToggle.z) {
+		_pixelShader->SetSamplerState("basicSampler", _samplerState);
+	}
+	//Only upload texture resources that exist
+	if (channelToggle.x) { _pixelShader->SetShaderResourceView("diffuseTexture", GetTexSRV()); }
+	if (channelToggle.y) { _pixelShader->SetShaderResourceView("normalMap", GetNormalSRV()); }
+	if (channelToggle.z) { _pixelShader->SetShaderResourceView("specularMap", GetSpecularSRV()); }
+
+	//Upload material data
+	_pixelShader->SetFloat3("cameraPosition", _cameraPos);
+	_pixelShader->SetFloat4("baseColor", GetColor());
+	_pixelShader->SetFloat("baseSpec", GetBaseSpecular());
+}
+
 DirectX::XMFLOAT4 Material::GetColor() { return baseColor; }
 
 void Material::SetColor(DirectX::XMFLOAT4 _newColor) { baseColor = _newColor; }

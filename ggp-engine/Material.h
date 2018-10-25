@@ -47,6 +47,10 @@ public:
 	SimpleVertexShader* GetVertexShader();
 	SimplePixelShader* GetPixelShader();
 
+	//Upload material to shaders
+	//If _pixelShader isn't passed in, the material will use its pixel shader
+	void UploadPSData(DirectX::XMFLOAT3 _cameraPos, ID3D11SamplerState* _samplerState, SimplePixelShader* _psOverride = nullptr);
+
 	//Color get/set
 	DirectX::XMFLOAT4 GetColor();
 	void SetColor(DirectX::XMFLOAT4 _newColor);

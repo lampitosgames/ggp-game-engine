@@ -99,18 +99,16 @@ void DebugScene::Init() {
 	//Create a light
 	Spatial* lightObject = new Spatial("light1");
 	AddChild(lightObject);
-	lightObject->AddDirLight(XMFLOAT4(0.05f, 0.05f, 0.05f, 1.0f), XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), XMFLOAT3(0.0f, +0.0f, 1.0f));
+	lightObject->AddDirLight(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, +0.0f, 1.0f), 0.3f, 0.05f);
 	Spatial* lightObject2 = new Spatial("light2");
 	AddChild(lightObject2);
 	lightObject2->AddPointLight(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
-	lightObject2->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetAmbientStrength(0.0f);
 	lightObject2->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetExpAtten(0.1f);
 	lightObject2->transform.position.x += 2.0f;
 	lightObject2->transform.position.z -= 1.0f;
 	Spatial* lightObject3 = new Spatial("light3");
 	AddChild(lightObject3);
 	lightObject3->AddPointLight(XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
-	lightObject3->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetAmbientStrength(0.0f);
 	lightObject3->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetLinearAtten(0.5f);
 	lightObject3->transform.position.z += 1.0f;
 

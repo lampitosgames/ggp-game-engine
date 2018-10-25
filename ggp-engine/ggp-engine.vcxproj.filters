@@ -125,6 +125,9 @@
     <ClCompile Include="DebugScene.cpp">
       <Filter>Source Files\Game Code</Filter>
     </ClCompile>
+    <ClCompile Include="PBRDemoScene.cpp">
+      <Filter>Source Files\Game Code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DXCore.h">
@@ -214,12 +217,12 @@
     <ClInclude Include="DebugScene.h">
       <Filter>Header Files\Game Code</Filter>
     </ClInclude>
+    <ClInclude Include="PBRDemoScene.h">
+      <Filter>Header Files\Game Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="LambertPShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PhongPShader.hlsl">
@@ -234,13 +237,10 @@
     <None Include="LightGlobals.hlsli">
       <Filter>Shaders\Shader Helpers</Filter>
     </None>
-    <None Include="TextureGlobals.hlsli">
-      <Filter>Shaders\Shader Helpers</Filter>
-    </None>
-    <None Include="PixelShaderGlobals.hlsli">
-      <Filter>Shaders\Shader Helpers</Filter>
-    </None>
     <None Include="VertexShaderGlobals.hlsli">
+      <Filter>Shaders\Shader Helpers</Filter>
+    </None>
+    <None Include="PShaderGlobals.hlsli">
       <Filter>Shaders\Shader Helpers</Filter>
     </None>
   </ItemGroup>

@@ -2,14 +2,12 @@
 #include "Spatial.h"
 using namespace DirectX;
 
-
-
 PointLight::PointLight(UINT _uniqueID, Spatial* _gameObject) {
 	//Call the fully parameterized constructor
 	PointLight(_uniqueID, _gameObject, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
-PointLight::PointLight(UINT _uniqueID, Spatial* _gameObject, XMFLOAT4 _color, float _ambientStrength, float _diffuseStrength, float _constAtten, float _linearAtten, float _expAtten) {
+PointLight::PointLight(UINT _uniqueID, Spatial* _gameObject, XMFLOAT4 _color, float _intensity, float _constAtten, float _linearAtten, float _expAtten) {
 	type = CompType::POINT_LIGHT;
 	uniqueID = _uniqueID;
 	gameObject = _gameObject;
@@ -17,8 +15,7 @@ PointLight::PointLight(UINT _uniqueID, Spatial* _gameObject, XMFLOAT4 _color, fl
 	lightData = {
 		_color,
 		gameObject->transform.position,
-		_ambientStrength,
-		_diffuseStrength,
+		_intensity,
 		_constAtten,
 		_linearAtten,
 		_expAtten
@@ -31,13 +28,9 @@ DirectX::XMFLOAT4 PointLight::GetColor() { return lightData.color; }
 
 void PointLight::SetColor(DirectX::XMFLOAT4 _color) { lightData.color = _color; }
 
-float PointLight::GetAmbientStrength() { return lightData.ambientColor; }
+float PointLight::GetIntensity() { return lightData.intensity; }
 
-void PointLight::SetAmbientStrength(float _ambientStrength) { lightData.ambientColor = _ambientStrength; }
-
-float PointLight::GetDiffuseStrength() { return lightData.diffuseColor; }
-
-void PointLight::SetDiffuseStrength(float _diffuseStrength) { lightData.diffuseColor = _diffuseStrength; }
+void PointLight::SetIntensity(float _newIntensity) { lightData.intensity = _newIntensity; }
 
 float PointLight::GetConstAtten() { return lightData.constAtten; }
 
