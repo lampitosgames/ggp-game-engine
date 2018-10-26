@@ -128,6 +128,9 @@
     <ClCompile Include="PBRDemoScene.cpp">
       <Filter>Source Files\Game Code</Filter>
     </ClCompile>
+    <ClCompile Include="PBRMaterial.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DXCore.h">
@@ -220,12 +223,18 @@
     <ClInclude Include="PBRDemoScene.h">
       <Filter>Header Files\Game Code</Filter>
     </ClInclude>
+    <ClInclude Include="PBRMaterial.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PhongPShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PBRPShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
@@ -241,6 +250,9 @@
       <Filter>Shaders\Shader Helpers</Filter>
     </None>
     <None Include="PShaderGlobals.hlsli">
+      <Filter>Shaders\Shader Helpers</Filter>
+    </None>
+    <None Include="PBRShaderGlobals.hlsli">
       <Filter>Shaders\Shader Helpers</Filter>
     </None>
   </ItemGroup>

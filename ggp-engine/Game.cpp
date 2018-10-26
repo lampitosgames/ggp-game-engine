@@ -1,6 +1,6 @@
 #include "Game.h"
 #include "Vertex.h"
-#include "DebugScene.h"
+#include "PBRDemoScene.h"
 
 // For the DirectX Math library
 using namespace DirectX;
@@ -74,7 +74,7 @@ void Game::Init() {
 	ResourceManager::SetContextPointer(dxContext);
 
 	//Create and init the active scene
-	activeScene = new DebugScene("PBR_Demo");
+	activeScene = new PBRDemoScene("PBR_Demo");
 	activeScene->Init();
 
 	// Tell the input assembler stage of the pipeline what kind of

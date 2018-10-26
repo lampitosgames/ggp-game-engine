@@ -81,6 +81,40 @@ float3 calcPointLight(PointLight _light, float3 _normal, float3 _surfaceColor, f
 	return (diff * _surfaceColor + spec) * lightAtten * _light.intensity * _light.color;
 }
 
+/*
+	PHYSICALLY BASED LIGHTING
+*/
+//Some basic constants
+static const float DIELECTRIC_FRESNEL_CONST = 0.04f;
+static const float MIN_ROUGHNESS = 0.0000001f;
+static const float PI = 3.14159264349f;
+
+//Trowbridge-Reits specular. D(h)
+//http://graphicrants.blogspot.com/2013/08/specular-brdf-reference.html
+float ggxSpecular(float3 _normal, float3 _lightDir, float3 _camPos, float3 _worldPos, float _roughness) {
+	float3 camDir = normalize(_camPos - _worldPos);
+	float3 halfVec = normalize(camDir + normalize(_lightDir));
+	float NdotHalf = dot(_normal, halfVec);
+	//a = roughness^2
+	float a = _roughness * _roughness;
+	//We need a^2 multiple times, only calculate once
+	//Also ensure it can't be zero
+	float aSquare = max(a * a, MIN_ROUGHNESS);
+	//Calculate and return specular
+	float spec = PI * pow(pow(NdotHalf, 2) * (aSquare - 1) + 1, 2);
+	spec = aSquare / spec;
+	return spec;
+}
+
+////CALC FOR INDIVIDUAL TYPES
+float3 calcDirLightPBR(DirectionalLight _light, float3 _normal, float3 _camPos, float3 _worldPos, float3 _albedo, float _roughness, float _metalness) {
+	return float3(1, 1, 1);
+}
+
+float3 calcPointLightPBR(PointLight _light, float3 _normal, float3 _camPos, float3 _worldPos, float3 _albedo, float _roughness, float _metalness) {
+	return float3(1, 1, 1);
+}
+
 
 /*
 	UTILS

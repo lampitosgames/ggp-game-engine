@@ -4,6 +4,7 @@
 #include "ResourceManager.h"
 #include "FlyingCamera.h"
 #include "Material.h"
+#include "PBRMaterial.h"
 #include "Mesh.h"
 #include "MeshRenderer.h"
 
@@ -15,6 +16,8 @@ void PBRDemoScene::Init() {
 
 	//Create a basic, white, shiny material
 	Material* whiteShiny = resourceManager->AddMaterial("whiteShiny", L"VertexShader.cso", L"PhongPShader.cso", XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 1.0f);
+	//Create a PBR material for testing
+	PBRMaterial* tactilePavingPBR = resourceManager->GetPBRMaterial("tactilePavingPBR", L"VertexShader.cso", L"PBRPShader.cso", L"assets/textures/TactilePaving_a.jpg", L"assets/textures/TactilePaving_n.jpg", L"assets/textures/TactilePaving_r.jpg", nullptr);
 	//Load a sphere mesh
 	Mesh* sphereMesh = resourceManager->GetMesh("assets/meshes/sphere.obj");
 	//Create a line of white spheres.
@@ -23,7 +26,7 @@ void PBRDemoScene::Init() {
 		AddChild(newSphere);
 		newSphere->AddMeshRenderer();
 		newSphere->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(sphereMesh);
-		newSphere->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(whiteShiny);
+		newSphere->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(tactilePavingPBR);
 		newSphere->transform.position.x = (float)i * 1.2f;
 	}
 

@@ -26,7 +26,7 @@ float4 main(VertexToPixel input) : SV_TARGET {
 	if (useDiffuseTex == 1) { 
 		surfaceColor = diffuseTexture.Sample(basicSampler, input.uv);
 		//Gamma corrections
-		pow(surfaceColor, gammaModifier);
+		surfaceColor = pow(surfaceColor, gammaModifier);
 	}
 	//Grab shininess
 	float shininess = baseSpec;

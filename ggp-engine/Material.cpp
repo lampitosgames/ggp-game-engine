@@ -131,4 +131,14 @@ ID3D11ShaderResourceView* Material::GetSpecularSRV() {
 void Material::SetSpecularMap(Texture* _newSpecular) { specular = _newSpecular; }
 
 bool Material::HasSpecularMap() { return specular != nullptr; }
+
+Material::Material() {
+	vertexShader = nullptr;
+	pixelShader = nullptr;
+	baseColor = XMFLOAT4();
+	baseSpecular = 0.0f;
+	diffuse = nullptr;
+	normal = nullptr;
+	specular = nullptr;
+}
 #pragma endregion

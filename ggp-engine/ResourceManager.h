@@ -8,6 +8,7 @@
 #include <DirectXMath.h>
 //Forward declaration
 class Material;
+class PBRMaterial;
 class Mesh;
 class Texture;
 struct Vertex;
@@ -61,6 +62,12 @@ public:
 	Material* AddMaterial(std::string _uniqueID, DirectX::XMFLOAT4 _color, float _specular = 0.0f);
 	//Create and return a new basic texture material without shaders
 	Material* AddMaterial(std::string _uniqueID, LPCWSTR _textureFilestring);
+
+	/*
+		PBR MATERIAL MANAGEMENT
+	*/
+	PBRMaterial* GetPBRMaterial(std::string _uniqueID, LPCWSTR _vertexShaderFilestring, LPCWSTR _pixelShaderFilestring, DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float _roughness = 0.0f, float _metalness = 0.0f);
+	PBRMaterial* GetPBRMaterial(std::string _uniqueID, LPCWSTR _vertexShaderFilestring, LPCWSTR _pixelShaderFilestring, LPCWSTR _albedoFilestring, LPCWSTR _normalFilestring, LPCWSTR _roughnessFilestring, LPCWSTR _metalnessFilestring);
 
 	/*
 		SHADER MANAGEMENT
