@@ -145,4 +145,32 @@ void DebugScene::Update(float _deltaTime) {
 	GetGameObject<Spatial>("Object5")->transform.position.x = 2.0f * sin(totalTime);
 
 	GetGameObject<Spatial>("light2")->transform.position.z = 2.0f * sin(totalTime);
+
+    // For every physics object in the scene
+
+    /*
+    if ( entityA->GetPhysicsLayer() == EPhysicsLayer::STATIC ) continue;
+
+    XMFLOAT3 forceToApply = XMFLOAT3( 0.f, 0.f, 0.f );
+    forceToApply.y += Gravity;
+
+    forceToApply.x *= deltaTime;
+    forceToApply.y *= deltaTime;
+    forceToApply.z *= deltaTime;
+
+    entityA->ApplyForce( forceToApply );
+
+    if ( entityA->GetPosition().y < -2.f )
+    {
+        XMFLOAT3 opposingVel = entityA->GetVelocity();
+        opposingVel.x *= -1.f;
+        opposingVel.y *= -1.f;
+        opposingVel.z *= -1.f;
+        entityA->ApplyForce( opposingVel );
+    }
+
+
+
+    entityA->ApplyAcceleration();*/
+
 }
