@@ -9,6 +9,9 @@ public:
 	void Init();
 	void Start();
 	void Update(float _deltaTime);
+
+    const float Gravity = -0.001f;
+
 };
 
 #endif //GAME_DEBUG_SCENE_H

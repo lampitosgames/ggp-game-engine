@@ -125,6 +125,9 @@
     <ClCompile Include="DebugScene.cpp">
       <Filter>Source Files\Game Code</Filter>
     </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DXCore.h">
@@ -213,6 +216,9 @@
     </ClInclude>
     <ClInclude Include="DebugScene.h">
       <Filter>Header Files\Game Code</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
