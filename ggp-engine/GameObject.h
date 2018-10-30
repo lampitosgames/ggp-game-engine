@@ -18,6 +18,7 @@
 #include "InputEvent.h"
 #include "InputManager.h"
 #include "LightManager.h"
+#include "PhysicsManager.h"
 class ResourceManager;
 class RenderManager;
 
@@ -54,6 +55,7 @@ protected:
 	InputManager* inputManager;
 	ResourceManager* resourceManager;
 	LightManager* lightManager;
+    PhysicsManager* physicsManager;
 public:
 	//Constructors
 	GameObject(std::string _uniqueID = "NA");
@@ -175,6 +177,13 @@ inline T* GameObject::GetComponent(CompType _type) {
 				return (T*)lightManager->GetPointLight(tempPL->second);
 			}
 		}
+        /*case CompType::RIGID_BODY {
+            auto tempPL = components.find( _type );
+            if ( tempPL != components.end() ) {
+                //typecast
+                return (T*) physicsManager->GetRigidBody( tempPL->second );
+            }
+        }*/
 	}
 	return nullptr;
 }
