@@ -14,6 +14,11 @@ namespace Physics
         DirectX::XMFLOAT3 Center;
     };
 
+    struct Point
+    {
+        float x, y, z;
+    };
+
     /// <summary>
     /// Static class with collision calculations and other helpful
     /// physics definitions
