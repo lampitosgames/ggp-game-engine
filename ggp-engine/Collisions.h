@@ -45,6 +45,15 @@ namespace Physics
         /// <returns>true if these two spheres are intersecting</returns>
         static const bool Intersects( const SphereCollider & aSphere, const SphereCollider & bSphere );
     
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="p">Ray origin</param>
+        /// <param name="d">Normalized directionaly vector</param>
+        /// <param name="s">Sphere to check</param>
+        /// <param name="t"></param>
+        /// <param name="q"></param>
+        /// <returns></returns>
         static const int IntersectRaySphere( Point p, const DirectX::XMFLOAT3 d, const SphereCollider & s, float &t, Point &q );
         
     };
