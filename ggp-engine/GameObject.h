@@ -104,10 +104,11 @@ public:
 	template<typename T>
 	T* GetComponent(CompType _type);
 
+    // #FixForNextBuild
 	//Functions to add different types of components
 	void AddInputListener();
 	void AddDirLight(DirectX::XMFLOAT4 _ambientColor = DirectX::XMFLOAT4(0.05f, 0.05f, 0.05f, 1.0f), DirectX::XMFLOAT4 _diffuseColor = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3 _direction = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
-
+  
 	//Gets for member variables
 	std::string GetUniqueID();
 	GOType GetType();

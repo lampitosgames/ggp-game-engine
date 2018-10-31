@@ -39,3 +39,8 @@ void Spatial::AddMeshRenderer() {
 void Spatial::AddPointLight(XMFLOAT4 _color) {
 	components[CompType::POINT_LIGHT] = lightManager->AddPointLight(this, _color);
 }
+
+void Spatial::AddRigidBody( float aMass, EPhysicsLayer aLayer )
+{
+    components[ CompType::RIGID_BODY ] = physicsManager->AddRigidBody( this, aMass, aLayer );
+}

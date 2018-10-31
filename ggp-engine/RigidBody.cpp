@@ -3,17 +3,9 @@
 
 using namespace DirectX;
 
-RigidBody::RigidBody()
-{
-    Mass = 1.f;
-    PhysicsLayer = EPhysicsLayer::STATIC;
-    Acceleration = XMFLOAT3( 0.f, 0.f, 0.f );
-    Velocity = XMFLOAT3( 0.f, 0.f, 0.f );
 
-}
-
-RigidBody::RigidBody( float aMass, EPhysicsLayer aPhysicsLayer )
-    : Mass( aMass ), PhysicsLayer( aPhysicsLayer )
+RigidBody::RigidBody( Spatial* aGameObj, float aMass, EPhysicsLayer aPhysicsLayer )
+    : gameObject(aGameObj), Mass( aMass ), PhysicsLayer( aPhysicsLayer )
 
 {
     Acceleration = XMFLOAT3( 0.f, 0.f, 0.f );
