@@ -44,6 +44,9 @@ namespace Physics
         /// <param name="bSphere">Second sphere of interest</param>
         /// <returns>true if these two spheres are intersecting</returns>
         static const bool Intersects( const SphereCollider & aSphere, const SphereCollider & bSphere );
+    
+        static const int IntersectRaySphere( Point p, const DirectX::XMFLOAT3 d, const SphereCollider & s, float &t, Point &q );
+        
     };
 
 }
