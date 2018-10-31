@@ -38,7 +38,7 @@ cbuffer pointLightData : register(b2) {
 }
 
 static const uint maxSpotLightCount = 128;
-cbuffer spotLightData : register(b2) {
+cbuffer spotLightData : register(b3) {
 	SpotLight spotLights[maxSpotLightCount];
 	uint spotLightCount;
 }

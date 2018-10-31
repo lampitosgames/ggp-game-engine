@@ -25,6 +25,23 @@ float4 calcPointLight(float3 _normal, float3 _pixWorldPos, PointLight _light) {
 	return saturate(ambientColor + lightAtten * (NdotL * diffuseColor));
 }
 
+float4 calcSpotLight(float3 _normal, float3 _pixWorldPos, SpotLight _light)
+{
+	//distance from this pixel to the light
+	float dis = length(_pixWorldPos - _light.position);
+	//direction from the pixel to the light
+	float3 lightDir = normalize(_pixWorldPos - _light.position);
+	//N * L
+	float NdotL = dot(_normal, -lightDir);
+	NdotL = saturate(NdotL);
+	//attenuation
+	float atten = saturate(1.0 - dis*dis / (_light.range*_light.range));
+	atten *= atten;
+	float angleFromCenter = max(dot(-lightDir, normalize(-_light.direction)), 0.0f);
+	float spotAmount = pow(angleFromCenter, 45.0f - _light.cone);
+	return saturate(_light.color*NdotL*spotAmount)*atten;
+}
+
 //Entry point
 float4 main(VertexToPixel input) : SV_TARGET {
 	//Re-normalize the lerped coordinate vectors
@@ -50,7 +67,13 @@ float4 main(VertexToPixel input) : SV_TARGET {
 		//Add each light's calculated value to the total color sum
 		lightColorSum += calcPointLight(input.normal, input.worldPos, pointLights[j]);
 	}
-	
+	//Loop through spot lights
+	for (uint k = 0; k < maxSpotLightCount; j++) {
+		if (k >= spotLightCount) { break; }
+		//Add each light's calculated value to the total color sum
+		lightColorSum += calcSpotLight(input.normal, input.worldPos, spotLights[k]);
+	}
+
 	//Grab the surface color
 	float4 surfaceColor = baseColor;
 	//If there is a diffuse texture, use the texture color instead of the baseColor

@@ -1,5 +1,5 @@
-#ifndef GGP_POINT_LIGHT_H
-#define GGP_POINT_LIGHT_H
+#ifndef GGP_SPOT_LIGHT_H
+#define GGP_SPOT_LIGHT_H
 
 #include <DirectXMath.h>
 #include "Component.h"
@@ -29,4 +29,4 @@ public:
 	SpotLightStruct buildLightStruct();
 };
 
-#endif //GGP_POINT_LIGHT_H#pragma once
+#endif //GGP_SPOT_LIGHT_H#pragma once
