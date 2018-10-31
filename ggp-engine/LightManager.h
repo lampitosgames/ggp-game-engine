@@ -5,6 +5,7 @@
 #include <DirectXMath.h>
 #include "PointLight.h"
 #include "DirLight.h"
+#include "SpotLight.h"
 #include "LightStructs.h"
 #include "SimpleShader.h"
 class GameObject;

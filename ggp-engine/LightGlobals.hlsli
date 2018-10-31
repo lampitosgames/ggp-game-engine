@@ -16,6 +16,14 @@ struct PointLight {
 	float expAtten;
 };
 
+struct SpotLight {
+	float4 color;
+	float3 direction;
+	float cone;
+	float3 position;
+	float range;
+};
+
 //LIGHTING DATA REGISTERS
 static const uint maxDirLightCount = 4;
 cbuffer dirLightData : register(b1) {
@@ -29,3 +37,8 @@ cbuffer pointLightData : register(b2) {
 	uint pointLightCount;
 }
 
+static const uint maxSpotLightCount = 128;
+cbuffer spotLightData : register(b2) {
+	SpotLight spotLights[maxSpotLightCount];
+	uint spotLightCount;
+}
