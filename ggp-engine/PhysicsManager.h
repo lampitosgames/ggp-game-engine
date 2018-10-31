@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <DirectXMath.h>
 
 ////////////////////////////
 // Forward Declarations
@@ -59,6 +60,16 @@ namespace Physics
         /// </summary>
         /// <returns>const UINT representing the number of bodies</returns>
         const UINT GetRigidBodyCount() const;
+
+        /// <summary>
+        /// Send a raycast starting from the origin point in the given directoin for 
+        /// the given distance. Return true if something is hit
+        /// </summary>
+        /// <param name="aOrigin">Starting point of the ray cast</param>
+        /// <param name="aDirectoin">Direction of the raycast</param>
+        /// <param name="distance">Distance of the raycast to go</param>
+        /// <returns>True if it hits a collider</returns>
+        const bool Raycast( const DirectX::XMFLOAT3 & aOrigin, const DirectX::XMFLOAT3 & aDirectoin, const float distance );
 
         // We don't want anything making copies of this class so delete these operators
         PhysicsManager( PhysicsManager const& ) = delete;

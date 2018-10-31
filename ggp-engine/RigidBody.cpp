@@ -12,7 +12,7 @@ RigidBody::RigidBody( Spatial* aGameObj, float aMass, EPhysicsLayer aPhysicsLaye
     Velocity = XMFLOAT3( 0.f, 0.f, 0.f );
 
     Collider.Center = gameObject->transform.position;
-    Collider.Radius = 0.1f;
+    Collider.Radius = 0.2f;
 }
 
 RigidBody::~RigidBody()

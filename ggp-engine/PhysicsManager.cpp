@@ -12,6 +12,12 @@ const UINT PhysicsManager::GetRigidBodyCount() const
     return rBodyCount;
 }
 
+const bool Physics::PhysicsManager::Raycast( const DirectX::XMFLOAT3 & aOrigin, const DirectX::XMFLOAT3 & aDirectoin, const float distance )
+{
+    printf( "\tStart raycast!\n" );
+    return false;
+}
+
 PhysicsManager::PhysicsManager()
 {
     rBodyCount = 0;
@@ -104,8 +110,15 @@ void PhysicsManager::UpdatePhysics( float deltaTime )
             colOther.Center = innerItr->second->gameObject->transform.position;
             if ( Physics::Collisions::Intersects( col1, colOther ) )
             {
-                printf( "Collision!\n" );
+                //printf( "Collision!\n" );
                 // Apply a force to these objects going the oppose way
+                XMFLOAT3 difference {};
+                difference.x = ( col1.Center.x - colOther.Center.x ) * deltaTime;
+                difference.y = ( col1.Center.y - colOther.Center.y ) * deltaTime;
+                difference.z = ( col1.Center.z - colOther.Center.z ) * deltaTime;
+
+                entityA->ApplyForce( difference );
+
             }
         }
         // Check the floor pos        
