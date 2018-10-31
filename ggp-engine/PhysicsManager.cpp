@@ -3,6 +3,7 @@
 #include "Spatial.h"
 
 using namespace DirectX;
+using namespace Physics;
 
 PhysicsManager* PhysicsManager::Instance = nullptr;
 
@@ -13,7 +14,7 @@ const UINT PhysicsManager::GetRigidBodyCount() const
 
 PhysicsManager::PhysicsManager()
 {
-
+    rBodyCount = 0;
 }
 
 PhysicsManager::~PhysicsManager()
@@ -50,10 +51,11 @@ UINT PhysicsManager::AddRigidBody( Spatial* aGameObj, float aMass, EPhysicsLayer
 {
     assert( aGameObj );
     RigidBody* rb = new RigidBody( aGameObj, aMass, aLayer );
+    // #FixForNextBuild
+    // Whyyyyy does this happen? I shouldn't have to put instance in front of this
+    Instance->RigidBodyUIDMap.insert( std::pair<UINT, RigidBody*>( Instance->rBodyCount, rb ) );
     
-    RigidBodyUIDMap.insert( std::pair<UINT, RigidBody*>( rBodyCount, rb ) );
-    
-    return rBodyCount++;
+    return Instance->rBodyCount++;
 }
 
 RigidBody * PhysicsManager::GetRigidBody( UINT uID )

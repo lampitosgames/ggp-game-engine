@@ -35,7 +35,7 @@ Game::Game(HINSTANCE hInstance)
 	renderManager = RenderManager::GetInstance();
 	inputManager = InputManager::GetInstance();
 	lightManager = LightManager::GetInstance();
-    physicsManager = PhysicsManager::GetInstance();
+    physicsManager = Physics::PhysicsManager::GetInstance();
 
 	#if defined(DEBUG) || defined(_DEBUG)
 		// Do we want a console window?  Probably only in debug mode

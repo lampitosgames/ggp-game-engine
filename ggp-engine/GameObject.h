@@ -55,7 +55,8 @@ protected:
 	InputManager* inputManager;
 	ResourceManager* resourceManager;
 	LightManager* lightManager;
-    PhysicsManager* physicsManager;
+    Physics::PhysicsManager * physicsManager;
+
 public:
 	//Constructors
 	GameObject(std::string _uniqueID = "NA");
@@ -125,6 +126,7 @@ private:
 	void Release();
 };
 
+// #FixForNextBuild
 template<typename T>
 inline T* GameObject::GetGameObject(std::string _uniqueID) {
 	//Find an object in the map with this unique ID
@@ -139,6 +141,7 @@ inline T* GameObject::GetGameObject(std::string _uniqueID) {
 	return (T*)foundObject->second;
 }
 
+// #FixForNextBuild
 template<typename T>
 inline T* GameObject::GetComponent(CompType _type) {
 	//This is fugly

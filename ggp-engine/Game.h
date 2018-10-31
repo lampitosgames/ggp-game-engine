@@ -52,7 +52,7 @@ private:
 	RenderManager* renderManager;
 	InputManager* inputManager;
 	LightManager* lightManager;
-    PhysicsManager* physicsManager;
+    Physics::PhysicsManager* physicsManager;
 
 	//Active scene
 	Scene* activeScene;

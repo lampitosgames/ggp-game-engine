@@ -16,7 +16,7 @@ using namespace std;
 
 void DebugScene::Init() {
 	Scene::Init();
-    physicsManager = PhysicsManager::GetInstance();
+    physicsManager = Physics::PhysicsManager::GetInstance();
 
 	//We only need a single material for all three for now
 	Material* stoneMaterial = resourceManager->AddMaterial("stoneMat",
@@ -46,7 +46,7 @@ void DebugScene::Init() {
     //Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
     PhysObject->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMesh( mesh1 );
     PhysObject->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMaterial( metalMaterial );
-    PhysObject->AddRigidBody( 1.0f, EPhysicsLayer::MOVEABLE );
+    PhysObject->AddRigidBody( 0.5f, EPhysicsLayer::MOVEABLE );
 
 	//Create the first game object
 	/*Spatial* gameObject1 = new Spatial("Object1");
@@ -164,6 +164,6 @@ void DebugScene::Update(float _deltaTime) {
     // For every physics object in the scene
     // Update the physics
     physicsManager->UpdatePhysics( _deltaTime );
-    
+    // Check collisions
 
 }
