@@ -90,7 +90,24 @@ void PhysicsManager::UpdatePhysics( float deltaTime )
         entityA->ApplyForce( forceToApply );
 
          
+        // For each object, we need to check it against all the others 
+        // in the scene that can possibly be colliding with it
+        Physics::SphereCollider col1 = entityA->GetCollider();
+        col1.Center = entityA->gameObject->transform.position;
 
+        for ( auto innerItr = RigidBodyUIDMap.begin(); innerItr != RigidBodyUIDMap.end(); ++innerItr )
+        {
+            if( innerItr->second == entityA ) continue;
+            // For each object, we need to check it against all the others 
+            // in the scene that can possibly be colliding with it
+            Physics::SphereCollider colOther = innerItr->second->GetCollider();
+            colOther.Center = innerItr->second->gameObject->transform.position;
+            if ( Physics::Collisions::Intersects( col1, colOther ) )
+            {
+                printf( "Collision!\n" );
+                // Apply a force to these objects going the oppose way
+            }
+        }
         // Check the floor pos        
         if ( entityA->gameObject->transform.position.y < -2.f )
         {

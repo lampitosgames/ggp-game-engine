@@ -4,23 +4,6 @@
 
 namespace Physics
 {
-    /// <summary>
-    /// Simple box collider with min and max bounds
-    /// </summary>
-    struct BoxCollider
-    {
-        float MinX; // 4 
-        float MaxX; // 8
-
-        float MinY; // 12
-        float MaxY; // 16
-
-        float MinZ; // 20
-        float MaxZ; // 24
-
-        DirectX::XMFLOAT3 Center; // 36
-
-    };
 
     /// <summary>
     /// A simple sphere collider
@@ -50,31 +33,12 @@ namespace Physics
         static const bool IsPointInside( const DirectX::XMFLOAT3 & aPoint, const SphereCollider & aSphere );
 
         /// <summary>
-        /// Checks if the given point is within the bounds of the box collider
-        /// </summary>
-        /// <param name="aPoint">Point of interest</param>
-        /// <param name="aBox">Box collider to check the point against</param>
-        /// <returns>True if point is inside the box collider</returns>
-        static const bool IsPointInside( const DirectX::XMFLOAT3 & aPoint, const BoxCollider & aBox );
-
-        /// <summary>
         /// Checks if two sphere colliders are intersecting 
         /// </summary>
         /// <param name="aSphere">First sphere of interest</param>
         /// <param name="bSphere">Second sphere of interest</param>
         /// <returns>true if these two spheres are intersecting</returns>
         static const bool Intersects( const SphereCollider & aSphere, const SphereCollider & bSphere );
-
-        /// <summary>
-        /// Checks if two box colliders are intersecting
-        /// </summary>
-        /// <param name="aBox">First box of interest</param>
-        /// <param name="bBox">Second box of interest</param>
-        /// <returns>True if the boxes are intersecting</returns>
-        static const bool Intersects( const BoxCollider & aBox, const BoxCollider & bBox );
-
     };
 
 }
-
-

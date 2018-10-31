@@ -10,6 +10,9 @@ RigidBody::RigidBody( Spatial* aGameObj, float aMass, EPhysicsLayer aPhysicsLaye
 {
     Acceleration = XMFLOAT3( 0.f, 0.f, 0.f );
     Velocity = XMFLOAT3( 0.f, 0.f, 0.f );
+
+    Collider.Center = gameObject->transform.position;
+    Collider.Radius = 0.1f;
 }
 
 RigidBody::~RigidBody()
@@ -78,4 +81,10 @@ const float RigidBody::GetMass() const
 void RigidBody::SetMass( float aMass )
 {
     Mass = aMass;
+}
+
+const Physics::SphereCollider & RigidBody::GetCollider() const
+{
+    return Collider;
+    // TODO: insert return statement here
 }

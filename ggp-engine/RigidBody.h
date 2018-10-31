@@ -2,6 +2,7 @@
 #include "Component.h"
 #include <DirectXMath.h>
 #include "Spatial.h"
+#include "Collisions.h"
 
 enum EPhysicsLayer
 {
@@ -33,7 +34,6 @@ public:
     /// </summary>
     void ApplyAcceleration();
 
-
     Spatial * gameObject; // :S
     
     /////////////////////////////////////////////////////////
@@ -49,7 +49,9 @@ public:
 
     const float GetMass() const;
 
-    void SetMass( const float aMass );
+    void SetMass( const float aMass );    
+
+    const Physics::SphereCollider & GetCollider() const;
 
 private:
 
@@ -60,6 +62,8 @@ private:
     DirectX::XMFLOAT3 Velocity;
 
     EPhysicsLayer PhysicsLayer;
+
+    Physics::SphereCollider Collider;
 
 };
 
