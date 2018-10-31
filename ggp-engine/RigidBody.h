@@ -1,6 +1,8 @@
 #pragma once
 #include "Component.h"
 #include <DirectXMath.h>
+#include "Spatial.h"
+#include "Collisions.h"
 
 enum EPhysicsLayer
 {
@@ -17,9 +19,7 @@ class RigidBody :
 {
 public:
     
-    RigidBody();
-
-    RigidBody( float aMass, EPhysicsLayer aPhysicsLayer );
+    RigidBody( Spatial* aGameObj, float aMass, EPhysicsLayer aPhysicsLayer );
 
     ~RigidBody();
 
@@ -34,8 +34,7 @@ public:
     /// </summary>
     void ApplyAcceleration();
 
-
-    class Spatial * gameObject; // :S
+    Spatial * gameObject; // :S
     
     /////////////////////////////////////////////////////////
     // Accessors
@@ -50,7 +49,9 @@ public:
 
     const float GetMass() const;
 
-    void SetMass( const float aMass );
+    void SetMass( const float aMass );    
+
+    const Physics::SphereCollider & GetCollider() const;
 
 private:
 
@@ -61,6 +62,8 @@ private:
     DirectX::XMFLOAT3 Velocity;
 
     EPhysicsLayer PhysicsLayer;
+
+    Physics::SphereCollider Collider;
 
 };
 

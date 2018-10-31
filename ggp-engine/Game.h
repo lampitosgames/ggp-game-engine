@@ -8,6 +8,7 @@
 #include "RenderManager.h"
 #include "InputManager.h"
 #include "LightManager.h"
+#include "PhysicsManager.h"
 #include "Scene.h"
 
 class Game
@@ -51,6 +52,7 @@ private:
 	RenderManager* renderManager;
 	InputManager* inputManager;
 	LightManager* lightManager;
+    Physics::PhysicsManager* physicsManager;
 
 	//Active scene
 	Scene* activeScene;
