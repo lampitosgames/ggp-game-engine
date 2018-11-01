@@ -44,9 +44,10 @@ public:
 		Useful for managing directional light components
 	*/
 	UINT AddDirLight(GameObject* _gameObject, 
-							 DirectX::XMFLOAT4 _ambientColor = DirectX::XMFLOAT4(0.05f, 0.05f, 0.05f, 1.0f), 
-							 DirectX::XMFLOAT4 _diffuseColor = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 
-							 DirectX::XMFLOAT3 _direction = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
+					 DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 
+					 DirectX::XMFLOAT3 _direction = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f),
+					 float _diffuseIntensity = 0.8f,
+					 float _ambientIntensity = 0.0f);
 	DirLight* GetDirLight(UINT _uniqueID);
 	DirLightStruct GetDirLightStruct(UINT _uniqueID);
 	void DeleteDirLight(UINT _uniqueID);

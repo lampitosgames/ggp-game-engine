@@ -2,15 +2,16 @@
 
 using namespace DirectX;
 
-DirLight::DirLight(UINT _uniqueID, GameObject* _gameObject, XMFLOAT4 _ambientColor, XMFLOAT4 _diffuseColor, XMFLOAT3 _direction) {
+DirLight::DirLight(UINT _uniqueID, GameObject* _gameObject, XMFLOAT4 _color, XMFLOAT3 _direction, float _diffuseIntensity, float _ambientIntensity) {
 	type = CompType::DIRECTIONAL_LIGHT;
 	uniqueID = _uniqueID;
 	gameObject = _gameObject;
 	lightData = {
-		_ambientColor,
-		_diffuseColor,
+		_color,
 		_direction,
-		0.0f
+		_diffuseIntensity,
+		_ambientIntensity,
+		XMFLOAT3()
 	};
 }
 

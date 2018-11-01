@@ -1,6 +1,7 @@
 #include "ResourceManager.h"
 #include "SimpleShader.h"
 #include "Material.h"
+#include "PBRMaterial.h"
 #include "Mesh.h"
 #include "Texture.h"
 #include <fstream>
@@ -143,6 +144,35 @@ Material* ResourceManager::AddMaterial(std::string _uniqueID, LPCWSTR _textureFi
 	materialUIDMap[_uniqueID] = newMaterial;
 	//Return new material
 	return newMaterial;
+}
+#pragma endregion
+
+#pragma region PBR Material Loading
+PBRMaterial* ResourceManager::GetPBRMaterial(std::string _uniqueID, LPCWSTR _vertexShaderFilestring, LPCWSTR _pixelShaderFilestring, XMFLOAT4 _color, float _roughness, float _metalness) {
+	//First, look up this material.  If it exists, just return it
+	auto thisMaterial = materialUIDMap.find(_uniqueID);
+	if (thisMaterial != materialUIDMap.end()) {
+		return (PBRMaterial*)thisMaterial->second;
+	}
+	//Create a new material
+	PBRMaterial* newPBRMaterial = new PBRMaterial(_uniqueID, GetVertexShader(_vertexShaderFilestring), GetPixelShader(_pixelShaderFilestring), _color, _roughness, _metalness);
+	//Add the material to the material map
+	materialUIDMap[_uniqueID] = newPBRMaterial;
+	//Return new material
+	return newPBRMaterial;
+}
+PBRMaterial* ResourceManager::GetPBRMaterial(std::string _uniqueID, LPCWSTR _vertexShaderFilestring, LPCWSTR _pixelShaderFilestring, LPCWSTR _albedoFilestring, LPCWSTR _normalFilestring, LPCWSTR _roughnessFilestring, LPCWSTR _metalnessFilestring) {
+	//First, look up this material.  If it exists, just return it
+	auto thisMaterial = materialUIDMap.find(_uniqueID);
+	if (thisMaterial != materialUIDMap.end()) {
+		return (PBRMaterial*)thisMaterial->second;
+	}
+	//Create a new material
+	PBRMaterial* newPBRMaterial = new PBRMaterial(_uniqueID, GetVertexShader(_vertexShaderFilestring), GetPixelShader(_pixelShaderFilestring), GetTexture(_albedoFilestring), GetTexture(_normalFilestring), GetTexture(_roughnessFilestring), GetTexture(_metalnessFilestring));
+	//Add the material to the material map
+	materialUIDMap[_uniqueID] = newPBRMaterial;
+	//Return new material
+	return newPBRMaterial;
 }
 #pragma endregion
 

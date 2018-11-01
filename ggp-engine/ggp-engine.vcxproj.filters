@@ -24,6 +24,9 @@
     <Filter Include="Header Files\Components">
       <UniqueIdentifier>{76f33d76-e569-4da6-9ee4-bcf0fa8eb2d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Managers">
+      <UniqueIdentifier>{01bb2277-febf-4bd5-8f0f-915282dc26cc}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\GameObjects">
       <UniqueIdentifier>{d93871e6-2efd-4d0e-ba26-16991df0d86b}</UniqueIdentifier>
     </Filter>
@@ -47,9 +50,6 @@
     </Filter>
     <Filter Include="Shaders\Shader Helpers">
       <UniqueIdentifier>{5e0fa5a3-c74e-4bb8-a303-e1f7b197a02e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Managers">
-      <UniqueIdentifier>{01bb2277-febf-4bd5-8f0f-915282dc26cc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +133,12 @@
     </ClCompile>
     <ClCompile Include="Collisions.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PBRDemoScene.cpp">
+      <Filter>Source Files\Game Code</Filter>
+    </ClCompile>
+    <ClCompile Include="PBRMaterial.cpp">
+      <Filter>Source Files\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -232,15 +238,21 @@
     <ClInclude Include="Collisions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PBRDemoScene.h">
+      <Filter>Header Files\Game Code</Filter>
+    </ClInclude>
+    <ClInclude Include="PBRMaterial.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="LambertPShader.hlsl">
+    <FxCompile Include="PhongPShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="PhongPShader.hlsl">
+    <FxCompile Include="PBRPShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
@@ -252,13 +264,13 @@
     <None Include="LightGlobals.hlsli">
       <Filter>Shaders\Shader Helpers</Filter>
     </None>
-    <None Include="TextureGlobals.hlsli">
-      <Filter>Shaders\Shader Helpers</Filter>
-    </None>
-    <None Include="PixelShaderGlobals.hlsli">
-      <Filter>Shaders\Shader Helpers</Filter>
-    </None>
     <None Include="VertexShaderGlobals.hlsli">
+      <Filter>Shaders\Shader Helpers</Filter>
+    </None>
+    <None Include="PShaderGlobals.hlsli">
+      <Filter>Shaders\Shader Helpers</Filter>
+    </None>
+    <None Include="PBRShaderGlobals.hlsli">
       <Filter>Shaders\Shader Helpers</Filter>
     </None>
   </ItemGroup>

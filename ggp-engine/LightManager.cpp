@@ -46,8 +46,8 @@ void LightManager::UploadAllLights(SimplePixelShader* _pixelShader) {
 }
 
 #pragma region Directional Lights
-UINT LightManager::AddDirLight(GameObject* _gameObject, XMFLOAT4 _ambientColor, XMFLOAT4 _diffuseColor, XMFLOAT3 _direction) {
-	DirLight* tempDL = new DirLight(dlUID, _gameObject, _ambientColor, _diffuseColor, _direction);;
+UINT LightManager::AddDirLight(GameObject* _gameObject, XMFLOAT4 _color, XMFLOAT3 _direction, float _diffuseIntensity, float _ambientIntensity) {
+	DirLight* tempDL = new DirLight(dlUID, _gameObject, _color, _direction, _diffuseIntensity, _ambientIntensity);;
 	dirLightUIDMap[dlUID] = tempDL;
 	dlUID++;
 	return dlUID - 1;

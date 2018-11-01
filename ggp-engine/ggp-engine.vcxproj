@@ -157,6 +157,8 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="PhysicsManager.cpp" />
+    <ClCompile Include="PBRDemoScene.cpp" />
+    <ClCompile Include="PBRMaterial.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
@@ -190,6 +192,8 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="PhysicsManager.h" />
+    <ClInclude Include="PBRDemoScene.h" />
+    <ClInclude Include="PBRMaterial.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="MeshRenderer.h" />
@@ -203,7 +207,7 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="LambertPShader.hlsl">
+    <FxCompile Include="PBRPShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -230,8 +234,8 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <None Include="InputOutputStructs.hlsli" />
     <None Include="LightGlobals.hlsli" />
     <None Include="packages.config" />
-    <None Include="PixelShaderGlobals.hlsli" />
-    <None Include="TextureGlobals.hlsli" />
+    <None Include="PBRShaderGlobals.hlsli" />
+    <None Include="PShaderGlobals.hlsli" />
     <None Include="VertexShaderGlobals.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
