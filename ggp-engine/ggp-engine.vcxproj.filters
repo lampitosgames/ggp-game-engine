@@ -24,7 +24,7 @@
     <Filter Include="Header Files\Components">
       <UniqueIdentifier>{76f33d76-e569-4da6-9ee4-bcf0fa8eb2d3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Managers">
+	<Filter Include="Header Files\Managers">
       <UniqueIdentifier>{01bb2277-febf-4bd5-8f0f-915282dc26cc}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\GameObjects">
@@ -50,6 +50,9 @@
     </Filter>
     <Filter Include="Shaders\Shader Helpers">
       <UniqueIdentifier>{5e0fa5a3-c74e-4bb8-a303-e1f7b197a02e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Managers">
+      <UniqueIdentifier>{01bb2277-febf-4bd5-8f0f-915282dc26cc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -128,8 +131,16 @@
     <ClCompile Include="RigidBody.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="SpotLight.cpp">
       <Filter>Source Files\Components</Filter>
+=======
+    <ClCompile Include="PhysicsManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Collisions.cpp">
+      <Filter>Source Files</Filter>
+>>>>>>> refs/remotes/origin/master
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -223,8 +234,16 @@
     <ClInclude Include="RigidBody.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="SpotLight.h">
       <Filter>Header Files\Components</Filter>
+=======
+    <ClInclude Include="PhysicsManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Collisions.h">
+      <Filter>Header Files</Filter>
+>>>>>>> refs/remotes/origin/master
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
