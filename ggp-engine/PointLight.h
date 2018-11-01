@@ -11,7 +11,7 @@ class PointLight : public Component {
 public:
 	Spatial* gameObject;
 	PointLight(UINT _uniqueID, Spatial* _gameObject);
-	PointLight(UINT _uniqueID, Spatial* _gameObject, DirectX::XMFLOAT4 _color, float _intensity = 1.0f, float _constAtten = 1.0f, float _linearAtten = 0.0f, float _expAtten = 1.0f);
+	PointLight(UINT _uniqueID, Spatial* _gameObject, DirectX::XMFLOAT4 _color, float _intensity = 1.0f, float _range = 5.0f);
 	~PointLight();
 
 	//Light color
@@ -21,12 +21,8 @@ public:
 	float GetIntensity();
 	void SetIntensity(float _diffuseStrength);
 	//Attenuation
-	float GetConstAtten();
-	float GetLinearAtten();
-	float GetExpAtten();
-	void SetConstAtten(float _constAtten);
-	void SetLinearAtten(float _linearAtten);
-	void SetExpAtten(float _expAtten);
+	float GetRange();
+	void SetRange(float _newRange);
 	PointLightStruct buildLightStruct();
 };
 

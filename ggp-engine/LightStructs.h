@@ -15,11 +15,8 @@ struct PointLightStruct {
 	DirectX::XMFLOAT4 color;
 	DirectX::XMFLOAT3 position;
 	float intensity;
-	// L = (AmbientColor + diffuseColor)/(constAtten + linearAtten*dist + expAtten*dist*dist)
-	float constAtten;
-	float linearAtten;
-	float expAtten;
-	float empty;
+	float range;
+	DirectX::XMFLOAT3 empty;
 };
 
 #endif //GGP_LIGHT_H

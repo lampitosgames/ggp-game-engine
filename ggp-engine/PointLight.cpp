@@ -7,7 +7,7 @@ PointLight::PointLight(UINT _uniqueID, Spatial* _gameObject) {
 	PointLight(_uniqueID, _gameObject, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
-PointLight::PointLight(UINT _uniqueID, Spatial* _gameObject, XMFLOAT4 _color, float _intensity, float _constAtten, float _linearAtten, float _expAtten) {
+PointLight::PointLight(UINT _uniqueID, Spatial* _gameObject, XMFLOAT4 _color, float _intensity, float _range) {
 	type = CompType::POINT_LIGHT;
 	uniqueID = _uniqueID;
 	gameObject = _gameObject;
@@ -16,9 +16,7 @@ PointLight::PointLight(UINT _uniqueID, Spatial* _gameObject, XMFLOAT4 _color, fl
 		_color,
 		gameObject->transform.position,
 		_intensity,
-		_constAtten,
-		_linearAtten,
-		_expAtten
+		_range
 	};
 }
 
@@ -32,17 +30,9 @@ float PointLight::GetIntensity() { return lightData.intensity; }
 
 void PointLight::SetIntensity(float _newIntensity) { lightData.intensity = _newIntensity; }
 
-float PointLight::GetConstAtten() { return lightData.constAtten; }
+float PointLight::GetRange() { return lightData.range; }
 
-float PointLight::GetLinearAtten() { return lightData.linearAtten; }
-
-float PointLight::GetExpAtten() { return lightData.expAtten; }
-
-void PointLight::SetConstAtten(float _constAtten) { lightData.constAtten = _constAtten; }
-
-void PointLight::SetLinearAtten(float _linearAtten) { lightData.linearAtten = _linearAtten; }
-
-void PointLight::SetExpAtten(float _expAtten) { lightData.expAtten = _expAtten; }
+void PointLight::SetRange(float _newRange) { lightData.range = _newRange; }
 
 PointLightStruct PointLight::buildLightStruct() {
 	lightData.position = gameObject->transform.position;

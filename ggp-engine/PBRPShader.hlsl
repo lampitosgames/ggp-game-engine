@@ -39,24 +39,29 @@ float4 main(VertexToPixel input) : SV_TARGET {
 		metalness = pow(metalness, gammaModifier);
 	}
 
+	//Get a specular value from the albedo texture.
+	//Then, interpolate between the fresnel value for dielectrics and the full specular 
+	//color based on the metalness at this pixel. This is the F0 variable in the fresnel equation
+	float3 specColor = lerp(DIELECTRIC_FRESNEL_CONST.rrr, albedo.rgb, metalness);
+
 	//Variable to store summed light strength for this pixel
 	float3 lightColorSum = float3(0.0f, 0.0f, 0.0f);
 	//Loop through direcitonal lights
 	for (uint i = 0; i < maxDirLightCount; i++) {
 		if (i >= dirLightCount) { break; }
 		//Add each light's calculated value to the total color sum
-		lightColorSum += calcDirLightPBR(dirLights[i], input.normal, cameraPosition, input.worldPos, albedo, roughness, metalness);
+		lightColorSum += calcDirLightPBR(dirLights[i], input.normal, cameraPosition, input.worldPos, albedo, roughness, metalness, specColor);
 	}
 	//Loop through point lights
 	for (uint j = 0; j < maxPointLightCount; j++) {
 		if (j >= pointLightCount) { break; }
 		//Add each light's calculated value to the total color sum
-		lightColorSum += calcPointLightPBR(pointLights[j], input.normal, cameraPosition, input.worldPos, albedo, roughness, metalness);
+		lightColorSum += calcPointLightPBR(pointLights[j], input.normal, cameraPosition, input.worldPos, albedo, roughness, metalness, specColor);
 	}
 
 	//Gamma correction
 	float3 gammaCorrect = pow(lightColorSum, 1.0f / gammaModifier);
 
 	//Return the mesh's surface color multiplied by the calculated light data
-	return saturate(float4(gammaCorrect, 1.0f));
+	return float4(gammaCorrect, 1.0f);
 }
