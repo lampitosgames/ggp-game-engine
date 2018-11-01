@@ -4,21 +4,19 @@
 #include <DirectXMath.h>
 
 struct DirLightStruct {
-	DirectX::XMFLOAT4 ambientColor;
-	DirectX::XMFLOAT4 diffuseColor;
+	DirectX::XMFLOAT4 color;
 	DirectX::XMFLOAT3 direction;
-	float emptyPadding;
+	float diffuseIntensity;
+	float ambientIntensity;
+	DirectX::XMFLOAT3 empty;
 };
 
 struct PointLightStruct {
 	DirectX::XMFLOAT4 color;
 	DirectX::XMFLOAT3 position;
-	float ambientColor;
-	float diffuseColor;
-	// L = (AmbientColor + diffuseColor)/(constAtten + linearAtten*dist + expAtten*dist*dist)
-	float constAtten;
-	float linearAtten;
-	float expAtten;
+	float intensity;
+	float range;
+	DirectX::XMFLOAT3 empty;
 };
 
 #endif //GGP_LIGHT_H
