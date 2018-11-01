@@ -142,6 +142,7 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
   <ItemGroup>
     <ClCompile Include="Basis.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Collisions.cpp" />
     <ClCompile Include="DebugScene.cpp" />
     <ClCompile Include="DirLight.cpp" />
     <ClCompile Include="DXCore.cpp" />
@@ -155,12 +156,14 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="PhysicsManager.cpp" />
     <ClCompile Include="PBRDemoScene.cpp" />
     <ClCompile Include="PBRMaterial.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SimpleShader.cpp" />
     <ClCompile Include="Spatial.cpp" />
@@ -170,6 +173,7 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
   <ItemGroup>
     <ClInclude Include="Basis.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Collisions.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentTypes.h" />
     <ClInclude Include="DebugScene.h" />
@@ -187,12 +191,14 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="PhysicsManager.h" />
     <ClInclude Include="PBRDemoScene.h" />
     <ClInclude Include="PBRMaterial.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SimpleShader.h" />
     <ClInclude Include="Spatial.h" />

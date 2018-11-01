@@ -9,12 +9,15 @@
 #include "Transform.h"
 #include "PointLight.h"
 #include "Material.h"
+#include "RigidBody.h"
 
 using namespace DirectX;
 using namespace std;
 
 void DebugScene::Init() {
 	Scene::Init();
+    physicsManager = Physics::PhysicsManager::GetInstance();
+
 	//We only need a single material for all three for now
 	Material* stoneMaterial = resourceManager->AddMaterial("stoneMat",
 														   L"VertexShader.cso",
@@ -37,8 +40,25 @@ void DebugScene::Init() {
 	Mesh* mesh2 = resourceManager->GetMesh("assets/meshes/helix.obj");
 	Mesh* mesh3 = resourceManager->GetMesh("assets/meshes/sphere.obj");
 
+    Spatial* PhysObject = new Spatial( "PhysObject" );
+    AddChild( PhysObject );
+    PhysObject->AddMeshRenderer();
+    //Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
+    PhysObject->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMesh( mesh3 );
+    PhysObject->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMaterial( metalMaterial );
+    PhysObject->AddRigidBody( 0.5f, EPhysicsLayer::MOVEABLE );
+
+    Spatial* PhysObject2 = new Spatial( "PhysObject2" );
+    AddChild( PhysObject2 );
+    PhysObject2->AddMeshRenderer();
+    //Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
+    PhysObject2->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMesh( mesh3 );
+    PhysObject2->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMaterial( blueMatte );
+    PhysObject2->AddRigidBody( 0.5f, EPhysicsLayer::MOVEABLE );
+    PhysObject2->transform.position.y = 3.f;
+
 	//Create the first game object
-	Spatial* gameObject1 = new Spatial("Object1");
+	/*Spatial* gameObject1 = new Spatial("Object1");
 	//Add it as a child
 	AddChild(gameObject1);
 	//Give it a mesh renderer component
@@ -94,7 +114,7 @@ void DebugScene::Init() {
 	gameObject5->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(mesh3);
 	gameObject5->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(stoneMaterial);
 	gameObject5->transform.position.y -= 2.0f;
-	gameObject5->transform.scale.x += 4.0f;
+	gameObject5->transform.scale.x += 4.0f;*/
 
 	//Create a light
 	Spatial* lightObject = new Spatial("light1");
@@ -125,8 +145,10 @@ void DebugScene::Start() {
 
 void DebugScene::Update(float _deltaTime) {
 	Scene::Update(_deltaTime);
+    // #FixForNextBuild
+    // This is rough dude
 	//Change object transforms every frame.  Eventually this should be done manually in a scene, or via the velocity in the physics singleton
-	GetGameObject<Spatial>("Object1")->transform.rotation.z += 0.1f * _deltaTime;
+	/*GetGameObject<Spatial>("Object1")->transform.rotation.z += 0.1f * _deltaTime;
 
 	GetGameObject<Spatial>("Object2")->transform.rotation.z += 1.0f * _deltaTime;
 	GetGameObject<Spatial>("Object2")->transform.rotation.y += 0.5f * _deltaTime;
@@ -140,5 +162,13 @@ void DebugScene::Update(float _deltaTime) {
 
 	GetGameObject<Spatial>("Object5")->transform.position.x = 2.0f * sin(totalTime);
 
-	GetGameObject<Spatial>("light2")->transform.position.z = 2.0f * sin(totalTime);
+	GetGameObject<Spatial>("light2")->transform.position.z = 2.0f * sin(totalTime);*/
+
+
+
+    // For every physics object in the scene
+    // Update the physics
+    physicsManager->UpdatePhysics( _deltaTime );
+    // Check collisions
+
 }

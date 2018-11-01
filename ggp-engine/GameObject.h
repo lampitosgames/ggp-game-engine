@@ -18,6 +18,7 @@
 #include "InputEvent.h"
 #include "InputManager.h"
 #include "LightManager.h"
+#include "PhysicsManager.h"
 class ResourceManager;
 class RenderManager;
 
@@ -54,6 +55,8 @@ protected:
 	InputManager* inputManager;
 	ResourceManager* resourceManager;
 	LightManager* lightManager;
+    Physics::PhysicsManager * physicsManager;
+
 public:
 	//Constructors
 	GameObject(std::string _uniqueID = "NA");
@@ -102,6 +105,7 @@ public:
 	template<typename T>
 	T* GetComponent(CompType _type);
 
+    // #FixForNextBuild
 	//Functions to add different types of components
 	void AddInputListener();
 	void AddDirLight(DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3 _direction = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), float _diffuseIntensity = 1.0f, float _ambientIntensity = 0.0f);
@@ -122,6 +126,7 @@ private:
 	void Release();
 };
 
+// #FixForNextBuild
 template<typename T>
 inline T* GameObject::GetGameObject(std::string _uniqueID) {
 	//Find an object in the map with this unique ID
@@ -136,6 +141,7 @@ inline T* GameObject::GetGameObject(std::string _uniqueID) {
 	return (T*)foundObject->second;
 }
 
+// #FixForNextBuild
 template<typename T>
 inline T* GameObject::GetComponent(CompType _type) {
 	//This is fugly
@@ -175,6 +181,13 @@ inline T* GameObject::GetComponent(CompType _type) {
 				return (T*)lightManager->GetPointLight(tempPL->second);
 			}
 		}
+        /*case CompType::RIGID_BODY {
+            auto tempPL = components.find( _type );
+            if ( tempPL != components.end() ) {
+                //typecast
+                return (T*) physicsManager->GetRigidBody( tempPL->second );
+            }
+        }*/
 	}
 	return nullptr;
 }
