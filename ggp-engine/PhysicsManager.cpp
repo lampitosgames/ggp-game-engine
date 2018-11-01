@@ -15,6 +15,8 @@ const UINT PhysicsManager::GetRigidBodyCount() const
 const bool Physics::PhysicsManager::Raycast( const DirectX::XMFLOAT3 & aOrigin, const DirectX::XMFLOAT3 & aDirectoin, const float distance )
 {
     printf( "\tStart raycast!\n" );
+
+
     return false;
 }
 
