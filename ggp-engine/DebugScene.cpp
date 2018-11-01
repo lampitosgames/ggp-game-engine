@@ -47,7 +47,7 @@ void DebugScene::Init()
     //Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
     PhysObject->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMesh( mesh3 );
     PhysObject->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMaterial( metalMaterial );
-    PhysObject->AddRigidBody( 0.5f, EPhysicsLayer::MOVEABLE );
+    PhysObject->AddRigidBody( 0.7f, EPhysicsLayer::MOVEABLE );
 
     Spatial* PhysObject2 = new Spatial( "PhysObject2" );
     AddChild( PhysObject2 );
@@ -55,7 +55,7 @@ void DebugScene::Init()
     //Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
     PhysObject2->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMesh( mesh3 );
     PhysObject2->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMaterial( blueMatte );
-    PhysObject2->AddRigidBody( 0.5f, EPhysicsLayer::MOVEABLE );
+    PhysObject2->AddRigidBody( 0.7f, EPhysicsLayer::MOVEABLE );
     PhysObject2->transform.position.y = 3.f;
 
 
