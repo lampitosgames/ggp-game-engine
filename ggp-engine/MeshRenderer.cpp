@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "MeshRenderer.h"
 #include "SimpleShader.h"
 #include "Material.h"

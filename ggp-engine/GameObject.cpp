@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "GameObject.h"
 #include "ResourceManager.h"
 #include "RenderManager.h"

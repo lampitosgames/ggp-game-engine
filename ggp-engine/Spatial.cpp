@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "Spatial.h"
 #include "RenderManager.h"
 #include "LightManager.h"

@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "DebugScene.h"
 #include <DirectXMath.h>
 #include <string>

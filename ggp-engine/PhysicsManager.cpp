@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "PhysicsManager.h"
 #include "RigidBody.h"
 #include "Spatial.h"

@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "PBRDemoScene.h"
 #include <DirectXMath.h>
 #include "RenderManager.h"

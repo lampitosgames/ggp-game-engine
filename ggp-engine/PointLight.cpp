@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "PointLight.h"
 #include "Spatial.h"
 using namespace DirectX;

@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "RenderManager.h"
 #include <DirectXMath.h>
 #include <d3d11.h>

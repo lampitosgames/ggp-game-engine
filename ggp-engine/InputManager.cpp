@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "InputManager.h"
 #include "GameObject.h"
 #include "InputListener.h"

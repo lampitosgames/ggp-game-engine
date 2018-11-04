@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "Camera.h"
 #include "InputManager.h"
 #include <iostream>

@@ -1,25 +1,18 @@
 #pragma once
 
-// Typedefs -----------------------------
-
-// TODO: UINT typedef
-
-// Common Libraries ---------------------
-#include <DirectXMath.h>
-
 // Memory Leak detection ----------------
-#define _CRTDBG_MAP_ALLOC  
+//#define _CRTDBG_MAP_ALLOC  
 #include <stdlib.h>  
 #include <stdio.h>
 #include <crtdbg.h>  
 #include <assert.h>
 // Replace the new keyword with the debug new 
-#ifdef _DEBUG
+/*#ifdef _DEBUG
 
 #define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
 #define new DEBUG_NEW
 
-#endif
+#endif*/
 
 // Debug Settings --------------------
 #ifdef _DEBUG
@@ -31,3 +24,10 @@
 #define DEBUG_PRINT(a, ...)
 
 #endif
+
+// Typedefs -----------------------------
+
+// TODO: UINT typedef
+
+// Common Libraries ---------------------
+#include <DirectXMath.h>
