@@ -41,9 +41,6 @@ private:
 	POINT mousePos;
 	POINT prevMousePos;
 
-	// Initialization helper methods - feel free to customize, combine, etc.
-	void CreateBasicGeometry();
-
 	// Buffers to hold actual geometry data
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;

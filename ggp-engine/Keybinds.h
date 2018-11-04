@@ -1,6 +1,7 @@
 #ifndef GGP_KEYBINDS_H
 #define GGP_KEYBINDS_H
 
+#include "stdafx.h"
 #include <Windows.h>
 #include <map>
 #include <vector>
