@@ -2,7 +2,7 @@
 
 #include "PhysicsManager.h"
 #include "RigidBody.h"
-#include "Spatial.h"
+#include "GameObject.h"
 
 using namespace DirectX;
 using namespace Physics;
@@ -57,7 +57,7 @@ void PhysicsManager::ReleaseInstance()
     }
 }
 
-UINT PhysicsManager::AddRigidBody( Spatial* aGameObj, float aMass, EPhysicsLayer aLayer )
+UINT PhysicsManager::AddRigidBody( GameObject* aGameObj, float aMass, EPhysicsLayer aLayer )
 {
     assert( aGameObj );
     RigidBody* rb = new RigidBody( aGameObj, aMass, aLayer );

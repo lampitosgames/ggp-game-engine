@@ -4,9 +4,9 @@
 #include "SimpleShader.h"
 #include "Material.h"
 #include "Mesh.h"
-#include "Spatial.h"
+#include "GameObject.h"
 
-MeshRenderer::MeshRenderer(UINT _uniqueID, Spatial* _gameObject) {
+MeshRenderer::MeshRenderer(UINT _uniqueID, GameObject* _gameObject) {
 	type = CompType::MESH_RENDERER;
 	uniqueID = _uniqueID;
 	gameObject = _gameObject;
@@ -14,7 +14,7 @@ MeshRenderer::MeshRenderer(UINT _uniqueID, Spatial* _gameObject) {
 	material = nullptr;
 }
 
-MeshRenderer::MeshRenderer(UINT _uniqueID, Spatial* _gameObject, Mesh* _mesh, Material* _material) {
+MeshRenderer::MeshRenderer(UINT _uniqueID, GameObject* _gameObject, Mesh* _mesh, Material* _material) {
 	type = CompType::MESH_RENDERER;
 	uniqueID = _uniqueID;
 	gameObject = _gameObject;

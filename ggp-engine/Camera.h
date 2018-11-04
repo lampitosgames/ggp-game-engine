@@ -1,9 +1,9 @@
 #ifndef GGP_CAMERA_H
 #define GGP_CAMERA_H
 
-#include "Spatial.h"
+#include "GameObject.h"
 
-class Camera : public Spatial {
+class Camera : public GameObject {
 protected:
 	float fov = 1.3962634f; //80 degree FOV
 	float aspectRatio = 1.777777777f; //1920 / 1080

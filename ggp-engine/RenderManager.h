@@ -6,7 +6,7 @@
 #include "LightStructs.h"
 class Mesh;
 class MeshRenderer;
-class Spatial;
+class GameObject;
 class ResourceManager;
 class LightManager;
 struct ID3D11SamplerState;
@@ -64,7 +64,7 @@ public:
 		Useful for sharing one mesh asset across many objects
 	*/
 	//Create (and return the uid of) a new mesh renderer
-	UINT AddMeshRenderer(Spatial* _gameObject);
+	UINT AddMeshRenderer( GameObject* _gameObject);
 	//Get a mesh renderer given its unique identifier
 	MeshRenderer* GetMeshRenderer(UINT _uniqueID);
 	//Delete a mesh renderer

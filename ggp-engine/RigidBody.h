@@ -1,7 +1,7 @@
 #pragma once
 #include "Component.h"
 #include <DirectXMath.h>
-#include "Spatial.h"
+#include "GameObject.h"
 #include "Collisions.h"
 
 enum EPhysicsLayer
@@ -19,7 +19,7 @@ class RigidBody :
 {
 public:
     
-    RigidBody( Spatial* aGameObj, float aMass, EPhysicsLayer aPhysicsLayer );
+    RigidBody( GameObject* aGameObj, float aMass, EPhysicsLayer aPhysicsLayer );
 
     ~RigidBody();
 
@@ -34,7 +34,7 @@ public:
     /// </summary>
     void ApplyAcceleration();
 
-    Spatial * gameObject; // :S
+    GameObject * gameObject; // :S
     
     /////////////////////////////////////////////////////////
     // Accessors

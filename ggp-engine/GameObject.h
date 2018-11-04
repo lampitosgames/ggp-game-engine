@@ -19,6 +19,8 @@
 #include "InputManager.h"
 #include "LightManager.h"
 #include "PhysicsManager.h"
+#include "Transform.h"
+
 class ResourceManager;
 class RenderManager;
 
@@ -58,11 +60,16 @@ protected:
     Physics::PhysicsManager * physicsManager;
 
 public:
-	//Constructors
-	GameObject(std::string _uniqueID = "NA");
+
+	GameObject(std::string _uniqueID = "NA",
+        DirectX::XMFLOAT3 _position = DirectX::XMFLOAT3( 0.0f, 0.0f, 0.0f ),
+        DirectX::XMFLOAT3 _rotation = DirectX::XMFLOAT3( 0.0f, 0.0f, 0.0f ),
+        DirectX::XMFLOAT3 _scale = DirectX::XMFLOAT3( 1.0f, 1.0f, 1.0f ) );
 
 	//Destructor
 	~GameObject();
+
+    Transform transform;
 
 	//Static, global get to access any game object by name
 	//static GameObject* GetGameObject(std::string _uniqueID);
@@ -109,6 +116,9 @@ public:
 	//Functions to add different types of components
 	void AddInputListener();
 	void AddDirLight(DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3 _direction = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), float _diffuseIntensity = 1.0f, float _ambientIntensity = 0.0f);
+    void AddMeshRenderer();
+    void AddPointLight( DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) );
+    void AddRigidBody( float aMass, EPhysicsLayer aLayer );
 
 	//Gets for member variables
 	std::string GetUniqueID();
