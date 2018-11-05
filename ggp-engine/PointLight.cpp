@@ -1,13 +1,15 @@
+#include "stdafx.h"
+
 #include "PointLight.h"
-#include "Spatial.h"
+#include "GameObject.h"
 using namespace DirectX;
 
-PointLight::PointLight(UINT _uniqueID, Spatial* _gameObject) {
+PointLight::PointLight(UINT _uniqueID, GameObject* _gameObject) {
 	//Call the fully parameterized constructor
 	PointLight(_uniqueID, _gameObject, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
-PointLight::PointLight(UINT _uniqueID, Spatial* _gameObject, XMFLOAT4 _color, float _intensity, float _range) {
+PointLight::PointLight(UINT _uniqueID, GameObject* _gameObject, XMFLOAT4 _color, float _intensity, float _range) {
 	type = CompType::POINT_LIGHT;
 	uniqueID = _uniqueID;
 	gameObject = _gameObject;

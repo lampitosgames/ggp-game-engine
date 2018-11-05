@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "PBRMaterial.h"
 #include "Texture.h"
 

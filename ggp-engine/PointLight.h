@@ -4,14 +4,14 @@
 #include <DirectXMath.h>
 #include "Component.h"
 #include "LightStructs.h"
-class Spatial;
+class GameObject;
 
 class PointLight : public Component {
 	PointLightStruct lightData;
 public:
-	Spatial* gameObject;
-	PointLight(UINT _uniqueID, Spatial* _gameObject);
-	PointLight(UINT _uniqueID, Spatial* _gameObject, DirectX::XMFLOAT4 _color, float _intensity = 1.0f, float _range = 5.0f);
+    GameObject * gameObject;
+	PointLight(UINT _uniqueID, GameObject* _gameObject);
+	PointLight(UINT _uniqueID, GameObject* _gameObject, DirectX::XMFLOAT4 _color, float _intensity = 1.0f, float _range = 5.0f);
 	~PointLight();
 
 	//Light color

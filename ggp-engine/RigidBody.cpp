@@ -1,10 +1,12 @@
+#include "stdafx.h"
+
 #include "RigidBody.h"
-#include "Spatial.h"
+#include "GameObject.h"
 
 using namespace DirectX;
 
 
-RigidBody::RigidBody( Spatial* aGameObj, float aMass, EPhysicsLayer aPhysicsLayer )
+RigidBody::RigidBody( GameObject* aGameObj, float aMass, EPhysicsLayer aPhysicsLayer )
     : gameObject(aGameObj), Mass( aMass ), PhysicsLayer( aPhysicsLayer )
 
 {

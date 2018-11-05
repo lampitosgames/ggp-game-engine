@@ -1,8 +1,10 @@
+#include "stdafx.h"
+
 #include "RenderManager.h"
 #include <DirectXMath.h>
 #include <d3d11.h>
 #include <iostream>
-#include "Spatial.h"
+#include "GameObject.h"
 #include "MeshRenderer.h"
 #include "ResourceManager.h"
 #include "LightManager.h"
@@ -46,7 +48,7 @@ void RenderManager::Start() {
 	}
 }
 
-UINT RenderManager::AddMeshRenderer(Spatial* _gameObject) {
+UINT RenderManager::AddMeshRenderer( GameObject* _gameObject) {
 	MeshRenderer* tempMR = new MeshRenderer(mrUID, _gameObject);
 	meshRendererUIDMap[mrUID] = tempMR;
 	mrUID++;

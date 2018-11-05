@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "LightManager.h"
 
 using namespace DirectX;
@@ -80,11 +82,11 @@ void LightManager::DeleteDirLight(UINT _uniqueID) {
 #pragma endregion
 
 #pragma region Point Lights
-UINT LightManager::AddPointLight(Spatial* _gameObject) {
+UINT LightManager::AddPointLight( GameObject* _gameObject) {
 	return AddPointLight(_gameObject, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
-UINT LightManager::AddPointLight(Spatial* _gameObject, XMFLOAT4 _color) {
+UINT LightManager::AddPointLight( GameObject* _gameObject, XMFLOAT4 _color) {
 	PointLight* tempPL = new PointLight(plUID, _gameObject, _color);
 	pointLightUIDMap[plUID] = tempPL;
 	plUID++;

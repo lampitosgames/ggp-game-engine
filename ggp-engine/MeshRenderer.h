@@ -8,7 +8,7 @@
 #include "Component.h"
 class Mesh;
 class Material;
-class Spatial;
+class GameObject;
 class SimpleVertexShader;
 class SimplePixelShader;
 
@@ -16,9 +16,9 @@ class MeshRenderer : public Component {
 	Mesh* mesh;
 	Material* material;
 public:
-	Spatial* gameObject;
-	MeshRenderer(UINT _uniqueID, Spatial* _gameObject);
-	MeshRenderer(UINT _uniqueID, Spatial* _gameObject, Mesh* _mesh, Material* _material);
+    //GameObject * gameObject;
+	MeshRenderer(UINT _uniqueID, GameObject* _gameObject);
+	MeshRenderer(UINT _uniqueID, GameObject* _gameObject, Mesh* _mesh, Material* _material);
 	~MeshRenderer();
 
 	void SetMesh(Mesh* _mesh);

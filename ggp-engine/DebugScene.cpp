@@ -1,9 +1,11 @@
+#include "stdafx.h"
+
 #include "DebugScene.h"
 #include <DirectXMath.h>
 #include <string>
 #include "RenderManager.h"
 #include "ResourceManager.h"
-#include "Spatial.h"
+#include "GameObject.h"
 #include "MeshRenderer.h"
 #include "FlyingCamera.h"
 #include "Transform.h"
@@ -41,7 +43,7 @@ void DebugScene::Init()
     Mesh* mesh2 = resourceManager->GetMesh( "assets/meshes/helix.obj" );
     Mesh* mesh3 = resourceManager->GetMesh( "assets/meshes/sphere.obj" );
 
-    Spatial* PhysObject = new Spatial( "PhysObject" );
+    GameObject* PhysObject = new GameObject( "PhysObject" );
     AddChild( PhysObject );
     PhysObject->AddMeshRenderer();
     //Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
@@ -49,7 +51,7 @@ void DebugScene::Init()
     PhysObject->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMaterial( metalMaterial );
     PhysObject->AddRigidBody( 0.7f, EPhysicsLayer::MOVEABLE );
 
-    Spatial* PhysObject2 = new Spatial( "PhysObject2" );
+    GameObject* PhysObject2 = new GameObject( "PhysObject2" );
     AddChild( PhysObject2 );
     PhysObject2->AddMeshRenderer();
     //Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
@@ -61,10 +63,10 @@ void DebugScene::Init()
 
 
     //Create a light
-    Spatial* lightObject = new Spatial( "light1" );
+    GameObject* lightObject = new GameObject( "light1" );
     AddChild( lightObject );
     lightObject->AddDirLight( XMFLOAT4( 0.05f, 0.05f, 0.05f, 1.0f ), XMFLOAT3( 0.3f, 0.3f, 0.3f ) );
-    Spatial* lightObject2 = new Spatial( "light2" );
+    GameObject* lightObject2 = new GameObject( "light2" );
     AddChild( lightObject2 );
     lightObject2->AddPointLight( XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) );
 
@@ -72,7 +74,7 @@ void DebugScene::Init()
     //lightObject2->GetComponent<PointLight>( CompType::POINT_LIGHT )->SetExpAtten( 0.1f );
     lightObject2->transform.position.x += 2.0f;
     lightObject2->transform.position.z -= 1.0f;
-    /*Spatial* lightObject3 = new Spatial( "light3" );
+    /*GameObject* lightObject3 = new GameObject( "light3" );
     AddChild( lightObject3 );
     lightObject3->AddPointLight( XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) );
     lightObject3->GetComponent<PointLight>( CompType::POINT_LIGHT )->SetAmbientStrength( 0.0f );
