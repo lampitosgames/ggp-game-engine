@@ -243,6 +243,17 @@ Mesh* ResourceManager::GetMesh(string _uniqueID) {
 	return newMesh;
 }
 
+Mesh* ResourceManager::GetTerrain(std::string _uniqueID, int _resolution, float _heightScale, float _uvScale) {
+	//If the mesh already exists, return it
+	auto thisTerrain = meshUIDMap.find(_uniqueID);
+	if (thisTerrain != meshUIDMap.end()) {
+		return thisTerrain->second;
+	}
+	//Else, we have to load the terrain data
+	meshUIDMap[_uniqueID] = ResourceManager::meshGen.LoadTerrain(_uniqueID, _resolution, _heightScale, _uvScale);
+	return meshUIDMap[_uniqueID];
+}
+
 Mesh* ResourceManager::GenerateCube(float _sideLength, float _uvScale) {
 	//Get the dynamic UID for this size of generated mesh
 	std::ostringstream genUID;

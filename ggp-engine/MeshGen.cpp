@@ -2,6 +2,8 @@
 
 #include "MeshGen.h"
 #include <map>
+#include <fstream>
+#include <iostream>
 
 using namespace DirectX;
 
@@ -9,6 +11,7 @@ void MeshGen::StartMesh() {
 	vIndex = -1;
 	tIndex = -1;
 	vertCount = 0;
+	indCount = 0;
 	vertData.clear();
 	triData.clear();
 	mVerts.clear();
@@ -34,9 +37,11 @@ UINT MeshGen::addVert(float3 _pos, float2 _uv) {
 	|  /
 	v1
 */
-UINT MeshGen::addTri(UINT _v1, UINT _v2, UINT _v3) {
+UINT MeshGen::addTri(UINT _v1, UINT _v2, UINT _v3, bool _invertTanNormal) {
 	//Get normal vector to the plane
 	float3 triNormal = getFaceNormal(vertData[_v1].pos, vertData[_v2].pos, vertData[_v3].pos);
+	//Invert the normal? Used when winding order and the tangent calculation don't line up exactly right
+	triNormal = _invertTanNormal ? float3(-triNormal.x, -triNormal.y, -triNormal.z) : triNormal;
 	//Push a new tri face onto the triData array
 	triData.push_back({
 		_v1,
@@ -60,9 +65,9 @@ UINT MeshGen::addTri(UINT _v1, UINT _v2, UINT _v3) {
 	|      |
 	v1 -- v2
 */
-void MeshGen::addQuad(UINT _v1, UINT _v2, UINT _v3, UINT _v4) {
-	addTri(_v1, _v3, _v4);
-	addTri(_v1, _v2, _v3);
+void MeshGen::addQuad(UINT _v1, UINT _v2, UINT _v3, UINT _v4, bool _invertTanNormal) {
+	addTri(_v1, _v3, _v4, _invertTanNormal);
+	addTri(_v1, _v2, _v3, _invertTanNormal);
 }
 #pragma endregion
 
@@ -83,13 +88,13 @@ void MeshGen::buildWithFaceNormals() {
 	for (UINT i = 0; i <= tIndex; i++) {
 		tri curTri = triData[i];
 		//Push the three verts onto the output array
-		mVerts.push_back({vertData[curTri.vert1].pos, vertData[curTri.vert1].uv, curTri.normal});
-		mVerts.push_back({vertData[curTri.vert2].pos, vertData[curTri.vert2].uv, curTri.normal});
-		mVerts.push_back({vertData[curTri.vert3].pos, vertData[curTri.vert3].uv, curTri.normal});
+		mVerts.push_back({vertData[curTri.vert1].pos, vertData[curTri.vert1].uv, curTri.normal}); vertCount++;
+		mVerts.push_back({vertData[curTri.vert2].pos, vertData[curTri.vert2].uv, curTri.normal}); vertCount++;
+		mVerts.push_back({vertData[curTri.vert3].pos, vertData[curTri.vert3].uv, curTri.normal}); vertCount++;
 		//Push their indices onto the output index array
-		mIndices.push_back(vertCount++);
-		mIndices.push_back(vertCount++);
-		mIndices.push_back(vertCount++);
+		mIndices.push_back(indCount++);
+		mIndices.push_back(indCount++);
+		mIndices.push_back(indCount++);
 	}
 }
 
@@ -107,13 +112,14 @@ void MeshGen::buildWithSmoothNormals() {
 		XMStoreFloat3(&curVert.norm, averageNormal);
 		//Add the vertex and it's averaged normal to the output array
 		mVerts.push_back({curVert.pos, curVert.uv, curVert.norm});
+		vertCount++;
 	}
 	//Loop through all tris and simply pass the stored index into the index buffer
 	for (UINT t = 0; t <= tIndex; t++) {
 		tri curTri = triData[t];
-		mIndices.push_back(curTri.vert1); vertCount++;
-		mIndices.push_back(curTri.vert2); vertCount++;
-		mIndices.push_back(curTri.vert3); vertCount++;
+		mIndices.push_back(curTri.vert1); indCount++;
+		mIndices.push_back(curTri.vert2); indCount++;
+		mIndices.push_back(curTri.vert3); indCount++;
 	}
 }
 
@@ -122,12 +128,12 @@ void MeshGen::buildWithSmoothNormals() {
 // Taken from the demo on mycourses (Game Graphics Programming)
 void MeshGen::CalculateTangents() {
 	// Reset tangents
-	for (UINT i = 0; i < mVerts.size(); i++) {
+	for (UINT i = 0; i < vertCount; i++) {
 		mVerts[i].tangent = float3(0, 0, 0);
 	}
 
 	// Calculate tangents one whole triangle at a time
-	for (UINT i = 0; i < vertCount;) {
+	for (UINT i = 0; i < indCount;) {
 		// Grab indices and vertices of first triangle
 		unsigned int i1 = mIndices[i++];
 		unsigned int i2 = mIndices[i++];
@@ -174,7 +180,7 @@ void MeshGen::CalculateTangents() {
 	}
 
 	// Ensure all of the tangents are orthogonal to the normals
-	for (UINT i = 0; i < mVerts.size(); i++) {
+	for (UINT i = 0; i < vertCount; i++) {
 		// Grab the two vectors
 		XMVECTOR normal = XMLoadFloat3(&mVerts[i].normal);
 		XMVECTOR tangent = XMLoadFloat3(&mVerts[i].tangent);
@@ -191,6 +197,66 @@ MeshGen::MeshGen() { dxDevice = nullptr; }
 
 MeshGen::MeshGen(ID3D11Device* _dxDevice) {
 	dxDevice = _dxDevice;
+}
+
+Mesh* MeshGen::LoadTerrain(std::string _rawFilepath, int _resolution, float _heightScale, float _uvScale) {
+	StartMesh();
+	unsigned char* heights = new unsigned char[_resolution * _resolution];
+	std::ifstream file;
+	file.open(_rawFilepath, std::ios_base::binary);
+	if (file) {
+		file.read((char*)&heights[0], _resolution * _resolution);
+		file.close();
+	} else {
+		return nullptr;
+	}
+
+	//Scale. 1 pixel = this many world units
+	float scl = 0.15f;
+
+	UINT* vertInds = new UINT[_resolution * _resolution];
+	for (UINT j = 0; j < _resolution * _resolution; j++) {
+		//Get 2d coordinates from the 1d array
+		int lx = j % _resolution;
+		int lz = (int)floor(j / _resolution);
+
+		//Get xyz coordinates
+		float vx = ((float)lx * scl) - ((float)_resolution * scl / 2.0f);
+		float vy = (heights[j] / 255.0f) * _heightScale; //Scale the raw height data to world coorda
+		float vz = ((float)lz * scl) - ((float)_resolution * scl / 2.0f);
+
+		//Get UV coordinates
+		float u = _uvScale * ((float)lx / (float)_resolution);
+		float v = _uvScale * ((float)lz / (float)_resolution);
+
+		//Create a new vertex and store it in the vertInds array
+		vertInds[j] = addVert(float3(vx, vy, vz), float2(u, v));
+	}
+
+	//Create faces for the terrain
+	for (UINT k = 0; k < _resolution * (_resolution - 1) - 1; k++) {
+		//Skip the last vertex in a row since it's already been included in the mesh
+		if (k % _resolution == _resolution - 1) {
+			continue; 
+		}
+		//Get the 4 coorners of the quad
+		UINT v1 = vertInds[k + _resolution];
+		UINT v2 = vertInds[k + _resolution + 1];
+		UINT v3 = vertInds[k + 1];
+		UINT v4 = vertInds[k];
+		addQuad(v1, v2, v3, v4);
+	}
+
+	//Build the mesh with shared verts and smoothed normals
+	buildWithSmoothNormals();
+	//Calculate tangents
+	CalculateTangents();
+
+	//Create and return the new cube mesh
+	Mesh* newMesh = new Mesh(&mVerts[0], vertCount, &mIndices[0], indCount, dxDevice);
+	delete[] heights;
+	delete[] vertInds;
+	return newMesh;
 }
 
 Mesh* MeshGen::GenerateCube(float _sideLength, float _uvScale) {
@@ -255,7 +321,7 @@ Mesh* MeshGen::GenerateCube(float _sideLength, float _uvScale) {
 	CalculateTangents();
 
 	//Create and return the new cube mesh
-	Mesh* newMesh = new Mesh(&mVerts[0], vertCount, &mIndices[0], vertCount, dxDevice);
+	Mesh* newMesh = new Mesh(&mVerts[0], vertCount, &mIndices[0], indCount, dxDevice);
 	return newMesh;
 }
 
@@ -370,12 +436,12 @@ Mesh* MeshGen::GenerateSphere(float _radius, UINT _subdivs, float _uvScale) {
 		addTri(sphereVertInds[sphereTris[i][0]], sphereVertInds[sphereTris[i][2]], sphereVertInds[sphereTris[i][1]]);
 	}
 
-	//Build the mesh without shared verts
+	//Build the mesh with shared verts and smoothed normals
 	buildWithSmoothNormals();
 	//Calculate tangents
 	CalculateTangents();
 
 	//Create and return the new cube mesh
-	Mesh* newMesh = new Mesh(&mVerts[0], vertCount, &mIndices[0], vertCount, dxDevice);
+	Mesh* newMesh = new Mesh(&mVerts[0], vertCount, &mIndices[0], indCount, dxDevice);
 	return newMesh;
 }
