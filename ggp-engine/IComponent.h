@@ -1,38 +1,51 @@
 #pragma once
 
-using ComponentID = size_t;
-
-class GameObject;
-
-class IComponent
+namespace ECS
 {
-public:
 
-    IComponent();
+    using ComponentID = size_t;
 
-    virtual ~IComponent();
+    class GameObject;
+
+    /// <summary>
+    /// Abstract component class with basic functionality that every 
+    /// component should have.
+    /// </summary>
+    class IComponent
+    {
+    public:
+
+        IComponent() : isEnabled(true), owner(nullptr), id(-1) { }
+
+        virtual ~IComponent() {}
 
 
-    inline const bool operator==( const IComponent& other ) const { return id == other.id; }
-    inline const bool operator!=( const IComponent& other ) const { return id == other.id; }
+        inline const bool operator==( const IComponent& other ) const { return id == other.id; }
+        inline const bool operator!=( const IComponent& other ) const { return id == other.id; }
 
 
-    /////////////////////////////////////////////////    
-    // Accessors 
+        /////////////////////////////////////////////////    
+        // Accessors 
 
-    inline const ComponentID GetComponentId() const { return this->id; }
+        inline const ComponentID GetComponentId() const { return this->id; }
 
-    inline const bool IsEnabled() const { return this->isEnabled; }
+        inline const bool IsEnabled() const { return this->isEnabled; }
 
-    inline void SetSenabled( bool aEnabledState ) { this->isEnabled = aEnabledState; }
+        inline void SetSenabled( bool aEnabledState ) { this->isEnabled = aEnabledState; }
 
-    inline const GameObject* GetOwner() const { return this->owner; }
+        inline const GameObject* GetOwner() const { return this->owner; }
 
-protected:
-    ComponentID id;
+    protected:
 
-    bool isEnabled;
+        /** The unique ID of this component */
+        ComponentID id;
 
-    GameObject* owner;
+        /** If this component is enabled or not */
+        bool isEnabled;
 
-};
+        /** The owner of this component */
+        GameObject* owner;
+
+    };
+
+}

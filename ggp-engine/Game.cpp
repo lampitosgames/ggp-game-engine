@@ -78,8 +78,8 @@ void Game::Init() {
 	ResourceManager::SetContextPointer(dxContext);
 
 	//Create and init the active scene
-	activeScene = new PBRDemoScene("PBR_Demo");
-    //activeScene = new DebugScene( "Debug Scene" );
+	//activeScene = new PBRDemoScene("PBR_Demo");
+    activeScene = new DebugScene( "Debug Scene" );
 	activeScene->Init();
 
 	// Tell the input assembler stage of the pipeline what kind of
