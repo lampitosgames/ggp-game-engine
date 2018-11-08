@@ -258,6 +258,21 @@ Mesh* ResourceManager::GenerateCube(float _sideLength, float _uvScale) {
 	return meshUIDMap[genUID.str()];
 }
 
+Mesh* ResourceManager::GenerateSphere(float _radius, int _subdivs, float _uvScale) {
+	//Get the dynamic UID for this size of generated mesh
+	std::ostringstream genUID;
+	genUID << "sphere" << _radius << "_" << _subdivs;
+	//If the mesh already exists, return it
+	auto thisMesh = meshUIDMap.find(genUID.str());
+	if (thisMesh != meshUIDMap.end()) {
+		return thisMesh->second;
+	}
+	//Mesh does not exist, so generate it and store it in the mesh map
+	meshUIDMap[genUID.str()] = ResourceManager::meshGen.GenerateSphere(_radius, _subdivs,_uvScale);
+	//Return the mesh
+	return meshUIDMap[genUID.str()];
+}
+
 Mesh* ResourceManager::LoadMesh(string _filepath) {// File input object
 	std::ifstream obj(_filepath);
 

@@ -27,7 +27,8 @@ void PBRDemoScene::Init() {
 	pbrMats[6] = resourceManager->GetPBRMaterial("gravelPBR", L"VertexShader.cso", L"PBRPShader.cso", L"assets/textures/PBR/gravel_a.jpg", L"assets/textures/PBR/gravel_n.jpg", L"assets/textures/PBR/gravel_r.jpg", nullptr);
 	//Load a sphere mesh
 	//Mesh* sphereMesh = resourceManager->GetMesh("assets/meshes/sphere.obj");
-	Mesh* sphereMesh = resourceManager->GenerateCube(1.0f, 2.0f);
+	//Mesh* sphereMesh = resourceManager->GenerateCube(1.0f, 2.0f);
+	Mesh* sphereMesh = resourceManager->GenerateSphere(0.5f, 3, 2.0f);
 	//Create a line of white spheres.
 	for (UINT i = 0; i < 7; i++) {
 		GameObject* newSphere = new GameObject("Sphere");

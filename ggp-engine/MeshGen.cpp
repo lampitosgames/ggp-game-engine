@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "MeshGen.h"
+#include <map>
 
 using namespace DirectX;
 
@@ -94,7 +95,26 @@ void MeshGen::buildWithFaceNormals() {
 
 void MeshGen::buildWithSmoothNormals() {
 	//Loop through all verts and calculate normals from faces.  Create Vertex struct and add it to the final array
+	for (UINT i = 0; i <= vIndex; i++) {
+		vert curVert = vertData[i];
+		XMVECTOR averageNormal = XMVectorZero();
+		//Loop through all faces this vert belongs to and average them
+		for (UINT f = 0; f < curVert.faces.size(); f++) {
+			averageNormal += XMLoadFloat3(&triData[curVert.faces[f]].normal);
+		}
+		averageNormal = XMVector3Normalize(averageNormal);
+		//Store the normal
+		XMStoreFloat3(&curVert.norm, averageNormal);
+		//Add the vertex and it's averaged normal to the output array
+		mVerts.push_back({curVert.pos, curVert.uv, curVert.norm});
+	}
 	//Loop through all tris and simply pass the stored index into the index buffer
+	for (UINT t = 0; t <= tIndex; t++) {
+		tri curTri = triData[t];
+		mIndices.push_back(curTri.vert1); vertCount++;
+		mIndices.push_back(curTri.vert2); vertCount++;
+		mIndices.push_back(curTri.vert3); vertCount++;
+	}
 }
 
 // Calculates the tangents of the vertices in a mesh
@@ -102,7 +122,7 @@ void MeshGen::buildWithSmoothNormals() {
 // Taken from the demo on mycourses (Game Graphics Programming)
 void MeshGen::CalculateTangents() {
 	// Reset tangents
-	for (UINT i = 0; i < vertCount; i++) {
+	for (UINT i = 0; i < mVerts.size(); i++) {
 		mVerts[i].tangent = float3(0, 0, 0);
 	}
 
@@ -154,7 +174,7 @@ void MeshGen::CalculateTangents() {
 	}
 
 	// Ensure all of the tangents are orthogonal to the normals
-	for (UINT i = 0; i < vertCount; i++) {
+	for (UINT i = 0; i < mVerts.size(); i++) {
 		// Grab the two vectors
 		XMVECTOR normal = XMLoadFloat3(&mVerts[i].normal);
 		XMVECTOR tangent = XMLoadFloat3(&mVerts[i].tangent);
@@ -231,6 +251,127 @@ Mesh* MeshGen::GenerateCube(float _sideLength, float _uvScale) {
 
 	//Build the mesh without shared verts
 	buildWithFaceNormals();
+	//Calculate tangents
+	CalculateTangents();
+
+	//Create and return the new cube mesh
+	Mesh* newMesh = new Mesh(&mVerts[0], vertCount, &mIndices[0], vertCount, dxDevice);
+	return newMesh;
+}
+
+//Code adapted from homework I did for DSA2
+Mesh* MeshGen::GenerateSphere(float _radius, UINT _subdivs, float _uvScale) {
+	//TODO: UVs are fucky and definitely need better math than I have time for
+	StartMesh();
+	//Set min/max for subdivisions
+	_subdivs = max(1, min(6, _subdivs));
+
+	//Initialize point data with a constant icosahedron to be further subdivided.
+	//https://schneide.wordpress.com/2016/07/15/generating-an-icosphere-in-c/
+	float x = sin(0.5532694f) * _radius;
+	float z = cos(0.5532694f) * _radius;
+	float n = 0.0f;
+	//Vector of points that make up the sphere
+	std::vector<float3> sphereVerts = {
+		float3(-x, +n, +z), float3(+x, +n, +z), float3(-x, +n, -z), float3(+x, +n, -z),
+		float3(+n, +z, +x), float3(+n, +z, -x), float3(+n, -z, +x), float3(+n, -z, -x),
+		float3(+z, +x, +n), float3(-z, +x, +n), float3(+z, -x, +n), float3(-z, -x, +n)
+	};
+	//Vector of tri indices on the sphere
+	std::vector<std::vector<int>> sphereTris = {
+		{0,4,1},  {0,9,4},  {9,5,4},  {4,5,8},  {4,8,1},
+		{8,10,1}, {8,3,10}, {5,3,8},  {5,2,3},  {2,7,3},
+		{7,10,3}, {7,6,10}, {7,11,6}, {11,0,6}, {0,1,6},
+		{6,1,10}, {9,0,11}, {9,11,2}, {9,2,5},  {7,2,11}
+	};
+
+	//For each requested subdivision, subdivide the mesh to make it a more accurate circle
+	for (UINT s = 0; s < _subdivs; s++) {
+		//Additional triangle storage
+		std::vector<std::vector<int>> newTris;
+		//Map that stores the index of a post-subdivide middle vertex given the two verts it is in the middle of
+		std::map<std::pair<int, int>, int> edgesMiddleInd;
+
+		//Loop through the triangles and subdivide each
+		for (UINT t = 0; t < sphereTris.size(); t++) {
+			//Store old tri
+			std::vector<int> oldTri = sphereTris[t];
+			//Store old corners
+			int corner1 = oldTri[0];
+			int corner2 = oldTri[1];
+			int corner3 = oldTri[2];
+			//Store pairs of corners as lookup values (sides) for the map of middle points
+			std::pair<int, int> sides[3];
+			sides[0] = std::pair<int, int>(corner1, corner2);
+			sides[1] = std::pair<int, int>(corner2, corner3);
+			sides[2] = std::pair<int, int>(corner3, corner1);
+
+			for (int j = 0; j < 3; j++) {
+				//Order the current sides pair from smallest to largest. This prevents 0,1 and 1,0 from 
+				//being two different values in the map(which would generate 2 different middle vertices)
+				if (sides[j].first > sides[j].second) { std::swap(sides[j].first, sides[j].second); }
+				//If the middle vert for this side doesn't exist, create it
+				auto middleInsert = edgesMiddleInd.insert({sides[j], (int)sphereVerts.size()});
+				if (middleInsert.second) {
+					//Get the average position between the two bounding verts and store it as an XMVECTOR
+					XMVECTOR newVertVec = XMLoadFloat3(&sphereVerts[sides[j].first]) + XMLoadFloat3(&sphereVerts[sides[j].second]);
+					//Generate the middle vertex and add it to the array.
+					//radius * norm(point1 + point2) = a point equidistant from both point1 and point2, normalized onto the sphere's shell
+					float3 newVert;
+					XMStoreFloat3(&newVert, _radius * XMVector3Normalize(newVertVec));
+					sphereVerts.push_back(newVert);
+				}
+			}
+
+			//Get the array index (in the vert array) of each middle point
+			int middle1 = edgesMiddleInd[sides[0]];
+			int middle2 = edgesMiddleInd[sides[1]];
+			int middle3 = edgesMiddleInd[sides[2]];
+			//Push all 4 new tris into the new triangles array
+			/*	  *
+			     / \
+			    / 4 \
+			   *-----*
+			  / \ 3 / \
+			 / 1 \ / 2 \
+			*-----*-----*/
+			newTris.push_back({corner1,middle1,middle3}); //1
+			newTris.push_back({middle1,corner2,middle2}); //2
+			newTris.push_back({middle1,middle2,middle3}); //3
+			newTris.push_back({middle3,middle2,corner3}); //4
+		}
+		//Replace the old triangles array with the new one for the next iteration
+		sphereTris = newTris;
+	}
+	//Construct final geometry
+	//Add a mesh point for every vertex
+	std::vector<UINT> sphereVertInds;
+	for (UINT v = 0; v < sphereVerts.size(); v++) {
+		float3 vertPos = sphereVerts[v];
+		//Calculate UV coordinates
+		//Atan returns a range from -pi/2 to pi/2
+		float trigMin = -PI / 2;
+		float trigMax = PI / 2;
+		
+		//Calculate x value (0 - 1 uv coords around the equator of the sphere)
+		float xUV = (atan(vertPos.y / vertPos.x) - trigMin) / (trigMax - trigMin);
+		xUV = (vertPos.x > 0.0f) ? xUV / 2.0f : 1.0f - (xUV / 2.0f);
+		//Calculate y vaule (0 - 1 uv coords mapped from north to south pole)
+		float yUV = (atan(vertPos.z / vertPos.x) - trigMin) / (trigMax - trigMin);
+
+		//Put the UV coordinate vector together
+		float2 uvCoords = float2(xUV * _uvScale, yUV * _uvScale);
+		//Add a vertex
+		sphereVertInds.push_back(addVert(vertPos, uvCoords));
+	}
+
+	//Construct subdivided sphere
+	for (UINT i = 0; i < sphereTris.size(); i++) {
+		addTri(sphereVertInds[sphereTris[i][0]], sphereVertInds[sphereTris[i][2]], sphereVertInds[sphereTris[i][1]]);
+	}
+
+	//Build the mesh without shared verts
+	buildWithSmoothNormals();
 	//Calculate tangents
 	CalculateTangents();
 

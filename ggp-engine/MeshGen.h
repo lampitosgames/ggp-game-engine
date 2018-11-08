@@ -12,6 +12,7 @@ typedef DirectX::XMFLOAT3 float3;
 
 class MeshGen {
 	ID3D11Device* dxDevice;
+	float PI = 3.14159264349f;
 
 	struct vert {
 		float3 pos;
@@ -58,6 +59,7 @@ public:
 	MeshGen(ID3D11Device* _dxDevice);
 
 	Mesh* GenerateCube(float _sideLength, float _uvScale = 1.0f);
+	Mesh* GenerateSphere(float _radius, UINT _subdivs = 4, float _uvScale = 1.0f);
 };
 
 #endif //GGP_MESH_GEN_H

@@ -87,6 +87,7 @@ public:
 	Mesh* GetMesh(std::string _uniqueID);
 	//void DeleteMesh(std::string _uniqueID);
 	Mesh* GenerateCube(float _sideLength, float _uvScale = 1.0f);
+	Mesh* GenerateSphere(float _radius, int _subdivs = 4, float _uvScale = 1.0f);
 
 	/*
 		TEXTURE RESOURCE MANAGEMENT
