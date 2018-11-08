@@ -9,7 +9,6 @@
 	a week so for now I'm just going to have to deal with some spaghetti
 */
 
-#include <string>
 #include <DirectXMath.h>
 #include <map>
 #include <vector>
