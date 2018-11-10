@@ -15,7 +15,7 @@ namespace ECS
     {
     public:
 
-        IComponent() : isEnabled(true), owner(nullptr), id(-1) { }
+        IComponent() { }
 
         virtual ~IComponent() {}
 
@@ -38,13 +38,13 @@ namespace ECS
     protected:
 
         /** The unique ID of this component */
-        ComponentID id;
+        ComponentID id = -1;
 
         /** If this component is enabled or not */
-        bool isEnabled;
+        bool isEnabled = true;
 
         /** The owner of this component */
-        GameObject* owner;
+        GameObject* owner = nullptr;
 
     };
 

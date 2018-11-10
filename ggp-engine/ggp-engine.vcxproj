@@ -147,6 +147,7 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClCompile Include="Basis.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collisions.cpp" />
+    <ClCompile Include="ComponentManager.cpp" />
     <ClCompile Include="DebugScene.cpp" />
     <ClCompile Include="DirLight.cpp" />
     <ClCompile Include="DXCore.cpp" />
@@ -175,10 +176,12 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BaseComponent.h" />
     <ClInclude Include="Basis.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collisions.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="ComponentManager.h" />
     <ClInclude Include="ComponentTypes.h" />
     <ClInclude Include="DebugScene.h" />
     <ClInclude Include="DirLight.h" />

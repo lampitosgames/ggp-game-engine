@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IComponent.h"
+#include "BaseComponent.h"
 
 namespace ECS
 {
@@ -8,7 +8,7 @@ namespace ECS
     /// A test component to make sure that we can use ECS
     /// </summary>
     class TestComponent :
-        public IComponent
+        public BaseComponent<TestComponent>
     {
     public:
 
