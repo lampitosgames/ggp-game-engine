@@ -24,10 +24,12 @@ namespace ECS
 
         static const ComponentTypeId STATIC_COMPONENT_TYPE_ID;
 
-        inline ComponentTypeId GetStaticComponentTypeID() const
+        ComponentTypeId GetStaticComponentTypeID() const
         {
             return STATIC_COMPONENT_TYPE_ID;
         }
+
+        static ComponentTypeId GetNumComponents() { return s_count; }
 
     };  // BaseComponent
 

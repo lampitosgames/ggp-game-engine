@@ -38,6 +38,7 @@ Game::Game(HINSTANCE hInstance)
 	inputManager = InputManager::GetInstance();
 	lightManager = LightManager::GetInstance();
     physicsManager = Physics::PhysicsManager::GetInstance();
+    componentManager = ECS::ComponentManager::GetInstance();
 
 	#if defined(DEBUG) || defined(_DEBUG)
 		// Do we want a console window?  Probably only in debug mode
@@ -64,6 +65,7 @@ Game::~Game() {
 	inputManager->ReleaseInstance();
 	lightManager->ReleaseInstance();
     physicsManager->ReleaseInstance();
+    ECS::ComponentManager::ReleaseInstance();
 
 	delete activeScene;
 }

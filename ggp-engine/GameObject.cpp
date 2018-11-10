@@ -5,6 +5,8 @@
 #include "RenderManager.h"
 #include "InputManager.h"
 #include "LightManager.h"
+#include "ComponentManager.h"
+
 using namespace std;
 using namespace DirectX;
 
@@ -19,7 +21,9 @@ GameObject::GameObject(string _uniqueID, XMFLOAT3 _position, XMFLOAT3 _rotation,
 	uniqueID = _uniqueID;
 
     transform = Transform( _position, _rotation, _scale );
-	
+
+    componentManager = ECS::ComponentManager::GetInstance();
+
     //Base constructor, this is a game object
 	type = GOType::GAME_OBJECT;
 	//Set this object as active
