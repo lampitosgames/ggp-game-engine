@@ -3,8 +3,9 @@
 
 using namespace ECS;
 
-TestComponent::TestComponent()
+TestComponent::TestComponent( int aData )
 {
+    testData = aData;
 }
 
 

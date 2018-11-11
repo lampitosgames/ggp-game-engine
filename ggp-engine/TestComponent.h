@@ -12,7 +12,7 @@ namespace ECS
     {
     public:
 
-        TestComponent();
+        TestComponent( int aData );
 
         ~TestComponent();
 

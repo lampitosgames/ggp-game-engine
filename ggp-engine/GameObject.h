@@ -182,17 +182,17 @@ public:
     template<typename T>
     T* GetComponentType()
     {
-        return this->componentManager->GetComponent<T>();
+        return this->componentManager->GetComponent<T>( this->uniqueID );
     }
 
     template<class T, class ...P>
     T* AddComponent( P&&... param )
     {
-        return 
-            this->componentManager->AddComponent<T>( 
-            this->uniqueID, 
-            std::forward<P>( param )... 
-            );
+        return
+            this->componentManager->AddComponent<T>(
+                this->uniqueID,
+                std::forward<P>( param )...
+                );
     }
 
     // #FixForNextBuild
