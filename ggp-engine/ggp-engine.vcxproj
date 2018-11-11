@@ -159,6 +159,7 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClCompile Include="DebugScene.cpp" />
     <ClCompile Include="DirLight.cpp" />
     <ClCompile Include="DXCore.cpp" />
+    <ClCompile Include="FamilyTypeID.cpp" />
     <ClCompile Include="FlyingCamera.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -194,6 +195,7 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClInclude Include="DebugScene.h" />
     <ClInclude Include="DirLight.h" />
     <ClInclude Include="DXCore.h" />
+    <ClInclude Include="FamilyTypeID.h" />
     <ClInclude Include="FlyingCamera.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />

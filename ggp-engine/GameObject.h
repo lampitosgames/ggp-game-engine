@@ -19,14 +19,15 @@
 #include "LightManager.h"
 #include "PhysicsManager.h"
 #include "Transform.h"
-
+#include "ComponentManager.h"
 
 class ResourceManager;
 class RenderManager;
+/*
 namespace ECS
 {
     class ComponentManager;
-}
+}*/
 
 typedef unsigned int UINT;
 
@@ -181,13 +182,17 @@ public:
     template<typename T>
     T* GetComponentType()
     {
-        return nullptr;
+        return this->componentManager->GetComponent<T>();
     }
 
     template<class T, class ...P>
     T* AddComponent( P&&... param )
     {
-        return this->componentManager->AddComponent<T>( this, std::forward<P>( param )... );
+        return 
+            this->componentManager->AddComponent<T>( 
+            this->uniqueID, 
+            std::forward<P>( param )... 
+            );
     }
 
     // #FixForNextBuild

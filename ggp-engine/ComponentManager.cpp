@@ -3,8 +3,8 @@
 #include "GameObject.h"
 
 // Singleton requirement
-//ECS::ComponentManager* instance = nullptr;
 ECS::ComponentManager* ECS::ComponentManager::instance = nullptr;
+
 using namespace ECS;
 
 ECS::ComponentManager* ECS::ComponentManager::GetInstance()
@@ -36,24 +36,18 @@ ECS::ComponentManager::~ComponentManager()
 
 void ECS::ComponentManager::CleanupAllComponents()
 {
-   /* auto map_itr = activeComponents.begin();
-
+    auto map_itr = activeComponents.begin();
+    
     for ( ; map_itr != activeComponents.end(); ++map_itr )
     {
-        auto vec_itr = map_itr->begin();
-        for ( ; vec_itr != map_itr->end(); ++vec_itr )
+        auto vec_itr = map_itr->second.begin();
+        for ( ; vec_itr != map_itr->second.end(); ++vec_itr )
         {
-            if ( *( vec_itr ) != nullptr )
+            if ( ( vec_itr->second ) != nullptr )
             {
-                delete *( vec_itr );
-            }            
+                delete vec_itr->second;
+            }         
         }
-    }*/
+    }
     ComponentCount = 0;
-}
-
-void ECS::ComponentManager::MapComponent( size_t aEntityID, ComponentID aComponentID, ComponentTypeId aComponentType )
-{
-
-
 }

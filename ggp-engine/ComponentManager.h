@@ -9,8 +9,6 @@
 
 namespace ECS
 {
-    using ComponentTypeId = size_t;
-    using EntityID = std::string;
 
     /// <summary>
     /// Component manager that keeps track of what components
@@ -18,6 +16,8 @@ namespace ECS
     /// </summary>
     class ComponentManager
     {
+        friend class IComponent;
+
     public:
 
         /// <summary>
@@ -39,8 +39,6 @@ namespace ECS
         ComponentManager( const ComponentManager& ) = delete;
         ComponentManager& operator=( ComponentManager& ) = delete;
 
-
-        
         /// <summary>
         /// Add a component to the given Entity
         /// </summary>
@@ -48,28 +46,28 @@ namespace ECS
         /// <param name="...args">Arguments for your component's constructor</param>
         /// <returns>Pointer to the newly created component</returns>
         template<class T, class ...ARGS>
-        T* AddComponent( const EntityID aEntityID, ARGS&&... args )
+        T* AddComponent( EntityID aEntityID, ARGS&&... args )
         {
             IComponent* newComponent = new T( std::forward<ARGS>( args )... );
-            
+
             const ComponentTypeId CTID = T::STATIC_COMPONENT_TYPE_ID;
 
-            newComponent->owner = aOwner;
+            newComponent->owner = aEntityID;
             newComponent->id = ComponentCount;
 
             ++ComponentCount;
-            activeComponents[ EntityID ].push_back( newComponent );
+
+            this->activeComponents[ aEntityID ][ CTID ] = newComponent;
 
             return static_cast< T* >( newComponent );
         }
-        
+
         template <class T>
         T* GetComponent( const EntityID aEntityID )
         {
             const ComponentTypeId CTID = T::STATIC_COMPONENT_TYPE_ID;
 
-
-            return nullptr;
+            return static_cast< T* >( activeComponents[ aEntityID ][ CTID ] );
         }
 
         template <class T>
@@ -77,13 +75,17 @@ namespace ECS
         {
             const ComponentTypeId CTID = T::STATIC_COMPONENT_TYPE_ID;
 
+            delete ( activeComponents[ aEntityID ][ CTID ] );
+            activeComponents[ aEntityID ][ CTID ] = nullptr;
         }
-        
+
     private:
 
         ComponentManager();
+
         ~ComponentManager();
 
+        /** Static instance of this component manager */
         static ComponentManager* instance;
 
         /// <summary>
@@ -91,11 +93,9 @@ namespace ECS
         /// </summary>
         void CleanupAllComponents();
 
-        void MapComponent( size_t aEntityID, ComponentID aComponentID, ComponentTypeId aComponentType );
-
         // This has pretty bad spatial locality but I don't have time
         // to implement a custom allocator
-        typedef std::vector<std::vector<IComponent*>> ComponentMap;
+        typedef std::unordered_map<ComponentTypeId, IComponent*> ComponentMap;
 
         /** Keep track of all component types */
         std::unordered_map<EntityID, ComponentMap> activeComponents;

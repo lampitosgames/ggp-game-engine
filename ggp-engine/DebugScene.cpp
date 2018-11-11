@@ -12,6 +12,7 @@
 #include "PointLight.h"
 #include "Material.h"
 #include "RigidBody.h"
+#include "TestComponent.h"
 
 using namespace DirectX;
 using namespace std;
@@ -50,6 +51,8 @@ void DebugScene::Init()
     PhysObject->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMesh( mesh3 );
     PhysObject->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMaterial( metalMaterial );
     PhysObject->AddRigidBody( 0.7f, EPhysicsLayer::MOVEABLE );
+    PhysObject->AddComponent<ECS::TestComponent>();
+
 
     GameObject* PhysObject2 = new GameObject( "PhysObject2" );
     AddChild( PhysObject2 );

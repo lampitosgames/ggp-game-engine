@@ -1,9 +1,13 @@
 #pragma once
 
+#include <string>
+
 namespace ECS
 {
 
     using ComponentID = size_t;
+    using ComponentTypeId = size_t;
+    using EntityID = std::string;
 
     class GameObject;
 
@@ -13,16 +17,16 @@ namespace ECS
     /// </summary>
     class IComponent
     {
+        friend class ComponentManager;
+
     public:
 
-        IComponent() { }
+        IComponent() {}
 
         virtual ~IComponent() {}
 
-
         inline const bool operator==( const IComponent& other ) const { return id == other.id; }
         inline const bool operator!=( const IComponent& other ) const { return id == other.id; }
-
 
         /////////////////////////////////////////////////    
         // Accessors 
@@ -33,7 +37,7 @@ namespace ECS
 
         inline void SetSenabled( bool aEnabledState ) { this->isEnabled = aEnabledState; }
 
-        inline const GameObject* GetOwner() const { return this->owner; }
+        const EntityID& GetOwner() const { return this->owner; }
 
     protected:
 
@@ -44,8 +48,8 @@ namespace ECS
         bool isEnabled = true;
 
         /** The owner of this component */
-        GameObject* owner = nullptr;
+        EntityID owner;
 
-    };
+    };  // IComponent
 
-}
+}   // namespace ECS
