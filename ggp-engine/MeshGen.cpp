@@ -25,8 +25,8 @@ UINT MeshGen::addVert(float3 _pos, float2 _uv) {
 		_pos,
 		_uv,
 		float3()
-	});
-	//Increment and return the index
+					   });
+					   //Increment and return the index
 	vIndex++;
 	return vIndex;
 }
@@ -48,8 +48,8 @@ UINT MeshGen::addTri(UINT _v1, UINT _v2, UINT _v3, bool _invertTanNormal) {
 		_v2,
 		_v3,
 		triNormal
-	});
-	//Increment the tri index
+					  });
+					  //Increment the tri index
 	tIndex++;
 	//Add this tri to the verts that make it up
 	vertData[_v1].faces.push_back(tIndex);
@@ -220,9 +220,37 @@ Mesh* MeshGen::LoadTerrain(std::string _rawFilepath, int _resolution, float _hei
 		int lx = j % _resolution;
 		int lz = (int)floor(j / _resolution);
 
+		//Average surrounding heights
+		float avgHeight = 0.0f;
+		int neighborInds[] = {
+			j - _resolution - 1, //NW
+			j - _resolution,     //N
+			j - _resolution + 1, //NE
+			j - 1,               //MW
+			j,                   //M
+			j + 1,               //ME
+			j + _resolution - 1, //SW
+			j + _resolution,     //S
+			j + _resolution + 1  //SE
+		};
+		//If on first row, there is no previous row.
+		if (j < _resolution) { neighborInds[0] = neighborInds[1] = neighborInds[2] = j; }
+		//If on last row, there is no next row
+		if (j > _resolution * (_resolution - 1)) { neighborInds[6] = neighborInds[7] = neighborInds[8] = j; }
+		//If on first column, there is no previous column
+		if (j % _resolution == 0) { neighborInds[0] = neighborInds[3] = neighborInds[6] = j; }
+		//If on last column, there is no next column
+		if (j % _resolution == _resolution - 1) { neighborInds[2] = neighborInds[5] = neighborInds[8] = j; }
+
+		for (size_t h = 0; h < 9; h++) {
+			avgHeight += heights[neighborInds[h]];
+		}
+
+		avgHeight /= 9.0f;
+
 		//Get xyz coordinates
 		float vx = ((float)lx * scl) - ((float)_resolution * scl / 2.0f);
-		float vy = (heights[j] / 255.0f) * _heightScale; //Scale the raw height data to world coorda
+		float vy = (avgHeight / 255.0f) * _heightScale; //Scale the raw height data to world coorda
 		float vz = ((float)lz * scl) - ((float)_resolution * scl / 2.0f);
 
 		//Get UV coordinates
@@ -237,7 +265,7 @@ Mesh* MeshGen::LoadTerrain(std::string _rawFilepath, int _resolution, float _hei
 	for (UINT k = 0; k < _resolution * (_resolution - 1) - 1; k++) {
 		//Skip the last vertex in a row since it's already been included in the mesh
 		if (k % _resolution == _resolution - 1) {
-			continue; 
+			continue;
 		}
 		//Get the 4 coorners of the quad
 		UINT v1 = vertInds[k + _resolution];
@@ -395,8 +423,8 @@ Mesh* MeshGen::GenerateSphere(float _radius, UINT _subdivs, float _uvScale) {
 			int middle3 = edgesMiddleInd[sides[2]];
 			//Push all 4 new tris into the new triangles array
 			/*	  *
-			     / \
-			    / 4 \
+				 / \
+				/ 4 \
 			   *-----*
 			  / \ 3 / \
 			 / 1 \ / 2 \
@@ -418,7 +446,7 @@ Mesh* MeshGen::GenerateSphere(float _radius, UINT _subdivs, float _uvScale) {
 		//Atan returns a range from -pi/2 to pi/2
 		float trigMin = -PI / 2;
 		float trigMax = PI / 2;
-		
+
 		//Calculate x value (0 - 1 uv coords around the equator of the sphere)
 		float xUV = (atan(vertPos.y / vertPos.x) - trigMin) / (trigMax - trigMin);
 		xUV = (vertPos.x > 0.0f) ? xUV / 2.0f : 1.0f - (xUV / 2.0f);
