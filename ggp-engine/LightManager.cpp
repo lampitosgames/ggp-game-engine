@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "LightManager.h"
 
 using namespace DirectX;
@@ -22,7 +24,6 @@ void LightManager::UploadAllLights(SimplePixelShader* _pixelShader) {
 	//TODO: Only upload lights close to objects
 	UINT dirLightCount = 0;
 	UINT pointLightCount = 0;
-	UINT spotLightCount = 0;
 	//Loop through and get every directional light
 	std::map<UINT, DirLight*>::iterator dlIt;
 	for (dlIt = dirLightUIDMap.begin(); dlIt != dirLightUIDMap.end(); ++dlIt) {
@@ -44,21 +45,11 @@ void LightManager::UploadAllLights(SimplePixelShader* _pixelShader) {
 	}
 	_pixelShader->SetData("pointLights", &pointLights, sizeof(PointLightStruct) * maxPointLights);
 	_pixelShader->SetData("pointLightCount", &pointLightCount, sizeof(UINT));
-
-	//Loop through and get every spot light
-	std::map<UINT, SpotLight*>::iterator slIt;
-	for (slIt = spotLightUIDMap.begin(); slIt != spotLightUIDMap.end(); ++slIt) {
-		spotLights[spotLightCount] = slIt->second->buildLightStruct();
-		spotLightCount += 1;
-		if (spotLightCount >= maxSpotLights) { break; }
-	}
-	_pixelShader->SetData("spotLights", &spotLights, sizeof(SpotLightStruct) * maxSpotLights);
-	_pixelShader->SetData("spotLightCount", &spotLightCount, sizeof(UINT));
 }
 
 #pragma region Directional Lights
-UINT LightManager::AddDirLight(GameObject* _gameObject, XMFLOAT4 _ambientColor, XMFLOAT4 _diffuseColor, XMFLOAT3 _direction) {
-	DirLight* tempDL = new DirLight(dlUID, _gameObject, _ambientColor, _diffuseColor, _direction);;
+UINT LightManager::AddDirLight(GameObject* _gameObject, XMFLOAT4 _color, XMFLOAT3 _direction, float _diffuseIntensity, float _ambientIntensity) {
+	DirLight* tempDL = new DirLight(dlUID, _gameObject, _color, _direction, _diffuseIntensity, _ambientIntensity);;
 	dirLightUIDMap[dlUID] = tempDL;
 	dlUID++;
 	return dlUID - 1;
@@ -91,11 +82,11 @@ void LightManager::DeleteDirLight(UINT _uniqueID) {
 #pragma endregion
 
 #pragma region Point Lights
-UINT LightManager::AddPointLight(Spatial* _gameObject) {
+UINT LightManager::AddPointLight( GameObject* _gameObject) {
 	return AddPointLight(_gameObject, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
-UINT LightManager::AddPointLight(Spatial* _gameObject, XMFLOAT4 _color) {
+UINT LightManager::AddPointLight( GameObject* _gameObject, XMFLOAT4 _color) {
 	PointLight* tempPL = new PointLight(plUID, _gameObject, _color);
 	pointLightUIDMap[plUID] = tempPL;
 	plUID++;
@@ -128,44 +119,6 @@ void LightManager::DeletePointLight(UINT _uniqueID) {
 }
 #pragma endregion
 
-#pragma region Spot Lights
-UINT LightManager::AddSpotLight(Spatial* _gameObject) {
-	return AddSpotLight(_gameObject, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
-}
-
-UINT LightManager::AddSpotLight(Spatial* _gameObject, XMFLOAT4 _color) {
-	SpotLight* tempSL = new SpotLight(slUID, _gameObject, _color);
-	spotLightUIDMap[slUID] = tempSL;
-	slUID++;
-	return slUID - 1;
-}
-
-SpotLight* LightManager::GetSpotLight(UINT _uniqueID) {
-	auto thisSL = spotLightUIDMap.find(_uniqueID);
-	//If found, return it.  Else, return nullptr
-	if (thisSL != spotLightUIDMap.end()) {
-		return thisSL->second;
-	}
-	return nullptr;
-}
-
-SpotLightStruct LightManager::GetSpotLightStruct(UINT _uniqueID) {
-	SpotLight* tempSL = GetSpotLight(_uniqueID);
-	if (tempSL != nullptr) {
-		return tempSL->buildLightStruct();
-	}
-	return {};
-}
-
-void LightManager::DeleteSpotLight(UINT _uniqueID) {
-	SpotLight* slTemp = GetSpotLight(_uniqueID);
-	if (slTemp) {
-		delete slTemp;
-		spotLightUIDMap.erase(_uniqueID);
-	}
-}
-#pragma endregion
-
 LightManager::LightManager() {
 }
 
@@ -174,19 +127,6 @@ LightManager::~LightManager() {
 }
 
 void LightManager::Release() {
-	//Loop through and delete every spot light
-	std::map<UINT, SpotLight*>::iterator slIterator;
-	for (slIterator = spotLightUIDMap.begin(); slIterator != spotLightUIDMap.end(); ++slIterator) {
-		SpotLight* slTemp = slIterator->second;
-		if (slTemp != nullptr) {
-			delete slTemp;
-		}
-	}
-	//Reset point light unique ID values
-	slUID = 0;
-	//Clear the map so the singleton can be reused.
-	spotLightUIDMap.clear();
-
 	//Loop through and delete every point light
 	std::map<UINT, PointLight*>::iterator plIterator;
 	for (plIterator = pointLightUIDMap.begin(); plIterator != pointLightUIDMap.end(); ++plIterator) {

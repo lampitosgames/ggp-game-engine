@@ -1,6 +1,8 @@
+#include "stdafx.h"
+
 #include "PhysicsManager.h"
 #include "RigidBody.h"
-#include "Spatial.h"
+#include "GameObject.h"
 
 using namespace DirectX;
 using namespace Physics;
@@ -15,6 +17,8 @@ const UINT PhysicsManager::GetRigidBodyCount() const
 const bool Physics::PhysicsManager::Raycast( const DirectX::XMFLOAT3 & aOrigin, const DirectX::XMFLOAT3 & aDirectoin, const float distance )
 {
     printf( "\tStart raycast!\n" );
+
+
     return false;
 }
 
@@ -53,7 +57,7 @@ void PhysicsManager::ReleaseInstance()
     }
 }
 
-UINT PhysicsManager::AddRigidBody( Spatial* aGameObj, float aMass, EPhysicsLayer aLayer )
+UINT PhysicsManager::AddRigidBody( GameObject* aGameObj, float aMass, EPhysicsLayer aLayer )
 {
     assert( aGameObj );
     RigidBody* rb = new RigidBody( aGameObj, aMass, aLayer );

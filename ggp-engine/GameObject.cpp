@@ -1,19 +1,30 @@
+#include "stdafx.h"
+
 #include "GameObject.h"
 #include "ResourceManager.h"
 #include "RenderManager.h"
 #include "InputManager.h"
 #include "LightManager.h"
+#include "ComponentManager.h"
+
 using namespace std;
+using namespace DirectX;
 
 map<std::string, GameObject*> GameObject::goUIDMap = map<std::string, GameObject*>();
 
-GameObject::GameObject(string _uniqueID) {
+
+GameObject::GameObject(string _uniqueID, XMFLOAT3 _position, XMFLOAT3 _rotation, XMFLOAT3 _scale ) {
 	Init();
 	//Ensure the provided ID is unique
 	GenerateUID(_uniqueID);
 	//Store unique ID
 	uniqueID = _uniqueID;
-	//Base constructor, this is a game object
+
+    transform = Transform( _position, _rotation, _scale );
+
+    componentManager = ECS::ComponentManager::GetInstance();
+
+    //Base constructor, this is a game object
 	type = GOType::GAME_OBJECT;
 	//Set this object as active
 	isActive = true;
@@ -25,6 +36,7 @@ GameObject::GameObject(string _uniqueID) {
 	parent = nullptr;
 	parentHasTransform = false;
 }
+
 
 GameObject::~GameObject() { Release(); }
 
@@ -51,6 +63,9 @@ void GameObject::SetParent(GameObject* _newParent) {
 	parent = _newParent;
 	//Store whether or not the parent has a transform. This ensures we don't have to make the check every update, only when parent changes
 	parentHasTransform = parent->HasTransform();
+    if ( parentHasTransform ) {
+        transform.parent = &_newParent->transform;
+    }
 }
 
 GameObject* GameObject::GetParent() {
@@ -59,8 +74,12 @@ GameObject* GameObject::GetParent() {
 
 void GameObject::AddChild(GameObject* _newChild) {
 	_newChild->SetParent(this);
+    if ( _newChild->HasTransform() ) {
+        _newChild->transform.parent = &transform;
+    }
+
 	children.push_back(_newChild);
-	childCount++;
+	++childCount;
 }
 
 void GameObject::RemoveChild(std::string _uniqueID) {
@@ -129,15 +148,27 @@ GameObject* GameObject::GetChild(UINT _index) {
 }
 
 bool GameObject::HasTransform() {
-	return false;
+	return true;
 }
 
 void GameObject::AddInputListener() {
 	components[CompType::INPUT_LISTENER] = inputManager->AddInputListener(this);
 }
 
-void GameObject::AddDirLight(DirectX::XMFLOAT4 _ambientColor, DirectX::XMFLOAT4 _diffuseColor, DirectX::XMFLOAT3 _direction) {
-	components[CompType::DIRECTIONAL_LIGHT] = lightManager->AddDirLight(this, _ambientColor, _diffuseColor, _direction);
+void GameObject::AddDirLight(DirectX::XMFLOAT4 _color, DirectX::XMFLOAT3 _direction, float _diffuseIntensity, float _ambientIntensity) {
+	components[CompType::DIRECTIONAL_LIGHT] = lightManager->AddDirLight(this, _color, _direction, _diffuseIntensity, _ambientIntensity);
+}
+
+void GameObject::AddMeshRenderer() {
+    components[ CompType::MESH_RENDERER ] = renderManager->AddMeshRenderer( this );
+}
+
+void GameObject::AddPointLight( DirectX::XMFLOAT4 _color ) {
+    components[ CompType::POINT_LIGHT ] = lightManager->AddPointLight( this, _color );
+}
+
+void GameObject::AddRigidBody( float aMass, EPhysicsLayer aLayer ) {
+    components[ CompType::RIGID_BODY ] = physicsManager->AddRigidBody( this, aMass, aLayer );
 }
 
 string GameObject::GetUniqueID() { return uniqueID; }

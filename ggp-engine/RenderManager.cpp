@@ -1,8 +1,10 @@
+#include "stdafx.h"
+
 #include "RenderManager.h"
 #include <DirectXMath.h>
 #include <d3d11.h>
 #include <iostream>
-#include "Spatial.h"
+#include "GameObject.h"
 #include "MeshRenderer.h"
 #include "ResourceManager.h"
 #include "LightManager.h"
@@ -31,7 +33,7 @@ void RenderManager::ReleaseInstance() {
 void RenderManager::Start() {
 	//Load default shaders
 	defaultVertexShader = resourceManager->GetVertexShader(L"VertexShader.cso");
-	defaultPixelShader = resourceManager->GetPixelShader(L"LambertPShader.cso");
+	defaultPixelShader = resourceManager->GetPixelShader(L"PhongPShader.cso");
 	//Build the texture sampler state
 	D3D11_SAMPLER_DESC samplerDesc = {};
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -46,7 +48,7 @@ void RenderManager::Start() {
 	}
 }
 
-UINT RenderManager::AddMeshRenderer(Spatial* _gameObject) {
+UINT RenderManager::AddMeshRenderer( GameObject* _gameObject) {
 	MeshRenderer* tempMR = new MeshRenderer(mrUID, _gameObject);
 	meshRendererUIDMap[mrUID] = tempMR;
 	mrUID++;
@@ -83,49 +85,42 @@ void RenderManager::Render(ID3D11DeviceContext* _dxContext) {
 		SimplePixelShader* psTemp = mrTemp->GetPixelShader();
 		Material* matTemp = mrTemp->GetMaterial();
 
-		//Null check on all resources
+		//Null check vertex shader
 		if (vsTemp == nullptr) { vsTemp = defaultVertexShader; }
-		if (psTemp == nullptr) { psTemp = defaultPixelShader; }
 
 		//Upload all data to vertex shader
 		vsTemp->SetMatrix4x4("world", mrTemp->GetWorldMatrix());
 		vsTemp->SetMatrix4x4("view", activeCamera->GetViewMatrix());
 		vsTemp->SetMatrix4x4("projection", activeCamera->GetProjectionMatrix());
 		vsTemp->SetMatrix4x4("worldInvTrans", mrTemp->GetWorldInvTransMatrix());
-		//TODO: Implement a way to upload color-based material data
-		//TODO: Standardize what data all shaders can accept
 		vsTemp->CopyAllBufferData();
+
+		//Null check pixel shader
+		if (psTemp == nullptr) { psTemp = defaultPixelShader; }
 
 		//Upload lighting data from the light manager
 		lightManager->UploadAllLights(psTemp);
 
-		//Build texture channel toggle array
-		XMINT3 channelToggle = XMINT3(matTemp->HasDiffuseTexture(),
-									  matTemp->HasNormalMap(),
-									  matTemp->HasSpecularMap());
-		//Upload to pixel shader
-		psTemp->SetData("texChanToggle", &channelToggle, sizeof(XMINT3));
-
-		//If any textures exist, upload the sampler state
-		if (channelToggle.x || channelToggle.y || channelToggle.z) {
-			psTemp->SetSamplerState("basicSampler", samplerState);
-		}
-		//Only upload texture resources that exist
-		if (channelToggle.x) { psTemp->SetShaderResourceView("diffuseTexture", matTemp->GetTexSRV()); }
-		if (channelToggle.y) { psTemp->SetShaderResourceView("normalMap", matTemp->GetNormalSRV()); }
-		if (channelToggle.z) { psTemp->SetShaderResourceView("specularMap", matTemp->GetSpecularSRV()); }
-
-		//Upload material data
-		psTemp->SetFloat3("cameraPosition", activeCamera->transform.position);
-		psTemp->SetFloat4("baseColor", matTemp->GetColor());
-		psTemp->SetFloat("baseSpec", matTemp->GetBaseSpecular());
+		//Upload data from the material
+		matTemp->UploadPSData(activeCamera->transform.position, samplerState, psTemp);
+		//Upload gamma correction
+		psTemp->SetFloat("gammaModifier", gammaCorrection);
+		//Copy all buffer data
 		psTemp->CopyAllBufferData();
 		
+		//Set the shaders and draw
 		vsTemp->SetShader();
 		psTemp->SetShader();
-
 		mrTemp->Draw(_dxContext);
 	}
+}
+
+float RenderManager::GetGammaCorrection() {
+	return gammaCorrection;
+}
+
+void RenderManager::SetGammaCorrection(float _newGamma) {
+	gammaCorrection = _newGamma;
 }
 
 Camera* RenderManager::GetActiveCamera() {
@@ -138,6 +133,8 @@ void RenderManager::SetActiveCamera(Camera* _newCamera) {
 
 RenderManager::RenderManager() {
 	mrUID = 0;
+	//Gamma correction value should default to 2.2
+	gammaCorrection = 2.2f;
 	//Get an instance of the resource manager
 	resourceManager = ResourceManager::GetInstance();
 	lightManager = LightManager::GetInstance();

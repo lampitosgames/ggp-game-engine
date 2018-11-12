@@ -9,6 +9,7 @@
 #include "InputManager.h"
 #include "LightManager.h"
 #include "PhysicsManager.h"
+#include "ComponentManager.h"
 #include "Scene.h"
 
 class Game
@@ -41,9 +42,6 @@ private:
 	POINT mousePos;
 	POINT prevMousePos;
 
-	// Initialization helper methods - feel free to customize, combine, etc.
-	void CreateBasicGeometry();
-
 	// Buffers to hold actual geometry data
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
@@ -53,6 +51,7 @@ private:
 	InputManager* inputManager;
 	LightManager* lightManager;
     Physics::PhysicsManager* physicsManager;
+    ECS::ComponentManager* componentManager;
 
 	//Active scene
 	Scene* activeScene;

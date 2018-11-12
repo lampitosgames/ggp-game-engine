@@ -24,7 +24,7 @@
     <Filter Include="Header Files\Components">
       <UniqueIdentifier>{76f33d76-e569-4da6-9ee4-bcf0fa8eb2d3}</UniqueIdentifier>
     </Filter>
-	<Filter Include="Header Files\Managers">
+    <Filter Include="Header Files\Managers">
       <UniqueIdentifier>{01bb2277-febf-4bd5-8f0f-915282dc26cc}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\GameObjects">
@@ -51,9 +51,6 @@
     <Filter Include="Shaders\Shader Helpers">
       <UniqueIdentifier>{5e0fa5a3-c74e-4bb8-a303-e1f7b197a02e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Managers">
-      <UniqueIdentifier>{01bb2277-febf-4bd5-8f0f-915282dc26cc}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXCore.cpp">
@@ -76,9 +73,6 @@
     </ClCompile>
     <ClCompile Include="MeshRenderer.cpp">
       <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Spatial.cpp">
-      <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files\GameObjects</Filter>
@@ -131,16 +125,26 @@
     <ClCompile Include="RigidBody.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-<<<<<<< HEAD
-    <ClCompile Include="SpotLight.cpp">
-      <Filter>Source Files\Components</Filter>
-=======
     <ClCompile Include="PhysicsManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
     <ClCompile Include="Collisions.cpp">
       <Filter>Source Files</Filter>
->>>>>>> refs/remotes/origin/master
+    </ClCompile>
+    <ClCompile Include="PBRDemoScene.cpp">
+      <Filter>Source Files\Game Code</Filter>
+    </ClCompile>
+    <ClCompile Include="PBRMaterial.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="TestComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="FamilyTypeID.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -157,9 +161,6 @@
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
-      <Filter>Header Files\GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Spatial.h">
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="ComponentTypes.h">
@@ -234,26 +235,45 @@
     <ClInclude Include="RigidBody.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-<<<<<<< HEAD
-    <ClInclude Include="SpotLight.h">
-      <Filter>Header Files\Components</Filter>
-=======
     <ClInclude Include="PhysicsManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
     <ClInclude Include="Collisions.h">
       <Filter>Header Files</Filter>
->>>>>>> refs/remotes/origin/master
+    </ClInclude>
+    <ClInclude Include="PBRDemoScene.h">
+      <Filter>Header Files\Game Code</Filter>
+    </ClInclude>
+    <ClInclude Include="PBRMaterial.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IComponent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TestComponent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseComponent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="FamilyTypeID.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="LambertPShader.hlsl">
+    <FxCompile Include="PhongPShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="PhongPShader.hlsl">
+    <FxCompile Include="PBRPShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
@@ -265,14 +285,15 @@
     <None Include="LightGlobals.hlsli">
       <Filter>Shaders\Shader Helpers</Filter>
     </None>
-    <None Include="TextureGlobals.hlsli">
-      <Filter>Shaders\Shader Helpers</Filter>
-    </None>
-    <None Include="PixelShaderGlobals.hlsli">
-      <Filter>Shaders\Shader Helpers</Filter>
-    </None>
     <None Include="VertexShaderGlobals.hlsli">
       <Filter>Shaders\Shader Helpers</Filter>
     </None>
+    <None Include="PShaderGlobals.hlsli">
+      <Filter>Shaders\Shader Helpers</Filter>
+    </None>
+    <None Include="PBRShaderGlobals.hlsli">
+      <Filter>Shaders\Shader Helpers</Filter>
+    </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

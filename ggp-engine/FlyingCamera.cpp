@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "FlyingCamera.h"
 #include "InputEvent.h"
 #include "InputManager.h"

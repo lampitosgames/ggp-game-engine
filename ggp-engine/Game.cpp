@@ -1,7 +1,9 @@
+#include "stdafx.h"
+
 #include "Game.h"
 #include "Vertex.h"
+#include "PBRDemoScene.h"
 #include "DebugScene.h"
-
 // For the DirectX Math library
 using namespace DirectX;
 
@@ -36,6 +38,7 @@ Game::Game(HINSTANCE hInstance)
 	inputManager = InputManager::GetInstance();
 	lightManager = LightManager::GetInstance();
     physicsManager = Physics::PhysicsManager::GetInstance();
+    componentManager = ECS::ComponentManager::GetInstance();
 
 	#if defined(DEBUG) || defined(_DEBUG)
 		// Do we want a console window?  Probably only in debug mode
@@ -62,6 +65,7 @@ Game::~Game() {
 	inputManager->ReleaseInstance();
 	lightManager->ReleaseInstance();
     physicsManager->ReleaseInstance();
+    ECS::ComponentManager::ReleaseInstance();
 
 	delete activeScene;
 }
@@ -76,7 +80,8 @@ void Game::Init() {
 	ResourceManager::SetContextPointer(dxContext);
 
 	//Create and init the active scene
-	activeScene = new DebugScene("DebugSceneObject");
+	//activeScene = new PBRDemoScene("PBR_Demo");
+    activeScene = new DebugScene( "Debug Scene" );
 	activeScene->Init();
 
 	// Tell the input assembler stage of the pipeline what kind of
@@ -121,8 +126,8 @@ void Game::Update(float deltaTime, float totalTime) {
 // Clear the screen, redraw everything, present to the user
 // --------------------------------------------------------
 void Game::Draw(float deltaTime, float totalTime) {
-	// Background color (Cornflower Blue in this case) for clearing
-	const float color[4] = {0.4f, 0.6f, 0.75f, 0.0f};
+	// Background color (Black in this case) for clearing
+	const float color[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
 	// Clear the render target and depth buffer (erases what's on the screen)
 	//  - Do this ONCE PER FRAME

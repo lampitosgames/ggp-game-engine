@@ -6,7 +6,7 @@
 ////////////////////////////
 // Forward Declarations
 class RigidBody;
-class Spatial;
+class GameObject;
 enum EPhysicsLayer;
 
 namespace Physics
@@ -40,7 +40,7 @@ namespace Physics
         /// <param name="aMass">The mass of this rigidbody</param>
         /// <param name="aLayer">Physics layer of this rigidbody</param>
         /// <returns>Unique ID of this rigid body</returns>
-        UINT AddRigidBody( Spatial* aGameObj, float aMass, EPhysicsLayer aLayer );
+        UINT AddRigidBody( GameObject* aGameObj, float aMass, EPhysicsLayer aLayer );
 
         /// <summary>
         /// Get a rigidbody based on it's ID

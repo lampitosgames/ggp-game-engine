@@ -1,6 +1,7 @@
+#include "stdafx.h"
+
 #include "Camera.h"
 #include "InputManager.h"
-#include <iostream>
 
 using namespace DirectX;
 
@@ -11,7 +12,7 @@ Camera::Camera(std::string _uniqueID,
 			   float _farPlane, 
 			   XMFLOAT3 _position, 
 			   XMFLOAT3 _rotation, 
-			   XMFLOAT3 _scale) : Spatial(_uniqueID, _position, _rotation, _scale) {
+			   XMFLOAT3 _scale) : GameObject(_uniqueID, _position, _rotation, _scale) {
 	//This is a camera object
 	type = GOType::CAMERA;
 
