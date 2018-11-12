@@ -146,6 +146,9 @@
     <ClCompile Include="FamilyTypeID.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SpotLight.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DXCore.h">
@@ -264,6 +267,9 @@
     </ClInclude>
     <ClInclude Include="FamilyTypeID.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotLight.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

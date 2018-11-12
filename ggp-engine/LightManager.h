@@ -4,6 +4,7 @@
 #include <map>
 #include <DirectXMath.h>
 #include "PointLight.h"
+#include "SpotLight.h"
 #include "DirLight.h"
 #include "LightStructs.h"
 #include "SimpleShader.h"
@@ -28,6 +29,14 @@ class LightManager {
 	//Point light struct array of fixed length. Helps upload to the shader
 	const UINT maxPointLights = 128;
 	PointLightStruct pointLights[128];
+
+	//Unique ids given to each spot light
+	UINT slUID = 0;
+	//Map of all spot lights
+	std::map<UINT, SpotLight*> spotLightUIDMap;
+	//Spot light struct array of fixed length. Helps upload to the shader
+	const UINT maxSpotLights = 128;
+	PointLightStruct spotLights[128];
 public:
 	//Static singleton get/release
 	static LightManager* GetInstance();
@@ -65,6 +74,20 @@ public:
 	PointLightStruct GetPointLightStruct(UINT _uniqueID);
 	//Delete the point light
 	void DeletePointLight(UINT _uniqueID);
+
+	/*
+	SPOT LIGHT HELPERS
+	Used for adding, getting, and deleting spot light components
+	*/
+	//Create (and return the UID of) a new spot light
+	UINT AddSpotLight(GameObject* _gameObject);
+	UINT AddSpotLight(GameObject* _gameObject, DirectX::XMFLOAT4 _color);
+	//Get a spot light given its unique ID
+	SpotLight* GetSpotLight(UINT _uniqueID);
+	//Get a struct representing the current state of the point light
+	SpotLightStruct GetSpotLightStruct(UINT _uniqueID);
+	//Delete the point light
+	void DeleteSpotLight(UINT _uniqueID);
 private:
 	LightManager();
 	~LightManager();
