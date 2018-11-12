@@ -12,6 +12,7 @@
 #include "PointLight.h"
 #include "Material.h"
 #include "RigidBody.h"
+#include "TestComponent.h"
 
 using namespace DirectX;
 using namespace std;
@@ -50,6 +51,14 @@ void DebugScene::Init()
     PhysObject->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMesh( mesh3 );
     PhysObject->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMaterial( metalMaterial );
     PhysObject->AddRigidBody( 0.7f, EPhysicsLayer::MOVEABLE );
+
+    PhysObject->AddComponent<ECS::TestComponent>( 999 );
+
+    ECS::TestComponent* aComp = PhysObject->GetComponentType<ECS::TestComponent>();
+    if ( aComp != nullptr )
+    {
+        aComp->TestFunction();
+    }
 
     GameObject* PhysObject2 = new GameObject( "PhysObject2" );
     AddChild( PhysObject2 );
@@ -118,8 +127,6 @@ void DebugScene::Update( float _deltaTime )
 
         int result = Physics::Collisions::IntersectRaySphere( rayOrigin, rayDir, _rb->GetCollider(), t, hitPoint );
         // TODO: Draw the ray
-        printf( "ray result: %d\n", result );
-
     }
 
     // For every physics object in the scene

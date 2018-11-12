@@ -2,7 +2,6 @@
 
 #include "Camera.h"
 #include "InputManager.h"
-#include <iostream>
 
 using namespace DirectX;
 
