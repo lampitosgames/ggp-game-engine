@@ -64,7 +64,16 @@ UINT PhysicsManager::AddRigidBody( GameObject* aGameObj, float aMass, EPhysicsLa
     // #FixForNextBuild
     // Whyyyyy does this happen? I shouldn't have to put instance in front of this
     Instance->RigidBodyUIDMap.insert( std::pair<UINT, RigidBody*>( Instance->rBodyCount, rb ) );
-    
+
+    return Instance->rBodyCount++;
+}
+
+UINT Physics::PhysicsManager::AddRigidBody( GameObject * aGameObj, RigidBody * aRigidBody )
+{
+    assert( aRigidBody != nullptr && aGameObj != nullptr );
+
+    Instance->RigidBodyUIDMap.insert( std::pair<UINT, RigidBody*>( Instance->rBodyCount, aRigidBody ) );
+
     return Instance->rBodyCount++;
 }
 
@@ -72,13 +81,14 @@ RigidBody * PhysicsManager::GetRigidBody( UINT uID )
 {
     auto thisRB = RigidBodyUIDMap.find( uID );
     //If found, return it.  Else, return nullptr
-    if ( thisRB != RigidBodyUIDMap.end() ) {
+    if ( thisRB != RigidBodyUIDMap.end() )
+    {
         return thisRB->second;
     }
     return nullptr;
 }
 
-/** Iteration over a map is o(n), but it is not optimal for caching 
+/** Iteration over a map is o(n), but it is not optimal for caching
 because the data is not stored contiguously. */
 void PhysicsManager::UpdatePhysics( float deltaTime )
 {
@@ -99,7 +109,7 @@ void PhysicsManager::UpdatePhysics( float deltaTime )
 
         entityA->ApplyForce( forceToApply );
 
-         
+
         // For each object, we need to check it against all the others 
         // in the scene that can possibly be colliding with it
         Physics::SphereCollider col1 = entityA->GetCollider();
@@ -107,7 +117,7 @@ void PhysicsManager::UpdatePhysics( float deltaTime )
 
         for ( auto innerItr = RigidBodyUIDMap.begin(); innerItr != RigidBodyUIDMap.end(); ++innerItr )
         {
-            if( innerItr->second == entityA ) continue;
+            if ( innerItr->second == entityA ) continue;
             // For each object, we need to check it against all the others 
             // in the scene that can possibly be colliding with it
             Physics::SphereCollider colOther = innerItr->second->GetCollider();
@@ -116,7 +126,7 @@ void PhysicsManager::UpdatePhysics( float deltaTime )
             {
                 //printf( "Collision!\n" );
                 // Apply a force to these objects going the oppose way
-                XMFLOAT3 difference {};
+                XMFLOAT3 difference{};
                 difference.x = ( col1.Center.x - colOther.Center.x ) * deltaTime;
                 difference.y = ( col1.Center.y - colOther.Center.y ) * deltaTime;
                 difference.z = ( col1.Center.z - colOther.Center.z ) * deltaTime;

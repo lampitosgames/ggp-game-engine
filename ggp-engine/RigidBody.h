@@ -3,6 +3,7 @@
 #include <DirectXMath.h>
 #include "GameObject.h"
 #include "Collisions.h"
+#include "BaseComponent.h"
 
 enum EPhysicsLayer
 {

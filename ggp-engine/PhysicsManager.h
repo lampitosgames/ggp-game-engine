@@ -42,6 +42,9 @@ namespace Physics
         /// <returns>Unique ID of this rigid body</returns>
         UINT AddRigidBody( GameObject* aGameObj, float aMass, EPhysicsLayer aLayer );
 
+
+        UINT AddRigidBody( GameObject* aGameObj, RigidBody* aRigidBody );
+
         /// <summary>
         /// Get a rigidbody based on it's ID
         /// </summary>
