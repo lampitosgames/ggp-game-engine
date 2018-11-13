@@ -1,9 +1,10 @@
 #pragma once
-#include "Component.h"
+
 #include <DirectXMath.h>
 #include "GameObject.h"
 #include "Collisions.h"
 #include "BaseComponent.h"
+#include "PhysicsManager.h"
 
 enum EPhysicsLayer
 {
@@ -16,7 +17,7 @@ enum EPhysicsLayer
 /// </summary>
 /// <author>Ben Hoffman</author>
 class RigidBody :
-    public Component
+    public ECS::BaseComponent<RigidBody>
 {
 public:
     

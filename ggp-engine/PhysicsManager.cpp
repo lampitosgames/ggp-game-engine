@@ -2,14 +2,13 @@
 
 #include "PhysicsManager.h"
 #include "RigidBody.h"
-#include "GameObject.h"
 
 using namespace DirectX;
 using namespace Physics;
 
 PhysicsManager* PhysicsManager::Instance = nullptr;
 
-const UINT PhysicsManager::GetRigidBodyCount() const
+const RigidBodyID PhysicsManager::GetRigidBodyCount() const
 {
     return rBodyCount;
 }
@@ -29,14 +28,14 @@ PhysicsManager::PhysicsManager()
 
 PhysicsManager::~PhysicsManager()
 {
-    for ( auto itr = RigidBodyUIDMap.begin(); itr != RigidBodyUIDMap.end(); ++itr )
+    /*for ( auto itr = RigidBodyUIDMap.begin(); itr != RigidBodyUIDMap.end(); ++itr )
     {
         RigidBody* temp = itr->second;
         if ( temp != nullptr )
         {
             delete temp;
         }
-    }
+    }*/
 }
 
 PhysicsManager* PhysicsManager::GetInstance()
@@ -56,8 +55,8 @@ void PhysicsManager::ReleaseInstance()
         Instance = nullptr;
     }
 }
-
-UINT PhysicsManager::AddRigidBody( GameObject* aGameObj, float aMass, EPhysicsLayer aLayer )
+/*
+RigidBodyID PhysicsManager::AddRigidBody( GameObject* aGameObj, float aMass, EPhysicsLayer aLayer )
 {
     assert( aGameObj );
     RigidBody* rb = new RigidBody( aGameObj, aMass, aLayer );
@@ -66,18 +65,20 @@ UINT PhysicsManager::AddRigidBody( GameObject* aGameObj, float aMass, EPhysicsLa
     Instance->RigidBodyUIDMap.insert( std::pair<UINT, RigidBody*>( Instance->rBodyCount, rb ) );
 
     return Instance->rBodyCount++;
-}
+}*/
 
-UINT Physics::PhysicsManager::AddRigidBody( GameObject * aGameObj, RigidBody * aRigidBody )
+RigidBodyID Physics::PhysicsManager::AddRigidBody( RigidBody * aRigidBody )
 {
-    assert( aRigidBody != nullptr && aGameObj != nullptr );
+    assert( aRigidBody != nullptr );
 
-    Instance->RigidBodyUIDMap.insert( std::pair<UINT, RigidBody*>( Instance->rBodyCount, aRigidBody ) );
+    Instance->RigidBodyUIDMap.insert(
+        std::pair<RigidBodyID, RigidBody*>( Instance->rBodyCount, aRigidBody ) 
+    );
 
     return Instance->rBodyCount++;
 }
 
-RigidBody * PhysicsManager::GetRigidBody( UINT uID )
+RigidBody * PhysicsManager::GetRigidBody( RigidBodyID uID )
 {
     auto thisRB = RigidBodyUIDMap.find( uID );
     //If found, return it.  Else, return nullptr

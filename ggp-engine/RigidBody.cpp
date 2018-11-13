@@ -15,11 +15,14 @@ RigidBody::RigidBody( GameObject* aGameObj, float aMass, EPhysicsLayer aPhysicsL
 
     Collider.Center = gameObject->transform.position;
     Collider.Radius = 0.2f;
+
+    Physics::PhysicsManager::GetInstance()->AddRigidBody( this );
 }
 
 RigidBody::~RigidBody()
 {
-
+    gameObject = nullptr;
+    // remove from Physics Manager
 }
 
 void RigidBody::ApplyForce( const DirectX::XMFLOAT3 & aForce )

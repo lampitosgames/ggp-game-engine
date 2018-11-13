@@ -118,7 +118,7 @@ void Game::Update(float deltaTime, float totalTime) {
 	HandleMouseMove();
 
 	inputManager->Update();
-
+    physicsManager->UpdatePhysics( deltaTime );
 	activeScene->Update(deltaTime);
 }
 

@@ -166,10 +166,10 @@ void GameObject::AddMeshRenderer() {
 void GameObject::AddPointLight( DirectX::XMFLOAT4 _color ) {
     components[ CompType::POINT_LIGHT ] = lightManager->AddPointLight( this, _color );
 }
-
+/*
 void GameObject::AddRigidBody( float aMass, EPhysicsLayer aLayer ) {
     components[ CompType::RIGID_BODY ] = physicsManager->AddRigidBody( this, aMass, aLayer );
-}
+}*/
 
 string GameObject::GetUniqueID() { return uniqueID; }
 
