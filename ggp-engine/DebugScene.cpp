@@ -45,10 +45,13 @@ void DebugScene::Init()
 
     GameObject* PhysObject = new GameObject( "PhysObject" );
     AddChild( PhysObject );
-    PhysObject->AddMeshRenderer();
-    //Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
-    PhysObject->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMesh( mesh3 );
-    PhysObject->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMaterial( metalMaterial );
+
+    MeshRenderer* aMesh = PhysObject->AddComponent<MeshRenderer>( PhysObject );
+    if ( aMesh != nullptr )
+    {
+        aMesh->SetMesh( mesh3 );
+        aMesh->SetMaterial( metalMaterial );
+    }
     PhysObject->AddComponent<RigidBody>( PhysObject, 0.7f, EPhysicsLayer::MOVEABLE );
 
     PhysObject->AddComponent<ECS::TestComponent>( 999 );
@@ -61,10 +64,13 @@ void DebugScene::Init()
 
     GameObject* PhysObject2 = new GameObject( "PhysObject2" );
     AddChild( PhysObject2 );
-    PhysObject2->AddMeshRenderer();
-    //Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
-    PhysObject2->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMesh( mesh3 );
-    PhysObject2->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMaterial( blueMatte );
+    aMesh = PhysObject2->AddComponent<MeshRenderer>( PhysObject2 );
+    if ( aMesh != nullptr )
+    {
+        aMesh->SetMesh( mesh3 );
+        aMesh->SetMaterial( blueMatte );
+    }
+    
     PhysObject2->transform.position.y = 3.f;
     PhysObject2->AddComponent<RigidBody>( PhysObject2, 0.7f, EPhysicsLayer::MOVEABLE );
 

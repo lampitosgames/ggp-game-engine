@@ -23,7 +23,6 @@
 class ResourceManager;
 class RenderManager;
 
-
 typedef unsigned int UINT;
 
 class GameObject

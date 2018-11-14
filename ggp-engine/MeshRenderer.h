@@ -6,19 +6,24 @@
 #include <DirectXMath.h>
 #include <d3d11.h>
 #include "Component.h"
+#include "BaseComponent.h"
+
 class Mesh;
 class Material;
 class GameObject;
 class SimpleVertexShader;
 class SimplePixelShader;
+class RenderManager;
 
-class MeshRenderer : public Component {
+class MeshRenderer 
+    : public ECS::BaseComponent<MeshRenderer>
+{
 	Mesh* mesh;
 	Material* material;
 public:
     //GameObject * gameObject;
-	MeshRenderer(UINT _uniqueID, GameObject* _gameObject);
-	MeshRenderer(UINT _uniqueID, GameObject* _gameObject, Mesh* _mesh, Material* _material);
+	MeshRenderer(GameObject* _gameObject);
+	MeshRenderer(GameObject* _gameObject, Mesh* _mesh, Material* _material);
 	~MeshRenderer();
 
 	void SetMesh(Mesh* _mesh);
@@ -33,6 +38,9 @@ public:
 	SimpleVertexShader* GetVertexShader();
 	SimplePixelShader* GetPixelShader();
 	DirectX::XMFLOAT4 GetColor();
+
+    GameObject* gameObject;
+    UINT uniqueID;
 };
 
 #endif //GGP_MESH_RENDERER_H
