@@ -192,9 +192,7 @@ public:
     //Functions to add different types of components
     void AddInputListener();
     void AddDirLight( DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ), DirectX::XMFLOAT3 _direction = DirectX::XMFLOAT3( 0.0f, 1.0f, 0.0f ), float _diffuseIntensity = 1.0f, float _ambientIntensity = 0.0f );
-    void AddMeshRenderer();
     void AddPointLight( DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) );
-    //void AddRigidBody( float aMass, EPhysicsLayer aLayer );
 
     //Gets for member variables
     std::string GetUniqueID();
