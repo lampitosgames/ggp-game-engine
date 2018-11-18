@@ -158,18 +158,18 @@ void GameObject::AddInputListener() {
 void GameObject::AddDirLight(DirectX::XMFLOAT4 _color, DirectX::XMFLOAT3 _direction, float _diffuseIntensity, float _ambientIntensity) {
 	components[CompType::DIRECTIONAL_LIGHT] = lightManager->AddDirLight(this, _color, _direction, _diffuseIntensity, _ambientIntensity);
 }
-
+/*
 void GameObject::AddMeshRenderer() {
     components[ CompType::MESH_RENDERER ] = renderManager->AddMeshRenderer( this );
-}
+}*/
 
 void GameObject::AddPointLight( DirectX::XMFLOAT4 _color ) {
     components[ CompType::POINT_LIGHT ] = lightManager->AddPointLight( this, _color );
 }
-
+/*
 void GameObject::AddRigidBody( float aMass, EPhysicsLayer aLayer ) {
     components[ CompType::RIGID_BODY ] = physicsManager->AddRigidBody( this, aMass, aLayer );
-}
+}*/
 
 string GameObject::GetUniqueID() { return uniqueID; }
 

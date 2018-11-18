@@ -65,6 +65,9 @@ public:
 	*/
 	//Create (and return the uid of) a new mesh renderer
 	UINT AddMeshRenderer( GameObject* _gameObject);
+    
+    UINT AddMeshRenderer( MeshRenderer* _meshRenderer );
+
 	//Get a mesh renderer given its unique identifier
 	MeshRenderer* GetMeshRenderer(UINT _uniqueID);
 	//Delete a mesh renderer

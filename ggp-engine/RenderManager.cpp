@@ -49,10 +49,20 @@ void RenderManager::Start() {
 }
 
 UINT RenderManager::AddMeshRenderer( GameObject* _gameObject) {
-	MeshRenderer* tempMR = new MeshRenderer(mrUID, _gameObject);
+	MeshRenderer* tempMR = new MeshRenderer( _gameObject);
+    tempMR->uniqueID = mrUID;
 	meshRendererUIDMap[mrUID] = tempMR;
 	mrUID++;
 	return mrUID - 1;
+}
+
+UINT RenderManager::AddMeshRenderer( MeshRenderer * _meshRenderer )
+{
+    _meshRenderer->uniqueID = mrUID;
+    meshRendererUIDMap[ mrUID ] = _meshRenderer;
+
+    mrUID++;
+    return mrUID - 1;
 }
 
 MeshRenderer* RenderManager::GetMeshRenderer(UINT _uniqueID) {
@@ -147,13 +157,13 @@ RenderManager::~RenderManager() {
 
 void RenderManager::Release() {
 	//Loop through and delete every mesh renderer
-	std::map<UINT, MeshRenderer*>::iterator mrIterator;
+	/*std::map<UINT, MeshRenderer*>::iterator mrIterator;
 	for (mrIterator = meshRendererUIDMap.begin(); mrIterator != meshRendererUIDMap.end(); ++mrIterator) {
 		MeshRenderer* mrTemp = mrIterator->second;
 		if (mrTemp != nullptr) {
 			delete mrTemp;
 		}
-	}
+	}*/
 	//Reset mesh renderer unique ID values
 	mrUID = 0;
 	//Clear the map so the singleton can be reused.
