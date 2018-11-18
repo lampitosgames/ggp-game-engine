@@ -84,9 +84,9 @@ public:
 	UINT AddSpotLight(GameObject* _gameObject, DirectX::XMFLOAT4 _color);
 	//Get a spot light given its unique ID
 	SpotLight* GetSpotLight(UINT _uniqueID);
-	//Get a struct representing the current state of the point light
+	//Get a struct representing the current state of the spot light
 	SpotLightStruct GetSpotLightStruct(UINT _uniqueID);
-	//Delete the point light
+	//Delete the spot light
 	void DeleteSpotLight(UINT _uniqueID);
 private:
 	LightManager();

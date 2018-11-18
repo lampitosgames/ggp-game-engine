@@ -167,6 +167,10 @@ void GameObject::AddPointLight( DirectX::XMFLOAT4 _color ) {
     components[ CompType::POINT_LIGHT ] = lightManager->AddPointLight( this, _color );
 }
 
+void GameObject::AddSpotLight(DirectX::XMFLOAT4 _color) {
+	components[CompType::SPOT_LIGHT] = lightManager->AddSpotLight(this, _color);
+}
+
 void GameObject::AddRigidBody( float aMass, EPhysicsLayer aLayer ) {
     components[ CompType::RIGID_BODY ] = physicsManager->AddRigidBody( this, aMass, aLayer );
 }

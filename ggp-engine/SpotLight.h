@@ -32,4 +32,4 @@ public:
 	PointLightStruct buildLightStruct();
 };
 
-#endif //GGP_SPOT_LIGHT_H#pragma once
+#endif //GGP_SPOT_LIGHT_H
