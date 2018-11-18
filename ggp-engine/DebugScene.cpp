@@ -10,6 +10,7 @@
 #include "FlyingCamera.h"
 #include "Transform.h"
 #include "PointLight.h"
+#include "SpotLight.h"
 #include "Material.h"
 #include "RigidBody.h"
 #include "TestComponent.h"
