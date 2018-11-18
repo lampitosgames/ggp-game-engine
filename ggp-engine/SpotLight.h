@@ -4,6 +4,7 @@
 #include <DirectXMath.h>
 #include "Component.h"
 #include "LightStructs.h"
+#include "GameObject.h"
 class GameObject;
 
 class SpotLight : public Component {
