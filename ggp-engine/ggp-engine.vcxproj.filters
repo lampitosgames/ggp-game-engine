@@ -137,9 +137,6 @@
     <ClCompile Include="PBRMaterial.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="TestComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ComponentManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
@@ -253,9 +250,6 @@
     <ClInclude Include="IComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="TestComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="BaseComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
@@ -274,6 +268,12 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PBRPShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="SkyPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="SkyVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
