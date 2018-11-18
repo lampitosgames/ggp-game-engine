@@ -9,7 +9,7 @@ class GameObject;
 class PointLight : public Component {
 	PointLightStruct lightData;
 public:
-    GameObject * gameObject;
+    GameObject* gameObject;
 	PointLight(UINT _uniqueID, GameObject* _gameObject);
 	PointLight(UINT _uniqueID, GameObject* _gameObject, DirectX::XMFLOAT4 _color, float _intensity = 1.0f, float _range = 5.0f);
 	~PointLight();

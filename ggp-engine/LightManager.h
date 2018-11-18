@@ -36,7 +36,7 @@ class LightManager {
 	std::map<UINT, SpotLight*> spotLightUIDMap;
 	//Spot light struct array of fixed length. Helps upload to the shader
 	const UINT maxSpotLights = 128;
-	PointLightStruct spotLights[128];
+	SpotLightStruct spotLights[128];
 public:
 	//Static singleton get/release
 	static LightManager* GetInstance();

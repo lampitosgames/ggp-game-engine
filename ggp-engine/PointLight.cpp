@@ -24,7 +24,10 @@ PointLight::PointLight(UINT _uniqueID, GameObject* _gameObject, XMFLOAT4 _color,
 
 PointLight::~PointLight() {}
 
-DirectX::XMFLOAT4 PointLight::GetColor() { return lightData.color; }
+DirectX::XMFLOAT4 PointLight::GetColor()
+{
+	return lightData.color;
+}
 
 void PointLight::SetColor(DirectX::XMFLOAT4 _color) { lightData.color = _color; }
 

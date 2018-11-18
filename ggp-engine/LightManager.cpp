@@ -152,9 +152,9 @@ SpotLight* LightManager::GetSpotLight(UINT _uniqueID) {
 }
 
 SpotLightStruct LightManager::GetSpotLightStruct(UINT _uniqueID) {
-	SpotLight* tempSL = GetSpotLight(_uniqueID);
-	if (tempSL != nullptr) {
-		return tempSL->buildLightStruct();
+	SpotLight* tempSpotL = GetSpotLight(_uniqueID);
+	if (tempSpotL != nullptr) {
+		return tempSpotL->buildLightStruct();
 	}
 	return {};
 }

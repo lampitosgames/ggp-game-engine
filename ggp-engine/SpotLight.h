@@ -9,7 +9,7 @@ class GameObject;
 class SpotLight : public Component {
 	SpotLightStruct lightData;
 public:
-	GameObject * gameObject;
+	GameObject* gameObject;
 	SpotLight(UINT _uniqueID, GameObject* _gameObject);
 	SpotLight(UINT _uniqueID, GameObject* _gameObject, DirectX::XMFLOAT4 _color, 
 			DirectX::XMFLOAT3 _direction = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f),
@@ -22,14 +22,14 @@ public:
 	void SetColor(DirectX::XMFLOAT4 _color);
 	//Light's direction
 	DirectX::XMFLOAT3 GetDirection();
-	void SetDirection(float _direction);
+	void SetDirection(DirectX::XMFLOAT3 _direction);
 	//cone <-- angle
 	float GetCone();
 	void SetCone(float _cone);
 	//Light's range
 	float GetRange();
 	void SetRange(float _newrange);
-	PointLightStruct buildLightStruct();
+	SpotLightStruct buildLightStruct();
 };
 
 #endif //GGP_SPOT_LIGHT_H

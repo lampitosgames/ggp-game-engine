@@ -13,11 +13,13 @@ SpotLight::SpotLight(UINT _uniqueID, GameObject * _gameObject, DirectX::XMFLOAT4
 	uniqueID = _uniqueID;
 	gameObject = _gameObject;
 	//store light data
-	lightData = { _color,
+	lightData = { 
+		_color,
 		_direction,
 		_cone,
 		gameObject->transform.position,
-		_range };
+		_range
+	};
 }
 
 SpotLight::~SpotLight(){}
@@ -37,10 +39,12 @@ DirectX::XMFLOAT3 SpotLight::GetDirection()
 	return lightData.direction;
 }
 
-void SpotLight::SetDirection(float _direction)
+void SpotLight::SetDirection(DirectX::XMFLOAT3 _direction)
 {
 	lightData.direction = _direction;
 }
+
+
 
 float SpotLight::GetCone()
 {
@@ -62,7 +66,7 @@ void SpotLight::SetRange(float _newrange)
 	lightData.range = _newrange;
 }
 
-PointLightStruct SpotLight::buildLightStruct()
+SpotLightStruct SpotLight::buildLightStruct()
 {
 	lightData.position = gameObject->transform.position;
 	return lightData;
