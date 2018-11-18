@@ -196,6 +196,7 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshGen.h" />
+    <ClInclude Include="PBRBlendMapMaterial.h" />
     <ClInclude Include="PhysicsManager.h" />
     <ClInclude Include="PBRDemoScene.h" />
     <ClInclude Include="PBRMaterial.h" />
