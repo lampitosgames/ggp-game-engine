@@ -1,4 +1,6 @@
+#include "stdafx.h"
 #include "SpotLight.h"
+#include "GameObject.h"
 using namespace DirectX;
 
 SpotLight::SpotLight(UINT _uniqueID, GameObject * _gameObject)
