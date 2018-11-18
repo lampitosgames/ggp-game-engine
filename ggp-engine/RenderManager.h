@@ -25,6 +25,14 @@ class RenderManager {
 	//Default shaders for materials without them (Or MeshRenderers without materials)
 	SimpleVertexShader* defaultVertexShader;
 	SimplePixelShader* defaultPixelShader;
+    
+    // Skybox options
+    SimpleVertexShader* skyboxVS = nullptr;
+    SimplePixelShader* skyboxPS = nullptr;
+    ID3D11RasterizerState* skyRastState = nullptr;
+    ID3D11DepthStencilState* skyDepthState = nullptr;
+    ID3D11ShaderResourceView* skyboxSrv = nullptr;
+    Mesh* skyboxMesh = nullptr;
 
 	//Active camera
 	Camera* activeCamera;
@@ -72,6 +80,19 @@ public:
 	MeshRenderer* GetMeshRenderer(UINT _uniqueID);
 	//Delete a mesh renderer
 	void DeleteMeshRenderer(UINT _uniqueID);
+
+    /// <summary>
+    /// Set the current skybox pixel shader
+    /// </summary>
+    /// <param name="aSkyPS">The new ksybox pixel shader</param>
+    void SetSkyboxPS( SimplePixelShader* aSkyPS );
+
+    /// <summary>
+    /// Set the current skybox Vertex shader
+    /// </summary>
+    /// <param name="aSkyVS">The new skybox vertex shader</param>
+    void SetSkyboxVS( SimpleVertexShader* aSkyVS );
+
 private:
 	RenderManager();
 	~RenderManager();
