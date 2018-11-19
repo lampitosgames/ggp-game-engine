@@ -88,7 +88,6 @@ float3 calcPointLight(PointLight _light, float3 _normal, float3 _surfaceColor, f
 	//Calculate lighting 
 	float diff = diffuse(_normal, lightDir);
 	float spec = specular(_normal, lightDir, _camPos, _worldPos, _shininess);
-
 	//Return the combined lighting
 	return (diff * _surfaceColor + spec) * lightAtten * _light.intensity * _light.color;
 }
@@ -99,9 +98,11 @@ float3 calcSpotLight(SpotLight _light, float3 _normal, float3 _surfaceColor, flo
 	float3 lightDir = normalize(_worldPos - _light.position);
 	//Get the distance to the light
 	float lightDist = length(_worldPos - _light.position);
-
+	float NdotL = dot(_normal, -lightDir);
+	NdotL = saturate(NdotL);
 	//Attenuation calculation
-	float lightAtten = pow(saturate(1.0f - (lightDist * lightDist / (_light.range * _light.range))), 2);
+	float lightAtten = saturate(1.0f - (lightDist * lightDist / (_light.range * _light.range)));
+	lightAtten *= lightAtten;
 	float angleFromCenter = max(dot(-lightDir, normalize(_light.direction)), 0.0f);
 	float spotAmount = pow(angleFromCenter, 45.0f - _light.cone);
 	//Calculate lighting 
@@ -109,10 +110,8 @@ float3 calcSpotLight(SpotLight _light, float3 _normal, float3 _surfaceColor, flo
 	float3 toCam = normalize(_camPos - _worldPos);
 	float3 refl = reflect(lightDir, _normal);
 	float spec = pow(max(dot(refl, toCam), 0.0f), 64.0f);
-	float diff = diffuse(_normal, -_light.direction);
-
 	//Return the combined lighting
-	return (_light.color * diff * _surfaceColor * spotAmount + spec) * lightAtten;
+	return (_light.color * NdotL * _surfaceColor * spotAmount + spec) * lightAtten;
 } 
 
 /*
