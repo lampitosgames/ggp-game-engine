@@ -87,6 +87,10 @@ void FlyingCamera::Input(InputEvent _event) {
 	if (_event.type == InputType::MOUSE_SCROLL) {
 		SetFOVDegrees(GetFOVDegrees() - _event.mDelta);
 	}
+	if (inputManager->ActionReleased("toggle_mouse_lock", _event)) {
+		inputManager->SetMouseLocked(false);
+		std::cout << "test" << std::endl;
+	}
 	//If this is a mouse move event
 	if (_event.type == InputType::MOUSE_MOVE) {
 		XMFLOAT3 fRotation = transform.rotation;

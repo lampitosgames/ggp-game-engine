@@ -86,12 +86,12 @@ void PBRDemoScene::Init() {
 	activeCamera->CalculateViewMatrix();
 
 	//Load terrain
-	GameObject* terrain = new GameObject("testTerrain");
-	Mesh* terrainMesh = resourceManager->GetTerrain("assets/terrain/testTerrain.raw", 513, 100.0f);
-	AddChild(terrain);
-	terrain->AddComponent<MeshRenderer>(terrain);
-	terrain->GetComponentType<MeshRenderer>()->SetMesh(terrainMesh);
-	terrain->GetComponentType<MeshRenderer>()->SetMaterial(pbrMats[6]);
+	//GameObject* terrain = new GameObject("testTerrain");
+	//Mesh* terrainMesh = resourceManager->GetTerrain("assets/terrain/testTerrain.raw", 513, 100.0f);
+	//AddChild(terrain);
+	//terrain->AddComponent<MeshRenderer>(terrain);
+	//terrain->GetComponentType<MeshRenderer>()->SetMesh(terrainMesh);
+	//terrain->GetComponentType<MeshRenderer>()->SetMaterial(pbrMats[6]);
 }
 
 void PBRDemoScene::Start() {

@@ -36,7 +36,9 @@ static std::map<std::string, std::vector<int>> create_binds() {
 	
 	//Down action
 	m["move_down"].push_back('Q');
-	m["move_down"].push_back('X');
+
+	//Toggle mouse lock
+	m["toggle_mouse_lock"].push_back('X');
 
 	return m;
 };

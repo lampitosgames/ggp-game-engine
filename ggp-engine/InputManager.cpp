@@ -35,7 +35,7 @@ void InputManager::Update() {
 		//Store current key state in previous state
 		prevKeyState[ksIt->first] = ksIt->second;
 		//Store new key state by querying windows
-		ksIt->second = GetAsyncKeyState(ksIt->first) & 0x8000;
+		keyState[ksIt->first] = GetKeyState(ksIt->first) & 0x8000;
 
 		//Check if we need to dispatch events
 		//If the key was just pressed
@@ -106,6 +106,7 @@ bool InputManager::ActionPressed(std::string _action, InputEvent _event) {
 	return false;
 }
 
+//:: BUG - Sometimes fires two events
 bool InputManager::ActionReleased(std::string _action, InputEvent _event) {
 	//Quick check to make sure this is a key release event
 	if (_event.pressed) { return false; }
@@ -140,6 +141,12 @@ bool InputManager::ActionHeld(std::string _action, InputEvent _event) {
 int* InputManager::GetPrevMousePos() { return prevMousePos; }
 
 int* InputManager::GetMousePos() { return mousePos; }
+
+bool InputManager::GetMouseLocked() {
+	return mouseLocked;
+}
+
+void InputManager::SetMouseLocked(bool _val) { mouseLocked = _val; }
 
 void InputManager::_OnMouseUp(WPARAM _buttonState, int _x, int _y) {
 	//Store current mouse state in previous mouse state
@@ -226,6 +233,7 @@ InputManager::InputManager() {
 			keyState[*i] = false;
 		}
 	}
+	mouseLocked = true;
 	//Ensure entries for the mouse buttons exist.  Note: They could have already been set in the keybinds file, but we want to make sure
 	//the mouse input functions have something to check against
 	prevKeyState[VK_LBUTTON] = keyState[VK_LBUTTON] = false;
