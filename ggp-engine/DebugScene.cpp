@@ -10,6 +10,7 @@
 #include "FlyingCamera.h"
 #include "Transform.h"
 #include "PointLight.h"
+#include "SpotLight.h"
 #include "Material.h"
 #include "RigidBody.h"
 
@@ -44,26 +45,17 @@ void DebugScene::Init()
 
     GameObject* PhysObject = new GameObject( "PhysObject" );
     AddChild( PhysObject );
-
-    MeshRenderer* aMesh = PhysObject->AddComponent<MeshRenderer>( PhysObject );
-    if ( aMesh != nullptr )
-    {
-        aMesh->SetMesh( mesh3 );
-        aMesh->SetMaterial( metalMaterial );
-    }
-    PhysObject->AddComponent<RigidBody>( PhysObject, 0.7f, EPhysicsLayer::MOVEABLE );
-
+    //Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
+    PhysObject->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMesh( mesh3 );
+    PhysObject->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMaterial( metalMaterial );
+    
     GameObject* PhysObject2 = new GameObject( "PhysObject2" );
     AddChild( PhysObject2 );
-    aMesh = PhysObject2->AddComponent<MeshRenderer>( PhysObject2 );
-    if ( aMesh != nullptr )
-    {
-        aMesh->SetMesh( mesh3 );
-        aMesh->SetMaterial( blueMatte );
-    }
-    
+    //Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
+    PhysObject2->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMesh( mesh3 );
+    PhysObject2->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMaterial( blueMatte );
     PhysObject2->transform.position.y = 3.f;
-    PhysObject2->AddComponent<RigidBody>( PhysObject2, 0.7f, EPhysicsLayer::MOVEABLE );
+
 
 
     //Create a light
@@ -74,16 +66,8 @@ void DebugScene::Init()
     AddChild( lightObject2 );
     lightObject2->AddPointLight( XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) );
 
-    //lightObject2->GetComponent<PointLight>( CompType::POINT_LIGHT )->SetAmbientStrength( 0.0f );
-    //lightObject2->GetComponent<PointLight>( CompType::POINT_LIGHT )->SetExpAtten( 0.1f );
     lightObject2->transform.position.x += 2.0f;
     lightObject2->transform.position.z -= 1.0f;
-    /*GameObject* lightObject3 = new GameObject( "light3" );
-    AddChild( lightObject3 );
-    lightObject3->AddPointLight( XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) );
-    lightObject3->GetComponent<PointLight>( CompType::POINT_LIGHT )->SetAmbientStrength( 0.0f );
-    lightObject3->GetComponent<PointLight>( CompType::POINT_LIGHT )->SetLinearAtten( 0.5f );
-    lightObject3->transform.position.z += 1.0f;*/
 
     //Create a camera
     activeCamera = new FlyingCamera( "MainCamera" );
@@ -105,24 +89,6 @@ void DebugScene::Update( float _deltaTime )
     // #FixForNextBuild
     // This is rough dude
 
-
-
-    // Loops throught the active rigid bodies and checks for ray hits
-    /*for ( UINT i = 0; i < physicsManager->GetRigidBodyCount(); ++i )
-    {
-        RigidBody* _rb = physicsManager->GetRigidBody( i );
-        Physics::Point rayOrigin = {};
-        rayOrigin.x = activeCamera->transform.position.x;
-        rayOrigin.y = activeCamera->transform.position.y;
-        rayOrigin.z = activeCamera->transform.position.z;
-
-        XMFLOAT3 rayDir = activeCamera->transform.Forward();
-        float t = 0.f;
-        Physics::Point hitPoint = {};
-
-        int result = Physics::Collisions::IntersectRaySphere( rayOrigin, rayDir, _rb->GetCollider(), t, hitPoint );
-        // TODO: Draw the ray
-    }*/
 
     // For every physics object in the scene
     // Update the physics

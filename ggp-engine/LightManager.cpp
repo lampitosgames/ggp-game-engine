@@ -24,6 +24,7 @@ void LightManager::UploadAllLights(SimplePixelShader* _pixelShader) {
 	//TODO: Only upload lights close to objects
 	UINT dirLightCount = 0;
 	UINT pointLightCount = 0;
+	UINT spotLightCount = 0;
 	//Loop through and get every directional light
 	std::map<UINT, DirLight*>::iterator dlIt;
 	for (dlIt = dirLightUIDMap.begin(); dlIt != dirLightUIDMap.end(); ++dlIt) {
@@ -45,6 +46,16 @@ void LightManager::UploadAllLights(SimplePixelShader* _pixelShader) {
 	}
 	_pixelShader->SetData("pointLights", &pointLights, sizeof(PointLightStruct) * maxPointLights);
 	_pixelShader->SetData("pointLightCount", &pointLightCount, sizeof(UINT));
+
+	//Loop through and get every spot light
+	std::map<UINT, SpotLight*>::iterator slIt;
+	for (slIt = spotLightUIDMap.begin(); slIt != spotLightUIDMap.end(); ++slIt) {
+		spotLights[spotLightCount] = slIt->second->buildLightStruct();
+		spotLightCount += 1;
+		if (spotLightCount >= maxSpotLights) { break; }
+	}
+	_pixelShader->SetData("spotLights", &spotLights, sizeof(SpotLightStruct) * maxSpotLights);
+	_pixelShader->SetData("spotLightCount", &spotLightCount, sizeof(UINT));
 }
 
 #pragma region Directional Lights
@@ -119,6 +130,44 @@ void LightManager::DeletePointLight(UINT _uniqueID) {
 }
 #pragma endregion
 
+#pragma region Spot Lights
+UINT LightManager::AddSpotLight(GameObject* _gameObject) {
+	return AddSpotLight(_gameObject, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+}
+
+UINT LightManager::AddSpotLight(GameObject* _gameObject, XMFLOAT4 _color) {
+	SpotLight* tempSL = new SpotLight(slUID, _gameObject, _color);
+	spotLightUIDMap[slUID] = tempSL;
+	slUID++;
+	return slUID - 1;
+}
+
+SpotLight* LightManager::GetSpotLight(UINT _uniqueID) {
+	auto thisSL = spotLightUIDMap.find(_uniqueID);
+	//If found, return it.  Else, return nullptr
+	if (thisSL != spotLightUIDMap.end()) {
+		return thisSL->second;
+	}
+	return nullptr;
+}
+
+SpotLightStruct LightManager::GetSpotLightStruct(UINT _uniqueID) {
+	SpotLight* tempSpotL = GetSpotLight(_uniqueID);
+	if (tempSpotL != nullptr) {
+		return tempSpotL->buildLightStruct();
+	}
+	return {};
+}
+
+void LightManager::DeleteSpotLight(UINT _uniqueID) {
+	SpotLight* slTemp = GetSpotLight(_uniqueID);
+	if (slTemp) {
+		delete slTemp;
+		spotLightUIDMap.erase(_uniqueID);
+	}
+}
+#pragma endregion
+
 LightManager::LightManager() {
 }
 
@@ -140,6 +189,19 @@ void LightManager::Release() {
 	//Clear the map so the singleton can be reused.
 	pointLightUIDMap.clear();
 	
+	//Loop through and delete every spot light
+	std::map<UINT, SpotLight*>::iterator slIterator;
+	for (slIterator = spotLightUIDMap.begin(); slIterator != spotLightUIDMap.end(); ++slIterator) {
+		SpotLight* slTemp = slIterator->second;
+		if (slTemp != nullptr) {
+			delete slTemp;
+		}
+	}
+	//Reset spot light unique ID values
+	slUID = 0;
+	//Clear the map so the singleton can be reused.
+	spotLightUIDMap.clear();
+
 	//Loop through and delete every directional light
 	std::map<UINT, DirLight*>::iterator dlIterator;
 	for (dlIterator = dirLightUIDMap.begin(); dlIterator != dirLightUIDMap.end(); ++dlIterator) {

@@ -19,4 +19,11 @@ struct PointLightStruct {
 	DirectX::XMFLOAT3 empty;
 };
 
+struct SpotLightStruct {
+	DirectX::XMFLOAT4 color;
+	DirectX::XMFLOAT3 direction;
+	float cone;
+	DirectX::XMFLOAT3 position;
+	float range;
+};
 #endif //GGP_LIGHT_H

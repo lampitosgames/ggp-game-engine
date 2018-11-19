@@ -15,6 +15,14 @@ struct PointLight {
 	float3 empty;
 };
 
+struct SpotLight {
+	float4 color;
+	float3 direction;
+	float cone;
+	float3 position;
+	float range;
+};
+
 //LIGHTING DATA REGISTERS
 static const uint maxDirLightCount = 4;
 cbuffer dirLightData : register(b1) {
@@ -26,6 +34,12 @@ static const uint maxPointLightCount = 128;
 cbuffer pointLightData : register(b2) {
 	PointLight pointLights[maxPointLightCount];
 	uint pointLightCount;
+}
+
+static const uint maxSpotLightCount = 128;
+cbuffer spotLightData : register(b3) {
+	SpotLight spotLights[maxSpotLightCount];
+	uint spotLightCount;
 }
 
 /*
@@ -78,6 +92,28 @@ float3 calcPointLight(PointLight _light, float3 _normal, float3 _surfaceColor, f
 	//Return the combined lighting
 	return (diff * _surfaceColor + spec) * lightAtten * _light.intensity * _light.color;
 }
+
+//Spot Light
+float3 calcSpotLight(SpotLight _light, float3 _normal, float3 _surfaceColor, float3 _camPos, float3 _worldPos, float _shininess = 0.0f) {
+	//Get direction from the pixel to the point light
+	float3 lightDir = normalize(_worldPos - _light.position);
+	//Get the distance to the light
+	float lightDist = length(_worldPos - _light.position);
+
+	//Attenuation calculation
+	float lightAtten = pow(saturate(1.0f - (lightDist * lightDist / (_light.range * _light.range))), 2);
+	float angleFromCenter = max(dot(-lightDir, normalize(_light.direction)), 0.0f);
+	float spotAmount = pow(angleFromCenter, 45.0f - _light.cone);
+	//Calculate lighting 
+	//Calculate specular light
+	float3 toCam = normalize(_camPos - _worldPos);
+	float3 refl = reflect(lightDir, _normal);
+	float spec = pow(max(dot(refl, toCam), 0.0f), 64.0f);
+	float diff = diffuse(_normal, -_light.direction);
+
+	//Return the combined lighting
+	return (_light.color * diff * _surfaceColor * spotAmount + spec) * lightAtten;
+} 
 
 /*
 	PHYSICALLY BASED LIGHTING
