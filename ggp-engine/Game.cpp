@@ -149,34 +149,28 @@ void Game::Draw(float deltaTime, float totalTime) {
 }
 
 void Game::HandleMouseMove() {
+	mouseLocked = inputManager->GetMouseLocked();
+	//Store previous mouse position
+	prevMousePos.x = mousePos.x;
+	prevMousePos.y = mousePos.y;
+	//Get the new mouse position
+	GetCursorPos(&mousePos);
 	if (mouseLocked) {
-		//Get the new mouse position
-		GetCursorPos(&mousePos);
 		//Store window rect
 		RECT windowRect;
 		GetWindowRect(hWnd, &windowRect);
 		//Previous position is always the window's center when the cursor is locked
 		prevMousePos.x = windowRect.left + width / 2;
 		prevMousePos.y = windowRect.top + height / 2;
-		//Get mouse displacement
-		int displaceX = mousePos.x - prevMousePos.x;
-		int displaceY = mousePos.y - prevMousePos.y;
-		//Pass data to input manager if mouse moved
-		if (displaceX != 0 || displaceY != 0) {
-			inputManager->_OnMouseMove(prevMousePos.x, prevMousePos.y, mousePos.x, mousePos.y);
-		}
 		//Reset cursor position
 		SetCursorPos(prevMousePos.x, prevMousePos.y);
-	} else {
-		//Store previous mouse position
-		prevMousePos.x = mousePos.x;
-		prevMousePos.y = mousePos.y;
-		//Get new mouse position
-		GetCursorPos(&mousePos);
-		//Pass to input manager if there was movement
-		if (prevMousePos.x != mousePos.x || prevMousePos.y != mousePos.y) {
-			inputManager->_OnMouseMove(prevMousePos.x, prevMousePos.y, mousePos.x, mousePos.y);
-		}
+	}
+	//Get mouse displacement
+	int displaceX = mousePos.x - prevMousePos.x;
+	int displaceY = mousePos.y - prevMousePos.y;
+	//Pass data to input manager if mouse moved
+	if (displaceX != 0 || displaceY != 0) {
+		inputManager->_OnMouseMove(prevMousePos.x, prevMousePos.y, mousePos.x, mousePos.y);
 	}
 }
 

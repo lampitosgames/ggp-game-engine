@@ -19,6 +19,9 @@ class InputManager {
 	//Map of all input listeners
 	std::map<UINT, InputListener*> inputListenerUIDMap;
 
+	//Is the mouse locked to the window?
+	bool mouseLocked;
+
 	//Two maps for key state
 	std::map<int, bool> prevKeyState;
 	std::map<int, bool> keyState;
@@ -64,6 +67,10 @@ public:
 	int* GetPrevMousePos();
 	//Get the current mouse position. Returns array of 2 ints
 	int* GetMousePos();
+
+	//mouseLocked get/set
+	bool GetMouseLocked();
+	void SetMouseLocked(bool _val);
 
 	/*
 		Mouse handling functions
