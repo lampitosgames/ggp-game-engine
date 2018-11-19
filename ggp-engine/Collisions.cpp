@@ -55,7 +55,7 @@ const int Physics::Collisions::IntersectRaySphere( Point p, const DirectX::XMFLO
     // A negative discriminant corresponds to a ray missing sphere
     if ( discr < 0.0f ) return 0;
 
-    t = -b - sqrt( discr );
+    t = (float)(-b - sqrt( discr ));
     // If t i snegative, then the ray started inside the sphere so clamp it to 0
     if ( t < 0.0f ) t = 0.0f;
 

@@ -16,6 +16,9 @@ using namespace std;
 void PBRDemoScene::Init() {
 	Scene::Init();
 
+
+
+	Material* blueMatte = resourceManager->AddMaterial("blueMatte", XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), 0.0f);
 	PBRMaterial* pbrMats[7];
 	//Create a PBR material for testing
 	pbrMats[0] = resourceManager->GetPBRMaterial("icePBR", L"VertexShader.cso", L"PBRPShader.cso", L"assets/textures/PBR/ice_a.jpg", L"assets/textures/PBR/ice_n.jpg", L"assets/textures/PBR/ice_r.jpg", nullptr);
@@ -27,6 +30,7 @@ void PBRDemoScene::Init() {
 	pbrMats[6] = resourceManager->GetPBRMaterial("gravelPBR", L"VertexShader.cso", L"PBRPShader.cso", L"assets/textures/PBR/gravel_a.jpg", L"assets/textures/PBR/gravel_n.jpg", L"assets/textures/PBR/gravel_r.jpg", nullptr);
 	//Load a sphere mesh
 	Mesh* sphereMesh = resourceManager->GetMesh("assets/meshes/sphere.obj");
+	//Mesh* sphereMesh = resourceManager->GenerateCube(1.0f, 2.0f);
 	//Create a line of white spheres.
 	for (UINT i = 0; i < 7; i++) {
 		GameObject* newSphere = new GameObject("Sphere");
@@ -72,6 +76,14 @@ void PBRDemoScene::Init() {
 	activeCamera->Start();
 	activeCamera->transform.position.z = -5.0f;
 	activeCamera->CalculateViewMatrix();
+
+	//Load terrain
+	GameObject* terrain = new GameObject("testTerrain");
+	Mesh* terrainMesh = resourceManager->GetTerrain("assets/terrain/testTerrain.raw", 513, 100.0f);
+	AddChild(terrain);
+	terrain->AddComponent<MeshRenderer>(terrain);
+	terrain->GetComponentType<MeshRenderer>()->SetMesh(terrainMesh);
+	terrain->GetComponentType<MeshRenderer>()->SetMaterial(pbrMats[6]);
 }
 
 void PBRDemoScene::Start() {

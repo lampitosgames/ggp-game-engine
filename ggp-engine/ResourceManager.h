@@ -6,6 +6,7 @@
 #include <string>
 #include <d3d11.h>
 #include <DirectXMath.h>
+#include "MeshGen.h"
 #include "WICTextureLoader.h"
 #include "DDSTextureLoader.h"
 //Forward declaration
@@ -21,6 +22,8 @@ class ResourceManager {
 	static ResourceManager* instance;
 	static ID3D11Device* dxDevice;
 	static ID3D11DeviceContext* dxContext;
+	//Helper object for generating meshes
+	static MeshGen meshGen;
 
 	//Map of unique material resources
 	std::map<std::string, Material*> materialUIDMap;
@@ -86,11 +89,13 @@ public:
 
 	/*
 		MESH RESOURCE MANAGEMENT
-		TODO: Loading mesh resources
 	*/
 	Mesh* CreateMeshFromData(Vertex* _vertexArray, UINT _vertexCount, UINT* _indexArray, UINT _indexCount, std::string _uniqueID = "NA");
 	Mesh* GetMesh(std::string _uniqueID);
+	Mesh* GetTerrain(std::string _uniqueID, int _resolution, float _heightScale = 50.0f, float _uvScale = 30.0f);
 	//void DeleteMesh(std::string _uniqueID);
+	Mesh* GenerateCube(float _sideLength, float _uvScale = 1.0f);
+	Mesh* GenerateSphere(float _radius, int _subdivs = 4, float _uvScale = 1.0f);
 
 	/*
 		TEXTURE RESOURCE MANAGEMENT
@@ -115,9 +120,6 @@ private:
 	//Private function to load a mesh from a file
 	Mesh* LoadMesh(std::string _filepath);
 	void CalculateTangents(int numVerts, int numIndices);
-
-	//Mesh* GenerateCube(float _size);
-	//Mesh* GenerateSphere(float _radius, int _subdivisions);
 };
 
 //Enum of mesh primitive types
