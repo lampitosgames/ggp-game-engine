@@ -7,7 +7,7 @@
 #include "Mesh.h"
 #include "Texture.h"
 #include <fstream>
-#include <iostream>
+#include <sstream>
 
 using namespace DirectX;
 using namespace std;
@@ -15,6 +15,7 @@ using namespace std;
 ResourceManager* ResourceManager::instance = nullptr;
 ID3D11Device* ResourceManager::dxDevice = nullptr;
 ID3D11DeviceContext* ResourceManager::dxContext = nullptr;
+MeshGen ResourceManager::meshGen;
 
 ResourceManager* ResourceManager::GetInstance() {
 	if (instance == nullptr) {
@@ -32,6 +33,8 @@ void ResourceManager::ReleaseInstance() {
 
 void ResourceManager::SetDevicePointer(ID3D11Device* _dxDevice) {
 	ResourceManager::dxDevice = _dxDevice;
+	//Create a MeshGen object and give it the dxDevice
+	ResourceManager::meshGen = MeshGen(_dxDevice);
 }
 
 void ResourceManager::SetContextPointer(ID3D11DeviceContext* _dxContext) {
@@ -150,6 +153,32 @@ Material* ResourceManager::AddMaterial(std::string _uniqueID, LPCWSTR _textureFi
 #pragma endregion
 
 #pragma region PBR Material Loading
+ID3D11ShaderResourceView * ResourceManager::LoadSRV_DDS( LPCWSTR _textureFileString )
+{
+    ID3D11ShaderResourceView* tempSRV = nullptr;
+
+    HRESULT iResult = CreateDDSTextureFromFile(
+        dxDevice,
+        dxContext,
+        _textureFileString,
+        0,
+        &tempSRV
+    );
+    
+    // if success
+    if ( iResult == S_OK )
+    {
+        return tempSRV;
+    }
+    else
+    {
+        DEBUG_PRINT( "DDS SRV LOADING FAILURE!" );
+        // #RemoveWhenDoneDebugging
+        throw "DDS SRV LOADING FAILURE!";
+
+        return nullptr;
+    }
+}
 PBRMaterial* ResourceManager::GetPBRMaterial(std::string _uniqueID, LPCWSTR _vertexShaderFilestring, LPCWSTR _pixelShaderFilestring, XMFLOAT4 _color, float _roughness, float _metalness) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
@@ -238,6 +267,47 @@ Mesh* ResourceManager::GetMesh(string _uniqueID) {
 	//Store it in the mesh map
 	meshUIDMap[_uniqueID] = newMesh;
 	return newMesh;
+}
+
+Mesh* ResourceManager::GetTerrain(std::string _uniqueID, int _resolution, float _heightScale, float _uvScale) {
+	//If the mesh already exists, return it
+	auto thisTerrain = meshUIDMap.find(_uniqueID);
+	if (thisTerrain != meshUIDMap.end()) {
+		return thisTerrain->second;
+	}
+	//Else, we have to load the terrain data
+	meshUIDMap[_uniqueID] = ResourceManager::meshGen.LoadTerrain(_uniqueID, _resolution, _heightScale, _uvScale);
+	return meshUIDMap[_uniqueID];
+}
+
+Mesh* ResourceManager::GenerateCube(float _sideLength, float _uvScale) {
+	//Get the dynamic UID for this size of generated mesh
+	std::ostringstream genUID;
+	genUID << "cube" << _sideLength << "_" << _uvScale;
+	//If the mesh already exists, return it
+	auto thisMesh = meshUIDMap.find(genUID.str());
+	if (thisMesh != meshUIDMap.end()) {
+		return thisMesh->second;
+	}
+	//Mesh does not exist, so generate it and store it in the mesh map
+	meshUIDMap[genUID.str()] = ResourceManager::meshGen.GenerateCube(_sideLength, _uvScale);
+	//Return the mesh
+	return meshUIDMap[genUID.str()];
+}
+
+Mesh* ResourceManager::GenerateSphere(float _radius, int _subdivs, float _uvScale) {
+	//Get the dynamic UID for this size of generated mesh
+	std::ostringstream genUID;
+	genUID << "sphere" << _radius << "_" << _subdivs;
+	//If the mesh already exists, return it
+	auto thisMesh = meshUIDMap.find(genUID.str());
+	if (thisMesh != meshUIDMap.end()) {
+		return thisMesh->second;
+	}
+	//Mesh does not exist, so generate it and store it in the mesh map
+	meshUIDMap[genUID.str()] = ResourceManager::meshGen.GenerateSphere(_radius, _subdivs,_uvScale);
+	//Return the mesh
+	return meshUIDMap[genUID.str()];
 }
 
 Mesh* ResourceManager::LoadMesh(string _filepath) {// File input object

@@ -30,7 +30,7 @@
 
 // Typedefs -----------------------------
 
-// TODO: UINT typedef
+typedef unsigned int UINT;
 
 // Common Libraries ---------------------
 #include <DirectXMath.h>

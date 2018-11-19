@@ -49,5 +49,6 @@ void ECS::ComponentManager::CleanupAllComponents()
             }         
         }
     }
+
     ComponentCount = 0;
 }

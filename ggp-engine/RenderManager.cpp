@@ -11,6 +11,7 @@
 #include "Texture.h"
 #include "Material.h"
 #include "Camera.h"
+#include "Mesh.h"
 
 using namespace DirectX;
 
@@ -46,13 +47,41 @@ void RenderManager::Start() {
 	if (samplerSuccessfulLoad != S_OK) {
 		std::cout << "Sampler load error!" << std::endl;
 	}
+
+    // Load skybox options ----------------------------------------
+    skyboxMesh = resourceManager->GetMesh( "assets/meshes/cube.obj" );
+    skyboxVS = resourceManager->GetVertexShader( L"SkyVS.cso" );
+    skyboxPS = resourceManager->GetPixelShader( L"SkyPS.cso" );
+    skyboxSrv = resourceManager->LoadSRV_DDS( L"assets/textures/SunnyCubeMap.dds" );
+    
+    D3D11_RASTERIZER_DESC rs = {};
+    rs.FillMode = D3D11_FILL_SOLID;
+    rs.CullMode = D3D11_CULL_FRONT;
+    rs.DepthClipEnable = true;
+    ResourceManager::GetDevicePointer()->CreateRasterizerState( &rs, &skyRastState );
+
+    D3D11_DEPTH_STENCIL_DESC ds = {};
+    ds.DepthEnable = true;
+    ds.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    ds.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+    ResourceManager::GetDevicePointer()->CreateDepthStencilState( &ds, &skyDepthState );
 }
 
 UINT RenderManager::AddMeshRenderer( GameObject* _gameObject) {
-	MeshRenderer* tempMR = new MeshRenderer(mrUID, _gameObject);
+	MeshRenderer* tempMR = new MeshRenderer( _gameObject);
+    tempMR->uniqueID = mrUID;
 	meshRendererUIDMap[mrUID] = tempMR;
 	mrUID++;
 	return mrUID - 1;
+}
+
+UINT RenderManager::AddMeshRenderer( MeshRenderer * _meshRenderer )
+{
+    _meshRenderer->uniqueID = mrUID;
+    meshRendererUIDMap[ mrUID ] = _meshRenderer;
+
+    mrUID++;
+    return mrUID - 1;
 }
 
 MeshRenderer* RenderManager::GetMeshRenderer(UINT _uniqueID) {
@@ -70,6 +99,13 @@ void RenderManager::DeleteMeshRenderer(UINT _uniqueID) {
 		delete mrTemp;
 		meshRendererUIDMap.erase(_uniqueID);
 	}
+}
+
+void RenderManager::SetSkyboxPS( SimplePixelShader * aSkyPS )
+{
+    assert( aSkyPS != nullptr );
+
+    skyboxPS = aSkyPS;
 }
 
 void RenderManager::Render(ID3D11DeviceContext* _dxContext) {
@@ -113,6 +149,46 @@ void RenderManager::Render(ID3D11DeviceContext* _dxContext) {
 		psTemp->SetShader();
 		mrTemp->Draw(_dxContext);
 	}
+
+    // Render the skybox ------------------------
+    // Set up sky render states
+    _dxContext->RSSetState( skyRastState );
+    _dxContext->OMSetDepthStencilState( skyDepthState, 0 );
+
+    // After drawing all of our regular (solid) objects, draw the sky!
+    ID3D11Buffer* skyVB = skyboxMesh->GetVertexBuffer();
+    ID3D11Buffer* skyIB = skyboxMesh->GetIndexBuffer();
+
+    // Set the buffers
+    UINT stride = sizeof( Vertex );
+    UINT offset = 0;
+    _dxContext->IASetVertexBuffers( 0, 1, &skyVB, &stride, &offset );
+    _dxContext->IASetIndexBuffer( skyIB, DXGI_FORMAT_R32_UINT, 0 );
+
+    // Send the camera's view and proj matrices 
+    skyboxVS->SetMatrix4x4( "view", activeCamera->GetViewMatrix() );
+    skyboxVS->SetMatrix4x4( "projection", activeCamera->GetProjectionMatrix() );
+
+    skyboxVS->CopyAllBufferData();
+    skyboxVS->SetShader();
+
+    // Send texture-related stuff
+    skyboxPS->SetShaderResourceView( "SkyTexture", skyboxSrv );
+    skyboxPS->SetSamplerState( "BasicSampler", samplerState );
+
+    skyboxPS->CopyAllBufferData(); // Remember to copy to the GPU!!!!
+    skyboxPS->SetShader();
+
+    // Reset any changed render states!
+    _dxContext->RSSetState( skyRastState );
+    _dxContext->OMSetDepthStencilState( skyDepthState, 0 );
+
+    // Draw the skybox "mesh" ( a cube )
+    _dxContext->DrawIndexed( skyboxMesh->GetIndexCount(), 0, 0 );
+
+    // Reset any states we've changed for the next frame!
+    _dxContext->RSSetState( 0 );
+    _dxContext->OMSetDepthStencilState( 0, 0 );
 }
 
 float RenderManager::GetGammaCorrection() {
@@ -131,6 +207,13 @@ void RenderManager::SetActiveCamera(Camera* _newCamera) {
 	activeCamera = _newCamera;
 }
 
+void RenderManager::SetSkyboxVS( SimpleVertexShader * aSkyVS )
+{
+    assert( aSkyVS != nullptr );
+
+    skyboxVS = aSkyVS;
+}
+
 RenderManager::RenderManager() {
 	mrUID = 0;
 	//Gamma correction value should default to 2.2
@@ -147,13 +230,13 @@ RenderManager::~RenderManager() {
 
 void RenderManager::Release() {
 	//Loop through and delete every mesh renderer
-	std::map<UINT, MeshRenderer*>::iterator mrIterator;
+	/*std::map<UINT, MeshRenderer*>::iterator mrIterator;
 	for (mrIterator = meshRendererUIDMap.begin(); mrIterator != meshRendererUIDMap.end(); ++mrIterator) {
 		MeshRenderer* mrTemp = mrIterator->second;
 		if (mrTemp != nullptr) {
 			delete mrTemp;
 		}
-	}
+	}*/
 	//Reset mesh renderer unique ID values
 	mrUID = 0;
 	//Clear the map so the singleton can be reused.
@@ -161,4 +244,12 @@ void RenderManager::Release() {
 
 	//Release the sampler state
 	samplerState->Release();
+
+    // Cleanup the skybox
+    skyboxVS = nullptr;
+    skyboxPS = nullptr;
+    skyboxMesh = nullptr;
+    skyRastState->Release();
+    skyDepthState->Release();
+    skyboxSrv->Release();
 }
