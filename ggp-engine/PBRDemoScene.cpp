@@ -70,6 +70,14 @@ void PBRDemoScene::Init() {
 	pointLight2->transform.position.x += 6.0f;
 	pointLight2->transform.position.y += 3.0f;
 
+	GameObject* spotLight1 = new GameObject("spotLight1");
+	AddChild(spotLight1);
+	spotLight1->AddSpotLight(XMFLOAT4(0.901f, 0.239f, 0.337f, 1.0f));
+	spotLight1->GetComponent<SpotLight>(CompType::SPOT_LIGHT)->SetCone(15.0f);
+	spotLight1->GetComponent<SpotLight>(CompType::SPOT_LIGHT)->SetRange(80.0f);
+	spotLight1->GetComponent<SpotLight>(CompType::SPOT_LIGHT)->SetDirection(XMFLOAT3(0.0f, -1.0f, 0.0f));
+	spotLight1->transform.position.y += 15.0f;
+
 	//Create a camera
 	activeCamera = new FlyingCamera("MainCamera");
 	AddChild(activeCamera);
