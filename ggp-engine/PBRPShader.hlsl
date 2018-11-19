@@ -58,7 +58,12 @@ float4 main(VertexToPixel input) : SV_TARGET {
 		//Add each light's calculated value to the total color sum
 		lightColorSum += calcPointLightPBR(pointLights[j], input.normal, cameraPosition, input.worldPos, albedo, roughness, metalness, specColor);
 	}
-
+	//Loop through spot lights
+	for (uint k = 0; k < maxSpotLightCount; k++) {
+		if (k >= spotLightCount) { break; }
+		//Add each light's calculated value to the total color sum
+		lightColorSum += calcSpotLightPBR(spotLights[k], input.normal, cameraPosition, input.worldPos, albedo, roughness, metalness, specColor);
+	}
 	//Gamma correction
 	float3 gammaCorrect = pow(lightColorSum, 1.0f / gammaModifier);
 
