@@ -94,7 +94,7 @@ void DebugScene::Init()
     AddChild( lightObject2 );
     //lightObject2->AddPointLight( XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) );
 	lightObject2->AddSpotLight(XMFLOAT4(0.917f, 0.525f, 0.819f, 1.0f));
-	lightObject2->GetComponent<SpotLight>(CompType::SPOT_LIGHT)->SetDirection(XMFLOAT3(0.0f, -0.3f, 1.0f));
+	lightObject2->GetComponent<SpotLight>(CompType::SPOT_LIGHT)->SetDirection(XMFLOAT3(0.0f, 1.0f, -1.0f));
 	lightObject2->GetComponent<SpotLight>(CompType::SPOT_LIGHT)->SetRange(80.0f);
 
     //lightObject2->GetComponent<PointLight>( CompType::POINT_LIGHT )->SetAmbientStrength( 0.0f );
