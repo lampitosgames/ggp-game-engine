@@ -56,18 +56,12 @@ void PBRDemoScene::Init() {
 	AddChild(dirLight3);
 	dirLight3->AddDirLight(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 1.0f), 0.2f, 0.00f);
 
-	//GameObject* pointLight1 = new GameObject("pointLight1");
-	//AddChild(pointLight1);
-	//pointLight1->AddPointLight(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
-	//pointLight1->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetRange(10.0f);
-	//pointLight1->transform.position.x += 2.0f;
-	//pointLight1->transform.position.y += 4.0f;
-
-	GameObject* spotLight = new GameObject("spotLight1");
-	AddChild(spotLight);
-	spotLight->AddSpotLight(XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
-	spotLight->GetComponent<SpotLight>(CompType::SPOT_LIGHT)->SetDirection(XMFLOAT3(-1.0f, 0.0f, 1.0f));
-	spotLight->transform.position.y = -2.75f;
+	GameObject* pointLight1 = new GameObject("pointLight1");
+	AddChild(pointLight1);
+	pointLight1->AddPointLight(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+	pointLight1->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetRange(10.0f);
+	pointLight1->transform.position.x += 2.0f;
+	pointLight1->transform.position.y += 4.0f;
 
 	GameObject* pointLight2 = new GameObject("pointLight2");
 	AddChild(pointLight2);
