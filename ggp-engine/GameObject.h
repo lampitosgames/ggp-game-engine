@@ -28,7 +28,7 @@ typedef unsigned int UINT;
 class GameObject
 {
 protected:
-<<<<<<< HEAD
+
 	//Static, engine-wide map of all gameobjects.
 	static std::map<std::string, GameObject*> goUIDMap;
 
@@ -58,42 +58,8 @@ protected:
 	InputManager* inputManager;
 	ResourceManager* resourceManager;
 	LightManager* lightManager;
-	Physics::PhysicsManager * physicsManager;
 
 	ECS::ComponentManager * componentManager = nullptr;
-=======
-    //Static, engine-wide map of all gameobjects.
-    static std::map<std::string, GameObject*> goUIDMap;
-
-    //Unique identifier of this object. Can be anything, must be unique.
-    std::string uniqueID;
-    //Every game object (and dervived type) will have a unique type so casting can be done
-    GOType type;
-    //Is the game object active or not? Defaults to true
-    bool isActive;
-
-    //Parent pointer
-    GameObject* parent;
-    bool parentHasTransform;
-
-    //Array of children pointers
-    std::vector<GameObject*> children;
-    UINT childCount;
-
-    //Map of this game object's components
-    //Storing the component's unique identifier helps prevent a messy solution to object slicing
-    //The resulting function calls to get a component are the same, but components are stored 
-    //by their respective providers in type-specific std::maps where slicing isn't an issue.
-    std::map<CompType, UINT> components;
-
-    //Pointers to required singletons (used for component management)
-    RenderManager* renderManager;
-    InputManager* inputManager;
-    ResourceManager* resourceManager;
-    LightManager* lightManager;
-
-    ECS::ComponentManager * componentManager = nullptr;
->>>>>>> refs/remotes/origin/master
 
 public:
 
@@ -237,11 +203,7 @@ public:
     void AddInputListener();
     void AddDirLight( DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ), DirectX::XMFLOAT3 _direction = DirectX::XMFLOAT3( 0.0f, 1.0f, 0.0f ), float _diffuseIntensity = 1.0f, float _ambientIntensity = 0.0f );
     void AddPointLight( DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) );
-<<<<<<< HEAD
 	void AddSpotLight(DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
-    void AddRigidBody( float aMass, EPhysicsLayer aLayer );
-=======
->>>>>>> refs/remotes/origin/master
 
     //Gets for member variables
     std::string GetUniqueID();
