@@ -63,6 +63,12 @@ void PBRDemoScene::Init() {
 	//pointLight1->transform.position.x += 2.0f;
 	//pointLight1->transform.position.y += 4.0f;
 
+	GameObject* spotLight = new GameObject("spotLight1");
+	AddChild(spotLight);
+	spotLight->AddSpotLight(XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
+	spotLight->GetComponent<SpotLight>(CompType::SPOT_LIGHT)->SetDirection(XMFLOAT3(-1.0f, 0.0f, 1.0f));
+	spotLight->transform.position.y = -2.75f;
+
 	GameObject* pointLight2 = new GameObject("pointLight2");
 	AddChild(pointLight2);
 	pointLight2->AddPointLight(XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f));
@@ -78,12 +84,13 @@ void PBRDemoScene::Init() {
 	activeCamera->CalculateViewMatrix();
 
 	//Load terrain
-	//GameObject* terrain = new GameObject("testTerrain");
-	//Mesh* terrainMesh = resourceManager->GetTerrain("assets/terrain/testTerrain.raw", 513, 100.0f);
-	//AddChild(terrain);
-	//terrain->AddComponent<MeshRenderer>(terrain);
-	//terrain->GetComponentType<MeshRenderer>()->SetMesh(terrainMesh);
-	//terrain->GetComponentType<MeshRenderer>()->SetMaterial(pbrMats[6]);
+	GameObject* terrain = new GameObject("testTerrain");
+	Mesh* terrainMesh = resourceManager->GetTerrain("assets/terrain/testTerrain.raw", 513, 100.0f);
+	AddChild(terrain);
+	terrain->AddComponent<MeshRenderer>(terrain);
+	terrain->GetComponentType<MeshRenderer>()->SetMesh(terrainMesh);
+	terrain->GetComponentType<MeshRenderer>()->SetMaterial(pbrMats[6]);
+	terrain->transform.position.y = -3.0f;
 }
 
 void PBRDemoScene::Start() {
