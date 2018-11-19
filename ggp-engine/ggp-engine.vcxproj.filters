@@ -247,9 +247,6 @@
     <ClInclude Include="MeshGen.h">
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="PBRBlendMapMaterial.h">
-      <Filter>Header Files\Resources</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
