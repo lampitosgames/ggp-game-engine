@@ -101,9 +101,9 @@ float3 calcSpotLight(SpotLight _light, float3 _normal, float3 _surfaceColor, flo
 	float NdotL = dot(_normal, -lightDir);
 	NdotL = saturate(NdotL);
 	//Attenuation calculation
-	float lightAtten = saturate(1.0f - (lightDist * lightDist / (_light.range * _light.range)));
+	float lightAtten = saturate(1.0f - lightDist * lightDist / (_light.range * _light.range));
 	lightAtten *= lightAtten;
-	float angleFromCenter = max(dot(-lightDir, normalize(_light.direction)), 0.0f);
+	float angleFromCenter = max(dot(-lightDir, normalize(-_light.direction)), 0.0f);
 	float spotAmount = pow(angleFromCenter, 45.0f - _light.cone);
 	//Calculate lighting 
 	//Calculate specular light
