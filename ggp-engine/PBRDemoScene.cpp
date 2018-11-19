@@ -35,9 +35,13 @@ void PBRDemoScene::Init() {
 	for (UINT i = 0; i < 7; i++) {
 		GameObject* newSphere = new GameObject("Sphere");
 		AddChild(newSphere);
-		newSphere->AddMeshRenderer();
-		newSphere->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(sphereMesh);
-		newSphere->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(pbrMats[i]);
+        MeshRenderer* aMeshRend = newSphere->AddComponent<MeshRenderer>( newSphere );
+        if ( aMeshRend )
+        {
+            aMeshRend->SetMesh( sphereMesh );
+            aMeshRend->SetMaterial( pbrMats[ i ] );
+        }
+
 		newSphere->transform.position.x = (float)i * 1.2f;
 	}
 
@@ -77,9 +81,9 @@ void PBRDemoScene::Init() {
 	GameObject* terrain = new GameObject("testTerrain");
 	Mesh* terrainMesh = resourceManager->GetTerrain("assets/terrain/testTerrain.raw", 513, 100.0f);
 	AddChild(terrain);
-	terrain->AddMeshRenderer();
-	terrain->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMesh(terrainMesh);
-	terrain->GetComponent<MeshRenderer>(CompType::MESH_RENDERER)->SetMaterial(pbrMats[6]);
+	terrain->AddComponent<MeshRenderer>(terrain);
+	terrain->GetComponentType<MeshRenderer>()->SetMesh(terrainMesh);
+	terrain->GetComponentType<MeshRenderer>()->SetMaterial(pbrMats[6]);
 }
 
 void PBRDemoScene::Start() {

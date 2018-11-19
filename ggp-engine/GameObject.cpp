@@ -5,6 +5,8 @@
 #include "RenderManager.h"
 #include "InputManager.h"
 #include "LightManager.h"
+#include "ComponentManager.h"
+
 using namespace std;
 using namespace DirectX;
 
@@ -19,7 +21,9 @@ GameObject::GameObject(string _uniqueID, XMFLOAT3 _position, XMFLOAT3 _rotation,
 	uniqueID = _uniqueID;
 
     transform = Transform( _position, _rotation, _scale );
-	
+
+    componentManager = ECS::ComponentManager::GetInstance();
+
     //Base constructor, this is a game object
 	type = GOType::GAME_OBJECT;
 	//Set this object as active
@@ -154,18 +158,18 @@ void GameObject::AddInputListener() {
 void GameObject::AddDirLight(DirectX::XMFLOAT4 _color, DirectX::XMFLOAT3 _direction, float _diffuseIntensity, float _ambientIntensity) {
 	components[CompType::DIRECTIONAL_LIGHT] = lightManager->AddDirLight(this, _color, _direction, _diffuseIntensity, _ambientIntensity);
 }
-
+/*
 void GameObject::AddMeshRenderer() {
     components[ CompType::MESH_RENDERER ] = renderManager->AddMeshRenderer( this );
-}
+}*/
 
 void GameObject::AddPointLight( DirectX::XMFLOAT4 _color ) {
     components[ CompType::POINT_LIGHT ] = lightManager->AddPointLight( this, _color );
 }
-
+/*
 void GameObject::AddRigidBody( float aMass, EPhysicsLayer aLayer ) {
     components[ CompType::RIGID_BODY ] = physicsManager->AddRigidBody( this, aMass, aLayer );
-}
+}*/
 
 string GameObject::GetUniqueID() { return uniqueID; }
 

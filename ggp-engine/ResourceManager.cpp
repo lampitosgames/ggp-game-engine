@@ -153,6 +153,32 @@ Material* ResourceManager::AddMaterial(std::string _uniqueID, LPCWSTR _textureFi
 #pragma endregion
 
 #pragma region PBR Material Loading
+ID3D11ShaderResourceView * ResourceManager::LoadSRV_DDS( LPCWSTR _textureFileString )
+{
+    ID3D11ShaderResourceView* tempSRV = nullptr;
+
+    HRESULT iResult = CreateDDSTextureFromFile(
+        dxDevice,
+        dxContext,
+        _textureFileString,
+        0,
+        &tempSRV
+    );
+    
+    // if success
+    if ( iResult == S_OK )
+    {
+        return tempSRV;
+    }
+    else
+    {
+        DEBUG_PRINT( "DDS SRV LOADING FAILURE!" );
+        // #RemoveWhenDoneDebugging
+        throw "DDS SRV LOADING FAILURE!";
+
+        return nullptr;
+    }
+}
 PBRMaterial* ResourceManager::GetPBRMaterial(std::string _uniqueID, LPCWSTR _vertexShaderFilestring, LPCWSTR _pixelShaderFilestring, XMFLOAT4 _color, float _roughness, float _metalness) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);

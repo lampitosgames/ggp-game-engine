@@ -7,6 +7,8 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include "MeshGen.h"
+#include "WICTextureLoader.h"
+#include "DDSTextureLoader.h"
 //Forward declaration
 class Material;
 class PBRMaterial;
@@ -66,6 +68,12 @@ public:
 	//Create and return a new basic texture material without shaders
 	Material* AddMaterial(std::string _uniqueID, LPCWSTR _textureFilestring);
 
+    /// <summary>
+    /// Load in a DDS texture
+    /// </summary>
+    /// <param name="_textureFileString"></param>
+    /// <returns></returns>
+    ID3D11ShaderResourceView* LoadSRV_DDS( LPCWSTR _textureFileString );
 	/*
 		PBR MATERIAL MANAGEMENT
 	*/

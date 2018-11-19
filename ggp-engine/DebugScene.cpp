@@ -19,7 +19,6 @@ using namespace std;
 void DebugScene::Init()
 {
     Scene::Init();
-    physicsManager = Physics::PhysicsManager::GetInstance();
 
     //We only need a single material for all three for now
     Material* stoneMaterial = resourceManager->AddMaterial( "stoneMat",
@@ -45,21 +44,26 @@ void DebugScene::Init()
 
     GameObject* PhysObject = new GameObject( "PhysObject" );
     AddChild( PhysObject );
-    PhysObject->AddMeshRenderer();
-    //Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
-    PhysObject->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMesh( mesh3 );
-    PhysObject->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMaterial( metalMaterial );
-    PhysObject->AddRigidBody( 0.7f, EPhysicsLayer::MOVEABLE );
+
+    MeshRenderer* aMesh = PhysObject->AddComponent<MeshRenderer>( PhysObject );
+    if ( aMesh != nullptr )
+    {
+        aMesh->SetMesh( mesh3 );
+        aMesh->SetMaterial( metalMaterial );
+    }
+    PhysObject->AddComponent<RigidBody>( PhysObject, 0.7f, EPhysicsLayer::MOVEABLE );
 
     GameObject* PhysObject2 = new GameObject( "PhysObject2" );
     AddChild( PhysObject2 );
-    PhysObject2->AddMeshRenderer();
-    //Give it the first mesh we made.  In the future, meshes will be managed by the MeshRenderer
-    PhysObject2->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMesh( mesh3 );
-    PhysObject2->GetComponent<MeshRenderer>( CompType::MESH_RENDERER )->SetMaterial( blueMatte );
-    PhysObject2->AddRigidBody( 0.7f, EPhysicsLayer::MOVEABLE );
+    aMesh = PhysObject2->AddComponent<MeshRenderer>( PhysObject2 );
+    if ( aMesh != nullptr )
+    {
+        aMesh->SetMesh( mesh3 );
+        aMesh->SetMaterial( blueMatte );
+    }
+    
     PhysObject2->transform.position.y = 3.f;
-
+    PhysObject2->AddComponent<RigidBody>( PhysObject2, 0.7f, EPhysicsLayer::MOVEABLE );
 
 
     //Create a light
@@ -104,7 +108,7 @@ void DebugScene::Update( float _deltaTime )
 
 
     // Loops throught the active rigid bodies and checks for ray hits
-    for ( UINT i = 0; i < physicsManager->GetRigidBodyCount(); ++i )
+    /*for ( UINT i = 0; i < physicsManager->GetRigidBodyCount(); ++i )
     {
         RigidBody* _rb = physicsManager->GetRigidBody( i );
         Physics::Point rayOrigin = {};
@@ -118,13 +122,10 @@ void DebugScene::Update( float _deltaTime )
 
         int result = Physics::Collisions::IntersectRaySphere( rayOrigin, rayDir, _rb->GetCollider(), t, hitPoint );
         // TODO: Draw the ray
-        printf( "ray result: %d\n", result );
-
-    }
+    }*/
 
     // For every physics object in the scene
     // Update the physics
-    physicsManager->UpdatePhysics( _deltaTime );
     // Check collisions
 
 }

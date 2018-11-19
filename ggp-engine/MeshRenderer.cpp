@@ -5,21 +5,23 @@
 #include "Material.h"
 #include "Mesh.h"
 #include "GameObject.h"
+#include "RenderManager.h"
 
-MeshRenderer::MeshRenderer(UINT _uniqueID, GameObject* _gameObject) {
-	type = CompType::MESH_RENDERER;
-	uniqueID = _uniqueID;
+MeshRenderer::MeshRenderer(GameObject* _gameObject) {
 	gameObject = _gameObject;
+
+    owner = _gameObject->GetUniqueID();
 	mesh = nullptr;
 	material = nullptr;
+    RenderManager::GetInstance()->AddMeshRenderer( this );
 }
 
-MeshRenderer::MeshRenderer(UINT _uniqueID, GameObject* _gameObject, Mesh* _mesh, Material* _material) {
-	type = CompType::MESH_RENDERER;
-	uniqueID = _uniqueID;
+MeshRenderer::MeshRenderer( GameObject* _gameObject, Mesh* _mesh, Material* _material) {
 	gameObject = _gameObject;
+    owner = _gameObject->GetUniqueID();
 	mesh = _mesh;
 	material = _material;
+    RenderManager::GetInstance()->AddMeshRenderer( this );
 }
 
 MeshRenderer::~MeshRenderer() {}

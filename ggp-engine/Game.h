@@ -9,6 +9,7 @@
 #include "InputManager.h"
 #include "LightManager.h"
 #include "PhysicsManager.h"
+#include "ComponentManager.h"
 #include "Scene.h"
 
 class Game
@@ -50,6 +51,7 @@ private:
 	InputManager* inputManager;
 	LightManager* lightManager;
     Physics::PhysicsManager* physicsManager;
+    ECS::ComponentManager* componentManager;
 
 	//Active scene
 	Scene* activeScene;

@@ -3,15 +3,17 @@
 #include <map>
 #include <DirectXMath.h>
 
+#include "GameObject.h"
+
 ////////////////////////////
 // Forward Declarations
+//class GameObject;
 class RigidBody;
-class GameObject;
-enum EPhysicsLayer;
+using RigidBodyID = size_t;
 
 namespace Physics
 {
-    typedef unsigned int UINT;
+
 
     /// <summary>
     /// Control the regular updating of physics on nay rigid body objects
@@ -40,14 +42,17 @@ namespace Physics
         /// <param name="aMass">The mass of this rigidbody</param>
         /// <param name="aLayer">Physics layer of this rigidbody</param>
         /// <returns>Unique ID of this rigid body</returns>
-        UINT AddRigidBody( GameObject* aGameObj, float aMass, EPhysicsLayer aLayer );
+        //RigidBodyID AddRigidBody( GameObject* aGameObj, float aMass, EPhysicsLayer aLayer );
+
+
+        RigidBodyID AddRigidBody( RigidBody* aRigidBody );
 
         /// <summary>
         /// Get a rigidbody based on it's ID
         /// </summary>
         /// <param name="uID">ID to look for</param>
         /// <returns>Pointer to that rigidbody</returns>
-        RigidBody* GetRigidBody( UINT uID );
+        RigidBody* GetRigidBody( RigidBodyID uID );
 
         /// <summary>
         /// Update the physics on all rigidbodies
@@ -59,7 +64,7 @@ namespace Physics
         /// Get the current number of rigid bodies
         /// </summary>
         /// <returns>const UINT representing the number of bodies</returns>
-        const UINT GetRigidBodyCount() const;
+        const RigidBodyID GetRigidBodyCount() const;
 
         /// <summary>
         /// Send a raycast starting from the origin point in the given directoin for 
@@ -86,9 +91,9 @@ namespace Physics
         const float Gravity = -0.001f;
 
         // #Optimize
-        std::map<UINT, RigidBody*> RigidBodyUIDMap;
+        std::map<RigidBodyID, RigidBody*> RigidBodyUIDMap;
 
-        UINT rBodyCount;
+        RigidBodyID rBodyCount;
 
     };
 
