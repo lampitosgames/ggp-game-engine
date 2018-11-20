@@ -68,6 +68,14 @@ DXCore::DXCore(
 // Destructor - Clean up (release) all DirectX references
 // --------------------------------------------------------
 DXCore::~DXCore() {
+
+#ifdef ENABLE_UI
+
+    ImGui_ImplDX11_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
+
+#endif
 	// Release all DirectX resources
 	if (depthStencilView) { depthStencilView->Release(); }
 	if (backBufferRTV) { backBufferRTV->Release(); }
@@ -259,6 +267,18 @@ HRESULT DXCore::InitDirectX() {
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 	dxContext->RSSetViewports(1, &viewport);
+
+    // Enable IMGUI ----------------------------------------
+#if defined(ENABLE_UI)
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO & io = ImGui::GetIO();
+    ImGui_ImplWin32_Init( hWnd );
+    ImGui_ImplDX11_Init( dxDevice, dxContext );
+    ImGui::StyleColorsDark();
+
+#endif
 
 	// Return the "everything is ok" HRESULT value
 	return S_OK;
@@ -491,7 +511,9 @@ void DXCore::CreateConsoleWindow(int bufferLines, int bufferColumns, int windowL
 
 
 
-
+#if defined(ENABLE_UI)
+extern LRESULT ImGui_ImplWin32_WndProcHandler( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
+#endif
 // --------------------------------------------------------
 // Handles messages that are sent to our window by the
 // operating system.  Ignoring these messages would cause
@@ -499,6 +521,13 @@ void DXCore::CreateConsoleWindow(int bufferLines, int bufferColumns, int windowL
 // unresponsive.
 // --------------------------------------------------------
 LRESULT DXCore::ProcessMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+
+#if defined(ENABLE_UI)
+
+    if ( ImGui_ImplWin32_WndProcHandler( hWnd, uMsg, wParam, lParam ) )
+        return true;
+#endif
+
 	// Check the incoming message and handle any we care about
 	switch (uMsg) {
 	// This is the message that signifies the window closing

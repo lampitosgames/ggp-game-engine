@@ -142,6 +142,39 @@ void Game::Draw(float deltaTime, float totalTime) {
 	//Call render on the renderManager
 	renderManager->Render(dxContext);
 
+#if defined(ENABLE_UI)
+    // Create a new IMGui frame
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
+    // Draw the UI options here -----------------------------------
+
+    // Create a window named test
+    //ImGui::Begin( "Light Options" );
+
+    //ImGui::Checkbox( "Use Dir Lights", &UseDirLights );
+    //ImGui::Checkbox( "Draw Light Gizmos", &DrawLightGizmos );
+    //ImGui::Checkbox( "Move Point Lights", &MovePointLights );
+    //ImGui::Checkbox( "Use SkyBox", &DrawSkyBox );
+
+    //ImGui::End();   // If you want more than one window, then use ImGui::Beigin
+
+    ImGui::Begin( "Controls" );
+
+    ImGui::Text( "R.Click - Rotate" );
+    ImGui::Text( "WASD    - Move" );
+    ImGui::Text( "E       - Go Up" );
+    ImGui::Text( "Q       - Go Down" );
+
+    ImGui::End();
+
+
+    ImGui::Render();
+    ImGui_ImplDX11_RenderDrawData( ImGui::GetDrawData() );
+#endif
+
+
 	// Present the back buffer to the user
 	//  - Puts the final frame we're drawing into the window so the user can see it
 	//  - Do this exactly ONCE PER FRAME (always at the very end of the frame)
