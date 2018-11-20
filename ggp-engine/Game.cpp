@@ -162,10 +162,11 @@ void Game::Draw(float deltaTime, float totalTime) {
 
     ImGui::Begin( "Controls" );
 
-    ImGui::Text( "R.Click - Rotate" );
+    ImGui::Text( "Mouse   - Rotate" );
     ImGui::Text( "WASD    - Move" );
     ImGui::Text( "E       - Go Up" );
     ImGui::Text( "Q       - Go Down" );
+    ImGui::Text( "X       - Release Mouse" );
 
     ImGui::End();
 
