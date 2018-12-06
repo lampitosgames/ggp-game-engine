@@ -14,10 +14,10 @@ public:
 	/*
 		Particle Properties
 	*/
-	float3* pos;
-	float3* vel;
+	float3* iPos;
+	float3* iVel;
 	float3* accel;
-	float* rotation;
+	float* iRot;
 	float* angularVel;
 
 	float* startSize;
@@ -33,7 +33,6 @@ public:
 	//Tracking data
 	UINT particleCount;
 	UINT aliveCount;
-	UINT nextRecycledInd;
 
 public:
 	ParticleData();
@@ -41,14 +40,15 @@ public:
 	~ParticleData();
 
 	void generate(UINT _maxCount);
+	void release();
 	void kill(UINT _id);
-	void wake(UINT _id);
+	void wakeNext();
 	void swap(UINT _id1, UINT _id2);
-
 };
 
 
 class ParticleEmitter : ECS::BaseComponent<ParticleEmitter> {
+	ParticleData particles;
 	SimpleVertexShader* particleVS;
 	SimplePixelShader* particlePS;
 public:
