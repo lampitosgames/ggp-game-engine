@@ -9,6 +9,9 @@
 #include <string>
 #include <iostream>
 
+// Common Libraries ---------------------
+#include <DirectXMath.h>
+
 // Replace the new keyword with the debug new 
 /*#ifdef _DEBUG
 
@@ -31,6 +34,6 @@
 // Typedefs -----------------------------
 
 typedef unsigned int UINT;
-
-// Common Libraries ---------------------
-#include <DirectXMath.h>
+typedef DirectX::XMFLOAT2 float2;
+typedef DirectX::XMFLOAT3 float3;
+typedef DirectX::XMFLOAT4 float4;
