@@ -190,12 +190,6 @@
     <ClInclude Include="GameObject.h">
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentTypes.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Component.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="MeshRenderer.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>

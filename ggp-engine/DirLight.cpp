@@ -1,13 +1,14 @@
 #include "stdafx.h"
 
+#include "LightManager.h"
 #include "DirLight.h"
+#include "GameObject.h"
 
 using namespace DirectX;
 
-DirLight::DirLight(UINT _uniqueID, GameObject* _gameObject, XMFLOAT4 _color, XMFLOAT3 _direction, float _diffuseIntensity, float _ambientIntensity) {
-	type = CompType::DIRECTIONAL_LIGHT;
-	uniqueID = _uniqueID;
+DirLight::DirLight(GameObject* _gameObject, XMFLOAT4 _color, XMFLOAT3 _direction, float _diffuseIntensity, float _ambientIntensity) {
 	gameObject = _gameObject;
+	owner = _gameObject->GetUniqueID();
 	lightData = {
 		_color,
 		_direction,
@@ -15,6 +16,7 @@ DirLight::DirLight(UINT _uniqueID, GameObject* _gameObject, XMFLOAT4 _color, XMF
 		_ambientIntensity,
 		XMFLOAT3()
 	};
+	LightManager::GetInstance()->AddDirLight(this);
 }
 
 DirLight::~DirLight() {}

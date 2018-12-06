@@ -12,6 +12,8 @@ class LightManager;
 struct ID3D11SamplerState;
 class Camera;
 
+typedef UINT MeshRendererID;
+
 class RenderManager {
 	//Singleton pointer
 	static RenderManager* instance;
@@ -41,9 +43,9 @@ class RenderManager {
 	float gammaCorrection;
 
 	//Unique number given to each mesh renderer
-	UINT mrUID = 0;
+	MeshRendererID mrCount = 0;
 	//Map of all mesh renderers
-	std::map<UINT, MeshRenderer*> meshRendererUIDMap;
+	std::map<MeshRendererID, MeshRenderer*> meshRendererUIDMap;
 public:
 	//Static Singleton get/release for the single renderManager instance
 	static RenderManager* GetInstance();
@@ -70,16 +72,10 @@ public:
 	/*
 		MESH RENDERER HELPERS
 		Useful for sharing one mesh asset across many objects
-	*/
-	//Create (and return the uid of) a new mesh renderer
-	UINT AddMeshRenderer( GameObject* _gameObject);
-    
+	*/    
     UINT AddMeshRenderer( MeshRenderer* _meshRenderer );
-
 	//Get a mesh renderer given its unique identifier
-	MeshRenderer* GetMeshRenderer(UINT _uniqueID);
-	//Delete a mesh renderer
-	void DeleteMeshRenderer(UINT _uniqueID);
+	MeshRenderer* GetMeshRenderer(MeshRendererID _uniqueID);
 
     /// <summary>
     /// Set the current skybox pixel shader

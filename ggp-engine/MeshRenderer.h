@@ -5,7 +5,6 @@
 
 #include <DirectXMath.h>
 #include <d3d11.h>
-#include "Component.h"
 #include "BaseComponent.h"
 
 class Mesh;
@@ -40,7 +39,6 @@ public:
 	DirectX::XMFLOAT4 GetColor();
 
     GameObject* gameObject;
-    UINT uniqueID;
 };
 
 #endif //GGP_MESH_RENDERER_H

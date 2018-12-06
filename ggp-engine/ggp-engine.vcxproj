@@ -209,9 +209,7 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClInclude Include="Basis.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collisions.h" />
-    <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentManager.h" />
-    <ClInclude Include="ComponentTypes.h" />
     <ClInclude Include="DebugScene.h" />
     <ClInclude Include="DirLight.h" />
     <ClInclude Include="DXCore.h" />

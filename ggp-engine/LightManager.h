@@ -10,6 +10,10 @@
 #include "SimpleShader.h"
 class GameObject;
 
+typedef UINT DirLightID;
+typedef UINT PointLightID;
+typedef UINT SpotLightID;
+
 class LightManager {
 	//Singleton pointer
 	static LightManager* instance;
@@ -68,6 +72,7 @@ public:
     //Create (and return the UID of) a new point light
     UINT AddPointLight( GameObject* _gameObject );
 	UINT AddPointLight( GameObject* _gameObject, DirectX::XMFLOAT4 _color);
+	
 	//Get a point light given its unique ID
 	PointLight* GetPointLight(UINT _uniqueID);
 	//Get a struct representing the current state of the point light

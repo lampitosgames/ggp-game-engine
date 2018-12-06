@@ -2,16 +2,16 @@
 #define GGP_POINT_LIGHT_H
 
 #include <DirectXMath.h>
-#include "Component.h"
+#include "BaseComponent.h"
 #include "LightStructs.h"
 class GameObject;
 
-class PointLight : public Component {
+class PointLight : public ECS::BaseComponent<PointLight> {
 	PointLightStruct lightData;
 public:
     GameObject* gameObject;
-	PointLight(UINT _uniqueID, GameObject* _gameObject);
-	PointLight(UINT _uniqueID, GameObject* _gameObject, DirectX::XMFLOAT4 _color, float _intensity = 1.0f, float _range = 5.0f);
+	PointLight(GameObject* _gameObject);
+	PointLight(GameObject* _gameObject, DirectX::XMFLOAT4 _color, float _intensity = 1.0f, float _range = 5.0f);
 	~PointLight();
 
 	//Light color

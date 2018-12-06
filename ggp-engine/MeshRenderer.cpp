@@ -9,7 +9,6 @@
 
 MeshRenderer::MeshRenderer(GameObject* _gameObject) {
 	gameObject = _gameObject;
-
     owner = _gameObject->GetUniqueID();
 	mesh = nullptr;
 	material = nullptr;
