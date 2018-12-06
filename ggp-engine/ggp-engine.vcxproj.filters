@@ -104,9 +104,6 @@
     <ClCompile Include="RenderManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>Source Files\GameObjects</Filter>
-    </ClCompile>
     <ClCompile Include="LightManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>

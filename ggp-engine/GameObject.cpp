@@ -13,18 +13,18 @@ using namespace DirectX;
 map<std::string, GameObject*> GameObject::goUIDMap = map<std::string, GameObject*>();
 
 
-GameObject::GameObject(string _uniqueID, XMFLOAT3 _position, XMFLOAT3 _rotation, XMFLOAT3 _scale ) {
+GameObject::GameObject(string _uniqueID, XMFLOAT3 _position, XMFLOAT3 _rotation, XMFLOAT3 _scale) {
 	Init();
 	//Ensure the provided ID is unique
 	GenerateUID(_uniqueID);
 	//Store unique ID
 	uniqueID = _uniqueID;
 
-    transform = Transform( _position, _rotation, _scale );
+	transform = Transform(_position, _rotation, _scale);
 
-    componentManager = ECS::ComponentManager::GetInstance();
+	componentManager = ECS::ComponentManager::GetInstance();
 
-    //Base constructor, this is a game object
+	//Base constructor, this is a game object
 	type = GOType::GAME_OBJECT;
 	//Set this object as active
 	isActive = true;
@@ -58,10 +58,10 @@ void GameObject::Update(float _deltaTime) {
 
 void GameObject::Input(InputEvent _event) {}
 
-void GameObject::SetParent(GameObject* _newParent) { 
+void GameObject::SetParent(GameObject* _newParent) {
 	//Store pointer to new parent
 	parent = _newParent;
-    transform.parent = &_newParent->transform;
+	transform.parent = &_newParent->transform;
 }
 
 GameObject* GameObject::GetParent() {

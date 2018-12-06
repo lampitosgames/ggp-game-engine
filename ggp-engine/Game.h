@@ -50,8 +50,8 @@ private:
 	RenderManager* renderManager;
 	InputManager* inputManager;
 	LightManager* lightManager;
-    Physics::PhysicsManager* physicsManager;
-    ECS::ComponentManager* componentManager;
+	Physics::PhysicsManager* physicsManager;
+	ECS::ComponentManager* componentManager;
 
 	//Active scene
 	Scene* activeScene;

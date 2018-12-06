@@ -9,7 +9,7 @@ class GameObject;
 class DirLight : public ECS::BaseComponent<DirLight> {
 	DirLightStruct lightData;
 public:
-	DirLight(GameObject* _gameObject, 
+	DirLight(GameObject* _gameObject,
 			 DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
 			 DirectX::XMFLOAT3 _direction = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f),
 			 float _diffuseIntensity = 1.0f,

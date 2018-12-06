@@ -26,8 +26,7 @@ PointLight::PointLight(GameObject* _gameObject, XMFLOAT4 _color, float _intensit
 
 PointLight::~PointLight() {}
 
-DirectX::XMFLOAT4 PointLight::GetColor()
-{
+DirectX::XMFLOAT4 PointLight::GetColor() {
 	return lightData.color;
 }
 

@@ -11,29 +11,29 @@ int WINAPI WinMain(
 	LPSTR lpCmdLine,			// Command line params
 	int nCmdShow)				// How the window should be shown (we ignore this)
 {
-#if defined(DEBUG) | defined(_DEBUG)
-    // Enable memory leak detection as a quick and dirty
-    // way of determining if we forgot to clean something up
-    //  - You may want to use something more advanced, like Visual Leak Detector
-    _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+	#if defined(DEBUG) | defined(_DEBUG)
+		// Enable memory leak detection as a quick and dirty
+		// way of determining if we forgot to clean something up
+		//  - You may want to use something more advanced, like Visual Leak Detector
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-    _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
+	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 
-#endif
+	#endif
 
-		// Ensure "Current Directory" (relative path) is always the .exe's folder
-		// - Without this, the relative path is different when running through VS
-		//    and when running the .exe directly, which makes it a pain to load files
-		//    - Running through VS: Current Dir is the *project folder*
-		//    - Running from .exe:  Current Dir is the .exe's folder
-		// - This has nothing to do with DEBUG and RELEASE modes - it's purely a 
-		//    Visual Studio "thing", and isn't obvious unless you know to look 
-		//    for it.  In fact, it could be fixed by changing a setting in VS, but
-		//    the option is stored in a user file (.suo), which is ignored by most
-		//    version control packages by default.  Meaning: the option must be
-		//    changed every on every PC.  Ugh.  So instead, I fixed it here.
-		// - This is a new change this year to simplify a long-standing headache.  
-		//    If it breaks something on your end, feel free to comment this section out
+			// Ensure "Current Directory" (relative path) is always the .exe's folder
+			// - Without this, the relative path is different when running through VS
+			//    and when running the .exe directly, which makes it a pain to load files
+			//    - Running through VS: Current Dir is the *project folder*
+			//    - Running from .exe:  Current Dir is the .exe's folder
+			// - This has nothing to do with DEBUG and RELEASE modes - it's purely a 
+			//    Visual Studio "thing", and isn't obvious unless you know to look 
+			//    for it.  In fact, it could be fixed by changing a setting in VS, but
+			//    the option is stored in a user file (.suo), which is ignored by most
+			//    version control packages by default.  Meaning: the option must be
+			//    changed every on every PC.  Ugh.  So instead, I fixed it here.
+			// - This is a new change this year to simplify a long-standing headache.  
+			//    If it breaks something on your end, feel free to comment this section out
 	{
 		// Get the real, full path to this executable, end the string before
 		// the filename itself and then set that as the current directory

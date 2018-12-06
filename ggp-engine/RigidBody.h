@@ -6,10 +6,9 @@
 #include "BaseComponent.h"
 #include "PhysicsManager.h"
 
-enum EPhysicsLayer
-{
-    MOVEABLE,
-    STATIC
+enum EPhysicsLayer {
+	MOVEABLE,
+	STATIC
 };
 
 /// <summary>
@@ -17,55 +16,54 @@ enum EPhysicsLayer
 /// </summary>
 /// <author>Ben Hoffman</author>
 class RigidBody :
-    public ECS::BaseComponent<RigidBody>
-{
+	public ECS::BaseComponent<RigidBody> {
 public:
-    
-    RigidBody( GameObject* aGameObj, float aMass, EPhysicsLayer aPhysicsLayer );
 
-    ~RigidBody();
+	RigidBody(GameObject* aGameObj, float aMass, EPhysicsLayer aPhysicsLayer);
 
-    /// <summary>
-    /// Apply a force to this entity
-    /// </summary>
-    /// <param name="aForce">The force to apply</param>
-    void ApplyForce( const DirectX::XMFLOAT3 & aForce );
+	~RigidBody();
 
-    /// <summary>
-    /// Apply the current acceleration to the velocity and set acceleration to 0
-    /// </summary>
-    void ApplyAcceleration();
+	/// <summary>
+	/// Apply a force to this entity
+	/// </summary>
+	/// <param name="aForce">The force to apply</param>
+	void ApplyForce(const DirectX::XMFLOAT3 & aForce);
 
-    GameObject * gameObject; // :S
-    
-    /////////////////////////////////////////////////////////
-    // Accessors
+	/// <summary>
+	/// Apply the current acceleration to the velocity and set acceleration to 0
+	/// </summary>
+	void ApplyAcceleration();
 
-    const EPhysicsLayer GetPhysicsLayer() const;
+	GameObject * gameObject; // :S
 
-    void SetPhysicsLayer( const EPhysicsLayer aLayer );
+	/////////////////////////////////////////////////////////
+	// Accessors
 
-    void SetVelocity( const DirectX::XMFLOAT3& aVel );
+	const EPhysicsLayer GetPhysicsLayer() const;
 
-    const DirectX::XMFLOAT3 & GetVelocity() const;
+	void SetPhysicsLayer(const EPhysicsLayer aLayer);
 
-    const float GetMass() const;
+	void SetVelocity(const DirectX::XMFLOAT3& aVel);
 
-    void SetMass( const float aMass );    
+	const DirectX::XMFLOAT3 & GetVelocity() const;
 
-    const Physics::SphereCollider & GetCollider() const;
+	const float GetMass() const;
+
+	void SetMass(const float aMass);
+
+	const Physics::SphereCollider & GetCollider() const;
 
 private:
 
-    float Mass = 1.0f;
+	float Mass = 1.0f;
 
-    DirectX::XMFLOAT3 Acceleration;
+	DirectX::XMFLOAT3 Acceleration;
 
-    DirectX::XMFLOAT3 Velocity;
+	DirectX::XMFLOAT3 Velocity;
 
-    EPhysicsLayer PhysicsLayer;
+	EPhysicsLayer PhysicsLayer;
 
-    Physics::SphereCollider Collider;
+	Physics::SphereCollider Collider;
 
 };
 

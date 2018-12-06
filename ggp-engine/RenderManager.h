@@ -27,14 +27,14 @@ class RenderManager {
 	//Default shaders for materials without them (Or MeshRenderers without materials)
 	SimpleVertexShader* defaultVertexShader;
 	SimplePixelShader* defaultPixelShader;
-    
-    // Skybox options
-    SimpleVertexShader* skyboxVS = nullptr;
-    SimplePixelShader* skyboxPS = nullptr;
-    ID3D11RasterizerState* skyRastState = nullptr;
-    ID3D11DepthStencilState* skyDepthState = nullptr;
-    ID3D11ShaderResourceView* skyboxSrv = nullptr;
-    Mesh* skyboxMesh = nullptr;
+
+	// Skybox options
+	SimpleVertexShader* skyboxVS = nullptr;
+	SimplePixelShader* skyboxPS = nullptr;
+	ID3D11RasterizerState* skyRastState = nullptr;
+	ID3D11DepthStencilState* skyDepthState = nullptr;
+	ID3D11ShaderResourceView* skyboxSrv = nullptr;
+	Mesh* skyboxMesh = nullptr;
 
 	//Active camera
 	Camera* activeCamera;
@@ -51,9 +51,9 @@ public:
 	static RenderManager* GetInstance();
 	static void ReleaseInstance();
 
-    // We don't want anything making copies of this class so delete these operators
-    RenderManager( RenderManager const& ) = delete;
-    void operator=( RenderManager const& ) = delete;
+	// We don't want anything making copies of this class so delete these operators
+	RenderManager(RenderManager const&) = delete;
+	void operator=(RenderManager const&) = delete;
 
 	//Start method.  Called once when we can safely assume the entire engine has been initialized
 	void Start();
@@ -72,22 +72,22 @@ public:
 	/*
 		MESH RENDERER HELPERS
 		Useful for sharing one mesh asset across many objects
-	*/    
-    UINT AddMeshRenderer( MeshRenderer* _meshRenderer );
+	*/
+	UINT AddMeshRenderer(MeshRenderer* _meshRenderer);
 	//Get a mesh renderer given its unique identifier
 	MeshRenderer* GetMeshRenderer(MeshRendererID _uniqueID);
 
-    /// <summary>
-    /// Set the current skybox pixel shader
-    /// </summary>
-    /// <param name="aSkyPS">The new ksybox pixel shader</param>
-    void SetSkyboxPS( SimplePixelShader* aSkyPS );
+	/// <summary>
+	/// Set the current skybox pixel shader
+	/// </summary>
+	/// <param name="aSkyPS">The new ksybox pixel shader</param>
+	void SetSkyboxPS(SimplePixelShader* aSkyPS);
 
-    /// <summary>
-    /// Set the current skybox Vertex shader
-    /// </summary>
-    /// <param name="aSkyVS">The new skybox vertex shader</param>
-    void SetSkyboxVS( SimpleVertexShader* aSkyVS );
+	/// <summary>
+	/// Set the current skybox Vertex shader
+	/// </summary>
+	/// <param name="aSkyVS">The new skybox vertex shader</param>
+	void SetSkyboxVS(SimpleVertexShader* aSkyVS);
 
 private:
 	RenderManager();

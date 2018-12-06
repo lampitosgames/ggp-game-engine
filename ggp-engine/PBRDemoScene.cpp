@@ -16,8 +16,6 @@ using namespace std;
 void PBRDemoScene::Init() {
 	Scene::Init();
 
-
-
 	Material* blueMatte = resourceManager->AddMaterial("blueMatte", XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), 0.0f);
 	PBRMaterial* pbrMats[7];
 	//Create a PBR material for testing
@@ -35,12 +33,11 @@ void PBRDemoScene::Init() {
 	for (UINT i = 0; i < 7; i++) {
 		GameObject* newSphere = new GameObject("Sphere");
 		AddChild(newSphere);
-        MeshRenderer* aMeshRend = newSphere->AddComponent<MeshRenderer>( newSphere );
-        if ( aMeshRend )
-        {
-            aMeshRend->SetMesh( sphereMesh );
-            aMeshRend->SetMaterial( pbrMats[ i ] );
-        }
+		MeshRenderer* aMeshRend = newSphere->AddComponent<MeshRenderer>(newSphere);
+		if (aMeshRend) {
+			aMeshRend->SetMesh(sphereMesh);
+			aMeshRend->SetMaterial(pbrMats[i]);
+		}
 
 		newSphere->transform.position.x = (float)i * 1.2f;
 	}
@@ -48,31 +45,31 @@ void PBRDemoScene::Init() {
 	//Create a single, white directional light
 	GameObject* dirLight = new GameObject("dirLight1");
 	AddChild(dirLight);
-	dirLight->AddComponent<DirLight>(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 1.0f), 0.8f, 0.00f);
+	dirLight->AddComponent<DirLight>(dirLight, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 1.0f), 0.8f, 0.00f);
 	GameObject* dirLight2 = new GameObject("dirLight2");
 	AddChild(dirLight2);
-	dirLight2->AddComponent<DirLight>(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, -0.25f, 0.0f), 0.2f, 0.00f);
+	dirLight2->AddComponent<DirLight>(dirLight2, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, -0.25f, 0.0f), 0.2f, 0.00f);
 	GameObject* dirLight3 = new GameObject("dirLight3");
 	AddChild(dirLight3);
-	dirLight3->AddComponent<DirLight>(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 1.0f), 0.2f, 0.00f);
+	dirLight3->AddComponent<DirLight>(dirLight3, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 1.0f), 0.2f, 0.00f);
 
 	GameObject* pointLight1 = new GameObject("pointLight1");
 	AddChild(pointLight1);
-	pointLight1->AddComponent<PointLight>(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+	pointLight1->AddComponent<PointLight>(pointLight1, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
 	pointLight1->GetComponentType<PointLight>()->SetRange(10.0f);
 	pointLight1->transform.position.x += 2.0f;
 	pointLight1->transform.position.y += 4.0f;
 
 	GameObject* pointLight2 = new GameObject("pointLight2");
 	AddChild(pointLight2);
-	pointLight2->AddComponent<PointLight>(XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f));
+	pointLight2->AddComponent<PointLight>(pointLight2, XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f));
 	pointLight2->GetComponentType<PointLight>()->SetIntensity(1.0f);
 	pointLight2->transform.position.x += 6.0f;
 	pointLight2->transform.position.y += 3.0f;
 
 	GameObject* spotLight1 = new GameObject("spotLight1");
 	AddChild(spotLight1);
-	spotLight1->AddComponent<SpotLight>(XMFLOAT4(0.901f, 0.239f, 0.337f, 1.0f));
+	spotLight1->AddComponent<SpotLight>(spotLight1, XMFLOAT4(0.901f, 0.239f, 0.337f, 1.0f));
 	spotLight1->GetComponentType<SpotLight>()->SetCone(15.0f);
 	spotLight1->GetComponentType<SpotLight>()->SetRange(80.0f);
 	spotLight1->GetComponentType<SpotLight>()->SetDirection(XMFLOAT3(0.0f, -1.0f, 0.0f));
@@ -89,9 +86,7 @@ void PBRDemoScene::Init() {
 	//GameObject* terrain = new GameObject("testTerrain");
 	//Mesh* terrainMesh = resourceManager->GetTerrain("assets/terrain/testTerrain.raw", 513, 100.0f);
 	//AddChild(terrain);
-	//terrain->AddComponent<MeshRenderer>(terrain);
-	//terrain->GetComponentType<MeshRenderer>()->SetMesh(terrainMesh);
-	//terrain->GetComponentType<MeshRenderer>()->SetMaterial(pbrMats[6]);
+	//terrain->AddComponent<MeshRenderer>(terrain, terrainMesh, pbrMats[0]);
 	//terrain->transform.position.y = -3.0f;
 }
 

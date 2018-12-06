@@ -16,10 +16,10 @@ PBRMaterial::PBRMaterial(string _uniqueID) {
 }
 
 PBRMaterial::PBRMaterial(string _uniqueID,
-						 SimpleVertexShader* _vertexShader, 
-						 SimplePixelShader* _pixelShader, 
-						 XMFLOAT4 _color, 
-						 float _roughness, 
+						 SimpleVertexShader* _vertexShader,
+						 SimplePixelShader* _pixelShader,
+						 XMFLOAT4 _color,
+						 float _roughness,
 						 float _metalness) {
 	uniqueID = _uniqueID;
 	vertexShader = _vertexShader;
@@ -31,12 +31,12 @@ PBRMaterial::PBRMaterial(string _uniqueID,
 	metalness = nullptr;
 }
 
-PBRMaterial::PBRMaterial(string _uniqueID, 
-						 SimpleVertexShader* _vertexShader, 
-						 SimplePixelShader* _pixelShader, 
-						 Texture* _albedo, 
-						 Texture* _normal, 
-						 Texture* _roughness, 
+PBRMaterial::PBRMaterial(string _uniqueID,
+						 SimpleVertexShader* _vertexShader,
+						 SimplePixelShader* _pixelShader,
+						 Texture* _albedo,
+						 Texture* _normal,
+						 Texture* _roughness,
 						 Texture* _metalness) {
 	uniqueID = _uniqueID;
 	vertexShader = _vertexShader;

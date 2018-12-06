@@ -92,7 +92,7 @@ DirectX::XMFLOAT4 Material::GetColor() { return baseColor; }
 
 void Material::SetColor(DirectX::XMFLOAT4 _newColor) { baseColor = _newColor; }
 
-float Material::GetBaseSpecular() {	return baseSpecular; }
+float Material::GetBaseSpecular() { return baseSpecular; }
 
 void Material::SetBaseSpecular(float _newSpecular) { baseSpecular = _newSpecular; }
 
