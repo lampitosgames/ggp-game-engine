@@ -175,12 +175,12 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InputListener.cpp" />
     <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="Light.cpp" />
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshGen.cpp" />
+    <ClCompile Include="ParticleEmitter.cpp" />
     <ClCompile Include="PhysicsManager.cpp" />
     <ClCompile Include="PBRDemoScene.cpp" />
     <ClCompile Include="PBRMaterial.cpp" />
@@ -208,9 +208,7 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClInclude Include="Basis.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collisions.h" />
-    <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentManager.h" />
-    <ClInclude Include="ComponentTypes.h" />
     <ClInclude Include="DebugScene.h" />
     <ClInclude Include="DirLight.h" />
     <ClInclude Include="DXCore.h" />
@@ -229,6 +227,7 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshGen.h" />
+    <ClInclude Include="ParticleEmitter.h" />
     <ClInclude Include="PhysicsManager.h" />
     <ClInclude Include="PBRDemoScene.h" />
     <ClInclude Include="PBRMaterial.h" />

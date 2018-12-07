@@ -24,9 +24,9 @@ public:
 	//Blank material constructor
 	Material(std::string _uniqueID);
 	//Fully-parameterized constructor
-	Material(std::string _uniqueID, 
-			 SimpleVertexShader* _vertexShader, 
-			 SimplePixelShader* _pixelShader, 
+	Material(std::string _uniqueID,
+			 SimpleVertexShader* _vertexShader,
+			 SimplePixelShader* _pixelShader,
 			 DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
 			 float _specular = 0.0f);
 	//Texture-only constructor

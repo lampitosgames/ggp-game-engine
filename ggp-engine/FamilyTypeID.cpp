@@ -2,14 +2,12 @@
 #include "FamilyTypeID.h"
 
 
-namespace ECS
-{
-    class IComponent;
+namespace ECS {
+	class IComponent;
 
-    namespace Util
-    {
-        TypeID FamilyTypeID<IComponent>::s_count = 0u;
+	namespace Util {
+		TypeID FamilyTypeID<IComponent>::s_count = 0u;
 
-        template class FamilyTypeID<IComponent>;
-    }
+		template class FamilyTypeID<IComponent>;
+	}
 }

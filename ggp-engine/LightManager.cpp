@@ -59,14 +59,13 @@ void LightManager::UploadAllLights(SimplePixelShader* _pixelShader) {
 }
 
 #pragma region Directional Lights
-UINT LightManager::AddDirLight(GameObject* _gameObject, XMFLOAT4 _color, XMFLOAT3 _direction, float _diffuseIntensity, float _ambientIntensity) {
-	DirLight* tempDL = new DirLight(dlUID, _gameObject, _color, _direction, _diffuseIntensity, _ambientIntensity);;
-	dirLightUIDMap[dlUID] = tempDL;
-	dlUID++;
-	return dlUID - 1;
+DirLightID LightManager::AddDirLight(DirLight* _dirLight) {
+	dirLightUIDMap[dlCount] = _dirLight;
+	dlCount++;
+	return dlCount - 1;
 }
 
-DirLight* LightManager::GetDirLight(UINT _uniqueID) {
+DirLight* LightManager::GetDirLight(DirLightID _uniqueID) {
 	auto thisDL = dirLightUIDMap.find(_uniqueID);
 	//If found, return it.  Else, return nullptr
 	if (thisDL != dirLightUIDMap.end()) {
@@ -75,36 +74,24 @@ DirLight* LightManager::GetDirLight(UINT _uniqueID) {
 	return nullptr;
 }
 
-DirLightStruct LightManager::GetDirLightStruct(UINT _uniqueID) {
+DirLightStruct LightManager::GetDirLightStruct(DirLightID _uniqueID) {
 	DirLight* tempDL = GetDirLight(_uniqueID);
 	if (tempDL != nullptr) {
 		return tempDL->buildLightStruct();
 	}
 	return {};
 }
-
-void LightManager::DeleteDirLight(UINT _uniqueID) {
-	DirLight* dlTemp = GetDirLight(_uniqueID);
-	if (dlTemp) {
-		delete dlTemp;
-		dirLightUIDMap.erase(_uniqueID);
-	}
-}
 #pragma endregion
 
 #pragma region Point Lights
-UINT LightManager::AddPointLight( GameObject* _gameObject) {
-	return AddPointLight(_gameObject, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+
+PointLightID LightManager::AddPointLight(PointLight* _pointLight) {
+	pointLightUIDMap[plCount] = _pointLight;
+	plCount++;
+	return plCount - 1;
 }
 
-UINT LightManager::AddPointLight( GameObject* _gameObject, XMFLOAT4 _color) {
-	PointLight* tempPL = new PointLight(plUID, _gameObject, _color);
-	pointLightUIDMap[plUID] = tempPL;
-	plUID++;
-	return plUID - 1;
-}
-
-PointLight* LightManager::GetPointLight(UINT _uniqueID) {
+PointLight* LightManager::GetPointLight(PointLightID _uniqueID) {
 	auto thisPL = pointLightUIDMap.find(_uniqueID);
 	//If found, return it.  Else, return nullptr
 	if (thisPL != pointLightUIDMap.end()) {
@@ -113,36 +100,23 @@ PointLight* LightManager::GetPointLight(UINT _uniqueID) {
 	return nullptr;
 }
 
-PointLightStruct LightManager::GetPointLightStruct(UINT _uniqueID) {
+PointLightStruct LightManager::GetPointLightStruct(PointLightID _uniqueID) {
 	PointLight* tempPL = GetPointLight(_uniqueID);
 	if (tempPL != nullptr) {
 		return tempPL->buildLightStruct();
 	}
 	return {};
 }
-
-void LightManager::DeletePointLight(UINT _uniqueID) {
-	PointLight* plTemp = GetPointLight(_uniqueID);
-	if (plTemp) {
-		delete plTemp;
-		pointLightUIDMap.erase(_uniqueID);
-	}
-}
 #pragma endregion
 
 #pragma region Spot Lights
-UINT LightManager::AddSpotLight(GameObject* _gameObject) {
-	return AddSpotLight(_gameObject, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+SpotLightID LightManager::AddSpotLight(SpotLight* _spotLight) {
+	spotLightUIDMap[slCount] = _spotLight;
+	slCount++;
+	return slCount - 1;
 }
 
-UINT LightManager::AddSpotLight(GameObject* _gameObject, XMFLOAT4 _color) {
-	SpotLight* tempSL = new SpotLight(slUID, _gameObject, _color);
-	spotLightUIDMap[slUID] = tempSL;
-	slUID++;
-	return slUID - 1;
-}
-
-SpotLight* LightManager::GetSpotLight(UINT _uniqueID) {
+SpotLight* LightManager::GetSpotLight(PointLightID _uniqueID) {
 	auto thisSL = spotLightUIDMap.find(_uniqueID);
 	//If found, return it.  Else, return nullptr
 	if (thisSL != spotLightUIDMap.end()) {
@@ -151,67 +125,32 @@ SpotLight* LightManager::GetSpotLight(UINT _uniqueID) {
 	return nullptr;
 }
 
-SpotLightStruct LightManager::GetSpotLightStruct(UINT _uniqueID) {
+SpotLightStruct LightManager::GetSpotLightStruct(PointLightID _uniqueID) {
 	SpotLight* tempSpotL = GetSpotLight(_uniqueID);
 	if (tempSpotL != nullptr) {
 		return tempSpotL->buildLightStruct();
 	}
 	return {};
 }
-
-void LightManager::DeleteSpotLight(UINT _uniqueID) {
-	SpotLight* slTemp = GetSpotLight(_uniqueID);
-	if (slTemp) {
-		delete slTemp;
-		spotLightUIDMap.erase(_uniqueID);
-	}
-}
 #pragma endregion
 
-LightManager::LightManager() {
-}
+LightManager::LightManager() {}
 
 LightManager::~LightManager() {
 	Release();
 }
 
 void LightManager::Release() {
-	//Loop through and delete every point light
-	std::map<UINT, PointLight*>::iterator plIterator;
-	for (plIterator = pointLightUIDMap.begin(); plIterator != pointLightUIDMap.end(); ++plIterator) {
-		PointLight* plTemp = plIterator->second;
-		if (plTemp != nullptr) {
-			delete plTemp;
-		}
-	}
-	//Reset point light unique ID values
-	plUID = 0;
-	//Clear the map so the singleton can be reused.
-	pointLightUIDMap.clear();
-	
-	//Loop through and delete every spot light
-	std::map<UINT, SpotLight*>::iterator slIterator;
-	for (slIterator = spotLightUIDMap.begin(); slIterator != spotLightUIDMap.end(); ++slIterator) {
-		SpotLight* slTemp = slIterator->second;
-		if (slTemp != nullptr) {
-			delete slTemp;
-		}
-	}
-	//Reset spot light unique ID values
-	slUID = 0;
-	//Clear the map so the singleton can be reused.
-	spotLightUIDMap.clear();
-
-	//Loop through and delete every directional light
-	std::map<UINT, DirLight*>::iterator dlIterator;
-	for (dlIterator = dirLightUIDMap.begin(); dlIterator != dirLightUIDMap.end(); ++dlIterator) {
-		DirLight* dlTemp = dlIterator->second;
-		if (dlTemp != nullptr) {
-			delete dlTemp;
-		}
-	}
 	//Reset directional light unique ID values
-	dlUID = 0;
+	dlCount = 0;
 	//Clear the map so the singleton can be reused.
 	dirLightUIDMap.clear();
+	//Reset point light unique ID values
+	plCount = 0;
+	//Clear the map so the singleton can be reused.
+	pointLightUIDMap.clear();
+	//Reset spot light unique ID values
+	slCount = 0;
+	//Clear the map so the singleton can be reused.
+	spotLightUIDMap.clear();
 }

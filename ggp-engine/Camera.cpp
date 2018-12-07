@@ -5,13 +5,13 @@
 
 using namespace DirectX;
 
-Camera::Camera(std::string _uniqueID, 
-			   float _fov, 
-			   float _aspectRatio, 
-			   float _nearPlane, 
-			   float _farPlane, 
-			   XMFLOAT3 _position, 
-			   XMFLOAT3 _rotation, 
+Camera::Camera(std::string _uniqueID,
+			   float _fov,
+			   float _aspectRatio,
+			   float _nearPlane,
+			   float _farPlane,
+			   XMFLOAT3 _position,
+			   XMFLOAT3 _rotation,
 			   XMFLOAT3 _scale) : GameObject(_uniqueID, _position, _rotation, _scale) {
 	//This is a camera object
 	type = GOType::CAMERA;
@@ -42,7 +42,7 @@ void Camera::SetFOV(float _fovAngle) {
 	CalculateProjectionMatrix();
 }
 
-float Camera::GetFOVDegrees() {	return 57.2958f * fov; }
+float Camera::GetFOVDegrees() { return 57.2958f * fov; }
 
 void Camera::SetFOVDegrees(float _fovAngle) {
 	fov = _fovAngle * (3.14159f / 180.0f);
@@ -51,7 +51,7 @@ void Camera::SetFOVDegrees(float _fovAngle) {
 
 float Camera::GetAspectRatio() { return aspectRatio; }
 
-void Camera::SetAspectRatio(float _aspectRatio) { 
+void Camera::SetAspectRatio(float _aspectRatio) {
 	aspectRatio = _aspectRatio;
 	CalculateProjectionMatrix();
 }

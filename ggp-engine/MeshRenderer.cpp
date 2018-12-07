@@ -9,19 +9,18 @@
 
 MeshRenderer::MeshRenderer(GameObject* _gameObject) {
 	gameObject = _gameObject;
-
-    owner = _gameObject->GetUniqueID();
+	owner = _gameObject->GetUniqueID();
 	mesh = nullptr;
 	material = nullptr;
-    RenderManager::GetInstance()->AddMeshRenderer( this );
+	RenderManager::GetInstance()->AddMeshRenderer(this);
 }
 
-MeshRenderer::MeshRenderer( GameObject* _gameObject, Mesh* _mesh, Material* _material) {
+MeshRenderer::MeshRenderer(GameObject* _gameObject, Mesh* _mesh, Material* _material) {
 	gameObject = _gameObject;
-    owner = _gameObject->GetUniqueID();
+	owner = _gameObject->GetUniqueID();
 	mesh = _mesh;
 	material = _material;
-    RenderManager::GetInstance()->AddMeshRenderer( this );
+	RenderManager::GetInstance()->AddMeshRenderer(this);
 }
 
 MeshRenderer::~MeshRenderer() {}

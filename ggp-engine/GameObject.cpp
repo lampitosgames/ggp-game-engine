@@ -13,18 +13,18 @@ using namespace DirectX;
 map<std::string, GameObject*> GameObject::goUIDMap = map<std::string, GameObject*>();
 
 
-GameObject::GameObject(string _uniqueID, XMFLOAT3 _position, XMFLOAT3 _rotation, XMFLOAT3 _scale ) {
+GameObject::GameObject(string _uniqueID, XMFLOAT3 _position, XMFLOAT3 _rotation, XMFLOAT3 _scale) {
 	Init();
 	//Ensure the provided ID is unique
 	GenerateUID(_uniqueID);
 	//Store unique ID
 	uniqueID = _uniqueID;
 
-    transform = Transform( _position, _rotation, _scale );
+	transform = Transform(_position, _rotation, _scale);
 
-    componentManager = ECS::ComponentManager::GetInstance();
+	componentManager = ECS::ComponentManager::GetInstance();
 
-    //Base constructor, this is a game object
+	//Base constructor, this is a game object
 	type = GOType::GAME_OBJECT;
 	//Set this object as active
 	isActive = true;
@@ -58,14 +58,10 @@ void GameObject::Update(float _deltaTime) {
 
 void GameObject::Input(InputEvent _event) {}
 
-void GameObject::SetParent(GameObject* _newParent) { 
+void GameObject::SetParent(GameObject* _newParent) {
 	//Store pointer to new parent
 	parent = _newParent;
-	//Store whether or not the parent has a transform. This ensures we don't have to make the check every update, only when parent changes
-	parentHasTransform = parent->HasTransform();
-    if ( parentHasTransform ) {
-        transform.parent = &_newParent->transform;
-    }
+	transform.parent = &_newParent->transform;
 }
 
 GameObject* GameObject::GetParent() {
@@ -74,10 +70,7 @@ GameObject* GameObject::GetParent() {
 
 void GameObject::AddChild(GameObject* _newChild) {
 	_newChild->SetParent(this);
-    if ( _newChild->HasTransform() ) {
-        _newChild->transform.parent = &transform;
-    }
-
+	_newChild->transform.parent = &transform;
 	children.push_back(_newChild);
 	++childCount;
 }
@@ -145,26 +138,6 @@ GameObject* GameObject::GetChild(UINT _index) {
 		return children[_index];
 	}
 	return nullptr;
-}
-
-bool GameObject::HasTransform() {
-	return true;
-}
-
-void GameObject::AddInputListener() {
-	components[CompType::INPUT_LISTENER] = inputManager->AddInputListener(this);
-}
-
-void GameObject::AddDirLight(DirectX::XMFLOAT4 _color, DirectX::XMFLOAT3 _direction, float _diffuseIntensity, float _ambientIntensity) {
-	components[CompType::DIRECTIONAL_LIGHT] = lightManager->AddDirLight(this, _color, _direction, _diffuseIntensity, _ambientIntensity);
-}
-
-void GameObject::AddPointLight( DirectX::XMFLOAT4 _color ) {
-    components[ CompType::POINT_LIGHT ] = lightManager->AddPointLight( this, _color );
-}
-
-void GameObject::AddSpotLight(DirectX::XMFLOAT4 _color) {
-	components[CompType::SPOT_LIGHT] = lightManager->AddSpotLight(this, _color);
 }
 
 string GameObject::GetUniqueID() { return uniqueID; }

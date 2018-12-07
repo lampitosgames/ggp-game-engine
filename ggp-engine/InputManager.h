@@ -8,16 +8,16 @@
 class InputListener;
 class GameObject;
 
-typedef unsigned int UINT;
+typedef UINT InputListenerID;
 
 class InputManager {
 	//Singleton pointer
 	static InputManager* instance;
 
 	//Unique member id given to each inputListener
-	UINT ilUID = 0;
+	InputListenerID ilCount = 0;
 	//Map of all input listeners
-	std::map<UINT, InputListener*> inputListenerUIDMap;
+	std::map<InputListenerID, InputListener*> inputListenerUIDMap;
 
 	//Is the mouse locked to the window?
 	bool mouseLocked;
@@ -34,19 +34,17 @@ public:
 	static InputManager* GetInstance();
 	static void ReleaseInstance();
 
-    // We don't want anything making copies of this class so delete these operators
-    InputManager( InputManager const& ) = delete;
-    void operator=( InputManager const& ) = delete;
+	// We don't want anything making copies of this class so delete these operators
+	InputManager(InputManager const&) = delete;
+	void operator=(InputManager const&) = delete;
 
 	//Main update function
 	void Update();
 
 	//Create (and return the UID of) a new input listener
-	UINT AddInputListener(GameObject* _gameObject);
+	InputListenerID AddInputListener(InputListener* _inputListener);
 	//Get an input listener given its UID
-	InputListener* GetInputListener(UINT _uniqueID);
-	//Delete an input listener
-	void DeleteInputListener(UINT _uniqueID);
+	InputListener* GetInputListener(InputListenerID _uniqueID);
 
 	/*
 		Public functions to check different action states
