@@ -9,6 +9,7 @@
 #include "PBRMaterial.h"
 #include "Mesh.h"
 #include "MeshRenderer.h"
+#include "InputListener.h"
 
 using namespace DirectX;
 using namespace std;

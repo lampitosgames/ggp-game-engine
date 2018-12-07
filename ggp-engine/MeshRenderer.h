@@ -19,7 +19,6 @@ class MeshRenderer
 	Mesh* mesh;
 	Material* material;
 public:
-	//GameObject * gameObject;
 	MeshRenderer(GameObject* _gameObject);
 	MeshRenderer(GameObject* _gameObject, Mesh* _mesh, Material* _material);
 	~MeshRenderer();

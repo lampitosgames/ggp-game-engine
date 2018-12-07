@@ -1,6 +1,13 @@
 #include "stdafx.h"
 #include <Windows.h>
 #include "Game.h"
+#include <iostream>
+
+//Overwrite the new keyword in debug mode.  Allows us to create memory allocation break points
+#ifdef DEBUG
+#define DEBUG_NEW new( _NORMAL_BLOCK, __FILE__, __LINE__) 
+#define new DEBUG_NEW
+#endif
 
 // --------------------------------------------------------
 // Entry point for a graphical (non-console) Windows application
@@ -11,12 +18,13 @@ int WINAPI WinMain(
 	LPSTR lpCmdLine,			// Command line params
 	int nCmdShow)				// How the window should be shown (we ignore this)
 {
-	#if defined(DEBUG) | defined(_DEBUG)
-		// Enable memory leak detection as a quick and dirty
-		// way of determining if we forgot to clean something up
-		//  - You may want to use something more advanced, like Visual Leak Detector
+	#ifdef DEBUG
+	// Enable memory leak detection as a quick and dirty
+	// way of determining if we forgot to clean something up
+	//  - You may want to use something more advanced, like Visual Leak Detector
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-
+	// TO DEBUG MEMORY LEAKS: uncomment the next line and change the number to the heap location
+	//_crtBreakAlloc = 1993;
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 
 	#endif
@@ -65,5 +73,6 @@ int WINAPI WinMain(
 
 	// Begin the message and game loop, and then return
 	// whatever we get back once the game loop is over
-	return dxGame.Run();
+	HRESULT dxGameResult = dxGame.Run();
+	return dxGameResult;
 }

@@ -17,10 +17,8 @@ FlyingCamera::FlyingCamera(string _uniqueID,
 						   float _farPlane,
 						   XMFLOAT3 _position,
 						   XMFLOAT3 _rotation,
-						   XMFLOAT3 _scale) : Camera(_uniqueID, _fov, _aspectRatio, _nearPlane, _farPlane, _position, _rotation, _scale) {}
-
-void FlyingCamera::Start() {
-	AddComponent<InputListener>(this);
+						   XMFLOAT3 _scale) : Camera(_uniqueID, _fov, _aspectRatio, _nearPlane, _farPlane, _position, _rotation, _scale) {
+	this->AddComponent<InputListener>(this);
 }
 
 void FlyingCamera::Update(float _deltaTime) {
