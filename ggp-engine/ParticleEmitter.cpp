@@ -1,7 +1,12 @@
 #include "stdafx.h"
 
 #include "ParticleEmitter.h"
+#include "GameObject.h"
+#include "RenderManager.h"
 
+
+
+#pragma region Particle Data Struct
 ParticleData::ParticleData() { generate(512); }
 
 ParticleData::ParticleData(UINT _maxCount) { generate(_maxCount); }
@@ -26,8 +31,8 @@ void ParticleData::generate(UINT _maxCount) {
 	endSize = new float[_maxCount];
 	startColor = new float4[_maxCount];
 	endColor = new float4[_maxCount];
-	startLifetime = new float[_maxCount];
-	remainingLifetime = new float[_maxCount];
+	startLife = new float[_maxCount];
+	remainLife = new float[_maxCount];
 	alive = new bool[_maxCount];
 }
 
@@ -41,8 +46,8 @@ void ParticleData::release() {
 	delete[] endSize;
 	delete[] startColor;
 	delete[] endColor;
-	delete[] startLifetime;
-	delete[] remainingLifetime;
+	delete[] startLife;
+	delete[] remainLife;
 	delete[] alive;
 }
 
@@ -66,11 +71,17 @@ void ParticleData::swap(UINT _id1, UINT _id2) {
 	std::swap(endSize[_id1], endSize[_id2]);
 	std::swap(startColor[_id1], startColor[_id2]);
 	std::swap(endColor[_id1], endColor[_id2]);
-	std::swap(startLifetime[_id1], startLifetime[_id2]);
-	std::swap(remainingLifetime[_id1], remainingLifetime[_id2]);
+	std::swap(startLife[_id1], startLife[_id2]);
+	std::swap(remainLife[_id1], remainLife[_id2]);
 	std::swap(alive[_id1], alive[_id2]);
 }
+#pragma endregion
 
-ParticleEmitter::ParticleEmitter(GameObject* _gameObject) {}
+#pragma region Particle Emitter Component
+ParticleEmitter::ParticleEmitter(GameObject* _gameObject) {
+	gameObject = _gameObject;
+	owner = _gameObject->GetUniqueID();
+}
 
 ParticleEmitter::~ParticleEmitter() {}
+#pragma endregion

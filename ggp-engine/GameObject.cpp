@@ -5,6 +5,7 @@
 #include "RenderManager.h"
 #include "InputManager.h"
 #include "LightManager.h"
+#include "ParticleManager.h"
 #include "ComponentManager.h"
 
 using namespace std;
@@ -176,6 +177,7 @@ void GameObject::Init() {
 	inputManager = InputManager::GetInstance();
 	resourceManager = ResourceManager::GetInstance();
 	lightManager = LightManager::GetInstance();
+	particleManager = ParticleManager::GetInstance();
 }
 
 void GameObject::Release() {

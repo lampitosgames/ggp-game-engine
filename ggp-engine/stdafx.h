@@ -26,6 +26,3 @@
 // Typedefs -----------------------------
 
 typedef unsigned int UINT;
-typedef DirectX::XMFLOAT2 float2;
-typedef DirectX::XMFLOAT3 float3;
-typedef DirectX::XMFLOAT4 float4;

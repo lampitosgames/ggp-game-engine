@@ -2,6 +2,7 @@
 #define GGP_PARTICLE_EMITTER_H
 
 #include <DirectXMath.h>
+#include "Math.h"
 #include <d3d11.h>
 #include "BaseComponent.h"
 class SimpleVertexShader;
@@ -26,8 +27,8 @@ public:
 	float4* startColor;
 	float4* endColor;
 
-	float* startLifetime;
-	float* remainingLifetime;
+	float* startLife;
+	float* remainLife;
 	bool* alive;
 
 	//Tracking data
@@ -45,7 +46,6 @@ public:
 	void wakeNext();
 	void swap(UINT _id1, UINT _id2);
 };
-
 
 class ParticleEmitter : ECS::BaseComponent<ParticleEmitter> {
 	ParticleData particles;

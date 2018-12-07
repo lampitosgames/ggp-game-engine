@@ -88,7 +88,8 @@ void RenderManager::SetSkyboxPS(SimplePixelShader * aSkyPS) {
 	skyboxPS = aSkyPS;
 }
 
-void RenderManager::Render(ID3D11DeviceContext* _dxContext) {
+void RenderManager::Render() {
+	ID3D11DeviceContext* _dxContext = ResourceManager::GetContextPointer();
 	//Loop through and render every object
 	std::map<UINT, MeshRenderer*>::iterator mrIterator;
 	for (mrIterator = meshRendererUIDMap.begin(); mrIterator != meshRendererUIDMap.end(); ++mrIterator) {

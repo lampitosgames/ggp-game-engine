@@ -37,6 +37,7 @@ Game::Game(HINSTANCE hInstance)
 	renderManager = RenderManager::GetInstance();
 	inputManager = InputManager::GetInstance();
 	lightManager = LightManager::GetInstance();
+	particleManager = ParticleManager::GetInstance();
 	physicsManager = Physics::PhysicsManager::GetInstance();
 	componentManager = ECS::ComponentManager::GetInstance();
 
@@ -64,6 +65,7 @@ Game::~Game() {
 	renderManager->ReleaseInstance();
 	inputManager->ReleaseInstance();
 	lightManager->ReleaseInstance();
+	particleManager->ReleaseInstance();
 	physicsManager->ReleaseInstance();
 	ECS::ComponentManager::ReleaseInstance();
 
@@ -91,6 +93,7 @@ void Game::Init() {
 
 	//Call start on the singletons that need it
 	renderManager->Start();
+	particleManager->Start();
 	//Call start on the active scene
 	activeScene->Start();
 }
@@ -118,6 +121,7 @@ void Game::Update(float deltaTime, float totalTime) {
 	HandleMouseMove();
 
 	inputManager->Update();
+	particleManager->Update(deltaTime);
 	physicsManager->UpdatePhysics(deltaTime);
 	activeScene->Update(deltaTime);
 }
@@ -140,7 +144,7 @@ void Game::Draw(float deltaTime, float totalTime) {
 		0);
 
 	//Call render on the renderManager
-	renderManager->Render(dxContext);
+	renderManager->Render();
 
 	#if defined(ENABLE_UI)
 		// Create a new IMGui frame

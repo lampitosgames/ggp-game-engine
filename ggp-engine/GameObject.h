@@ -14,13 +14,14 @@
 #include <vector>
 #include "GameObjectTypes.h"
 #include "InputEvent.h"
-#include "InputManager.h"
-#include "LightManager.h"
 #include "Transform.h"
 #include "ComponentManager.h"
 
+class InputManager;
+class LightManager;
 class ResourceManager;
 class RenderManager;
+class ParticleManager;
 
 typedef unsigned int UINT;
 
@@ -50,6 +51,7 @@ protected:
 	InputManager* inputManager;
 	ResourceManager* resourceManager;
 	LightManager* lightManager;
+	ParticleManager* particleManager;
 
 	ECS::ComponentManager* componentManager = nullptr;
 
