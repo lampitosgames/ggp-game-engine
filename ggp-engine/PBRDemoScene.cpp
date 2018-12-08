@@ -50,18 +50,8 @@ void PBRDemoScene::Init() {
 	}
 
 	//Create a single, white directional light
-	EmitterOptions emitterOpts = { 512 };
 	GameObject* dirLight = new GameObject("dirLight1");
 	AddChild(dirLight);
-	dirLight->AddComponent<DirLight>(dirLight, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 1.0f), 0.8f, 0.00f);
-	dirLight->AddComponent<InputListener>(dirLight);
-	dirLight->AddComponent<MeshRenderer>(dirLight, sphereMesh, pbrMats[3]);
-	dirLight->AddComponent<ParticleEmitter>(dirLight, emitterOpts);
-	dirLight->AddComponent<PointLight>(dirLight, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
-	dirLight->AddComponent<RigidBody>(dirLight, 1.0f, EPhysicsLayer::STATIC);
-	dirLight->AddComponent<SpotLight>(dirLight, XMFLOAT4(0.239f, 0.0f, 0.337f, 1.0f));
-	dirLight->transform.position.y += 10.0f;
-
 	GameObject* dirLight2 = new GameObject("dirLight2");
 	AddChild(dirLight2);
 	dirLight2->AddComponent<DirLight>(dirLight2, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, -0.25f, 0.0f), 0.2f, 0.00f);
@@ -77,7 +67,8 @@ void PBRDemoScene::Init() {
 	pointLight1->transform.position.y += 4.0f;
 
 	//Debug particle emitter
-	//pointLight1->AddComponent<ParticleEmitter>(pointLight1, emitterOpts);
+	EmitterOptions emitterOpts = { 512 };
+	pointLight1->AddComponent<ParticleEmitter>(pointLight1, emitterOpts);
 
 	GameObject* pointLight2 = new GameObject("pointLight2");
 	AddChild(pointLight2);

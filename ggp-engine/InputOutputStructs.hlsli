@@ -27,7 +27,7 @@ struct VertexToPixel {
 // Struct representing the particle shader input
 struct ParticleVertexShaderInput {
 	//Per-vertex
-	float2 uv           : TEXCOORD0;
+	float2 uv           : TEXCOORD;
 	//Per-instance
 	float3 iPos         : INITIAL_POSITION;
 	float3 iVel         : INITIAL_VELOCITY;

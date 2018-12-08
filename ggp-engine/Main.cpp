@@ -23,7 +23,7 @@ int WINAPI WinMain(
 	//  - You may want to use something more advanced, like Visual Leak Detector
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	// TO DEBUG MEMORY LEAKS: uncomment the next line and change the number to the heap location
-	//_crtBreakAlloc = 1550;
+	//_crtBreakAlloc = 1878;
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 
 	#endif

@@ -573,6 +573,12 @@ SimpleVertexShader::~SimpleVertexShader() {
 	CleanUp();
 }
 
+void SimpleVertexShader::SetInputLayout(ID3D11InputLayout * newLayout, bool perInstanceCompatible) {
+	if (inputLayout) { inputLayout->Release(); inputLayout = 0; }
+	this->inputLayout = newLayout;
+	this->perInstanceCompatible = perInstanceCompatible;
+}
+
 // --------------------------------------------------------
 // Handles cleaning up shader and base class clean up
 // --------------------------------------------------------

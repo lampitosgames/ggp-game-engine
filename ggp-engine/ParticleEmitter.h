@@ -129,8 +129,9 @@ private:
 	void GenerateParticleBuffers(ID3D11Device* _dxDevice);
 	void UploadParticleBuffers(ID3D11DeviceContext* _dxContext);
 
-	//Helper method for creating all of the instance buffers
+	//Helper methods for creating/updating all of the instance buffers
 	void MakeDynamicBuffer(UINT _itemSize, vbSlots _type, ID3D11Device* _dxDevice);
+	void UpdateDynamicBuffer(UINT _itemSize, vbSlots _type, void* _newData, ID3D11DeviceContext* _dxContext);
 
 	//Kill a particle
 	void Kill(UINT _id);

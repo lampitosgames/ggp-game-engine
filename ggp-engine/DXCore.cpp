@@ -2,6 +2,7 @@
 
 #include "DXCore.h"
 
+#include <dxgidebug.h>
 #include <WindowsX.h>
 #include <sstream>
 

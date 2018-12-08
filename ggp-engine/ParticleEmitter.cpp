@@ -6,6 +6,7 @@
 #include "GameObject.h"
 #include "RenderManager.h"
 #include "ResourceManager.h"
+#include "Camera.h"
 
 #pragma region Particle Data Struct
 ParticleData::ParticleData(UINT _maxCount) { generate(_maxCount); }
@@ -55,9 +56,6 @@ void ParticleData::swap(UINT _id1, UINT _id2) {
 
 
 #pragma region Particle Emitter Component
-//const UINT ParticleEmitter::bufferCount = 12;
-
-
 ParticleEmitter::ParticleEmitter(GameObject* _gameObject, EmitterOptions _settings) {
 	gameObject = _gameObject;
 	owner = _gameObject->GetUniqueID();
@@ -67,6 +65,9 @@ ParticleEmitter::ParticleEmitter(GameObject* _gameObject, EmitterOptions _settin
 	particles.generate(settings.maxParticleCount);
 	forceBufferUpdate = false;
 	GenerateParticleBuffers(ResourceManager::GetDevicePointer());
+	for (UINT i = 0; i < 20; i++) {
+		WakeNext();
+	}
 }
 
 ParticleEmitter::~ParticleEmitter() {
@@ -78,15 +79,33 @@ ParticleEmitter::~ParticleEmitter() {
 
 void ParticleEmitter::Update(float _dt) {
 	//Don't update all buffers unless we need to
-	forceBufferUpdate = false;
+
+	for (UINT i = 0; i < particles.aliveCount; i++) {
+		particles.remainLife[i] -= _dt;
+		if (particles.remainLife[i] <= 0.0f) {
+			particles.kill(i);
+		}
+	}
 
 	//Last thing we do
 	UploadParticleBuffers(ResourceManager::GetContextPointer());
+	forceBufferUpdate = false;
 }
 
 void ParticleEmitter::Render() {
 	ID3D11DeviceContext* dxContext = ResourceManager::GetContextPointer();
+
+	particleVS->SetMatrix4x4("view", RenderManager::GetInstance()->GetActiveCamera()->GetViewMatrix());
+	particleVS->SetMatrix4x4("projection", RenderManager::GetInstance()->GetActiveCamera()->GetProjectionMatrix());
+	particleVS->CopyAllBufferData();
+
+	particleVS->SetShader();
+	particlePS->SetShader();
+
 	dxContext->IASetVertexBuffers(0, bufferCount, buffers, strides, offsets);
+	dxContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+	dxContext->DrawIndexedInstanced(6, particles.aliveCount, 0, 0, 0);
 }
 
 #pragma region Get/Set
@@ -123,14 +142,20 @@ void ParticleEmitter::GenerateParticleBuffers(ID3D11Device * _dxDevice) {
 }
 
 void ParticleEmitter::UploadParticleBuffers(ID3D11DeviceContext * _dxContext) {
-	//If no new particles were created/destroyed
-	if (!forceBufferUpdate) {
-		//The only buffer that needs updating is remainLife
-		//Everything else is lerped on the GPU
-	}
-	//There were updates to the number of active particles
-	else {
-		//Update all buffers
+	//Only update the remainLife buffer by default
+	UpdateDynamicBuffer(sizeof(float), vbSlots::BREMAIN_LIFE, &particles.remainLife, _dxContext);
+
+	if (forceBufferUpdate) {
+		UpdateDynamicBuffer(sizeof(float3), vbSlots::BPOS, &particles.iPos, _dxContext);
+		UpdateDynamicBuffer(sizeof(float3), vbSlots::BVEL, &particles.iVel, _dxContext);
+		UpdateDynamicBuffer(sizeof(float3), vbSlots::BACCEL, &particles.accel, _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BROT, &particles.iRot, _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BANGULAR_VEL, &particles.angularVel, _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BSTART_SIZE, &particles.startSize, _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BEND_SIZE, &particles.endSize, _dxContext);
+		UpdateDynamicBuffer(sizeof(float4), vbSlots::BSTART_COLOR, &particles.startColor, _dxContext);
+		UpdateDynamicBuffer(sizeof(float4), vbSlots::BEND_COLOR, &particles.endColor, _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BSTART_LIFE, &particles.startLife, _dxContext);
 	}
 }
 
@@ -147,6 +172,13 @@ void ParticleEmitter::MakeDynamicBuffer(UINT _itemSize, vbSlots _type, ID3D11Dev
 	ThrowIfFail(_dxDevice->CreateBuffer(&buffDesc, 0, &buffers[_type]));
 }
 
+void ParticleEmitter::UpdateDynamicBuffer(UINT _itemSize, vbSlots _type, void * _newData, ID3D11DeviceContext * _dxContext) {
+	D3D11_MAPPED_SUBRESOURCE mapped = {};
+	_dxContext->Map(buffers[_type], 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+	memcpy(mapped.pData, _newData, sizeof(_itemSize) * particles.aliveCount);
+	_dxContext->Unmap(buffers[_type], 0);
+}
+
 void ParticleEmitter::Kill(UINT _id) {
 	particles.kill(_id);
 	forceBufferUpdate = true;
@@ -156,6 +188,12 @@ void ParticleEmitter::WakeNext() {
 	particles.wakeNext();
 	forceBufferUpdate = true;
 	//TODO: Set the new particle's properties according to the emitter's settings
+	UINT i = particles.aliveCount - 1;
+	particles.iPos[i] = float3(0.0f, (float)i, 0.0f);
+	particles.iVel[i] = float3(0.0f, 0.0f, 0.0f);
+	particles.startLife[i] = 10.0f;
+	particles.remainLife[i] = 10.0f;
+	particles.startColor[i] = float4(1.0f, 0.0f, 0.0f, 1.0f);
 }
 void ParticleEmitter::ThrowIfFail(HRESULT _result) {
 	if (FAILED(_result)) {
