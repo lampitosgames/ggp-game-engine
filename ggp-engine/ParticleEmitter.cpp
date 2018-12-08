@@ -147,6 +147,7 @@ void ParticleEmitter::UploadParticleBuffers(ID3D11DeviceContext * _dxContext) {
 	//Only update the remainLife buffer by default
 	UpdateDynamicBuffer(sizeof(float), vbSlots::BREMAIN_LIFE, particles.remainLife.get(), _dxContext);
 
+	if (forceBufferUpdate) {
 		UpdateDynamicBuffer(sizeof(float3), vbSlots::BPOS, particles.iPos.get(), _dxContext);
 		UpdateDynamicBuffer(sizeof(float3), vbSlots::BVEL, particles.iVel.get(), _dxContext);
 		UpdateDynamicBuffer(sizeof(float3), vbSlots::BACCEL, particles.accel.get(), _dxContext);
@@ -157,7 +158,7 @@ void ParticleEmitter::UploadParticleBuffers(ID3D11DeviceContext * _dxContext) {
 		UpdateDynamicBuffer(sizeof(float4), vbSlots::BSTART_COLOR, particles.startColor.get(), _dxContext);
 		UpdateDynamicBuffer(sizeof(float4), vbSlots::BEND_COLOR, particles.endColor.get(), _dxContext);
 		UpdateDynamicBuffer(sizeof(float), vbSlots::BSTART_LIFE, particles.startLife.get(), _dxContext);
-	
+	}
 }
 
 void ParticleEmitter::MakeDynamicBuffer(UINT _itemSize, vbSlots _type, void* _initData, ID3D11Device* _dxDevice) {
@@ -194,6 +195,7 @@ void ParticleEmitter::WakeNext() {
 	particles.wakeNext();
 	forceBufferUpdate = true;
 	//TODO: Set the new particle's properties according to the emitter's settings
+	//Currently this is just test data.
 	UINT i = particles.aliveCount - 1;
 	particles.iPos[i] = float3(-1.0f * i, 0.0f, 0.0f);
 	particles.iVel[i] = float3(0.0f, 0.0f, 0.0f);
