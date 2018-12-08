@@ -14,16 +14,18 @@ ParticleVertexToPixel main(ParticleVertexShaderInput input) {
 	//Calculate position using kinematics and constant acceleration
 	float3 position = input.iPos + input.iVel * time + 0.5 * input.accel * time * time;
 
+	float normalizedTime = map(input.remainLife, 0.0f, input.startLife, 0.0f, 1.0f);
+	output.color = input.startColor * normalizedTime + input.endColor * (1 - normalizedTime);
+	float size = input.startSize * normalizedTime + input.endSize * (1 - normalizedTime);
 
 	float2 offset = input.uv * 2 - 1;
 	offset.y *= -1;
-	position.xy += offset;
+	position.xy += offset * size;
 
 	matrix viewProj = mul(view, projection);
 	output.position = mul(float4(position, 1.0f), viewProj);
 
 	output.uv = input.uv;
-	output.color = float4(map(input.remainLife, 0.0f, 10.0f, 0.0f, 1.0f), 0.0f, 0.0f, 1.0f);
 	// Whatever we return will make its way through the pipeline to the
 	// next programmable stage we're using (the pixel shader for now)
 	return output;

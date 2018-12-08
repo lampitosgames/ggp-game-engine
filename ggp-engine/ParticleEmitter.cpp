@@ -66,7 +66,8 @@ ParticleEmitter::ParticleEmitter(GameObject* _gameObject, EmitterOptions _settin
 	particles.generate(settings.maxParticleCount);
 	forceBufferUpdate = false;
 	GenerateParticleBuffers(ResourceManager::GetDevicePointer());
-	for (UINT i = 0; i < 20; i++) {
+
+	while (particles.aliveCount < particles.particleCount) {
 		WakeNext();
 	}
 }
@@ -80,7 +81,6 @@ ParticleEmitter::~ParticleEmitter() {
 
 void ParticleEmitter::Update(float _dt) {
 	//Don't update all buffers unless we need to
-
 	for (UINT i = 0; i < particles.aliveCount; i++) {
 		particles.remainLife[i] -= _dt;
 		if (particles.remainLife[i] <= 0.0f) {
@@ -88,7 +88,6 @@ void ParticleEmitter::Update(float _dt) {
 			forceBufferUpdate = true;
 		}
 	}
-	std::cout << particles.remainLife[0] << std::endl;
 
 	//Last thing we do
 	UploadParticleBuffers(ResourceManager::GetContextPointer());
@@ -148,7 +147,6 @@ void ParticleEmitter::UploadParticleBuffers(ID3D11DeviceContext * _dxContext) {
 	//Only update the remainLife buffer by default
 	UpdateDynamicBuffer(sizeof(float), vbSlots::BREMAIN_LIFE, particles.remainLife.get(), _dxContext);
 
-	if (forceBufferUpdate) {
 		UpdateDynamicBuffer(sizeof(float3), vbSlots::BPOS, particles.iPos.get(), _dxContext);
 		UpdateDynamicBuffer(sizeof(float3), vbSlots::BVEL, particles.iVel.get(), _dxContext);
 		UpdateDynamicBuffer(sizeof(float3), vbSlots::BACCEL, particles.accel.get(), _dxContext);
@@ -159,7 +157,7 @@ void ParticleEmitter::UploadParticleBuffers(ID3D11DeviceContext * _dxContext) {
 		UpdateDynamicBuffer(sizeof(float4), vbSlots::BSTART_COLOR, particles.startColor.get(), _dxContext);
 		UpdateDynamicBuffer(sizeof(float4), vbSlots::BEND_COLOR, particles.endColor.get(), _dxContext);
 		UpdateDynamicBuffer(sizeof(float), vbSlots::BSTART_LIFE, particles.startLife.get(), _dxContext);
-	}
+	
 }
 
 void ParticleEmitter::MakeDynamicBuffer(UINT _itemSize, vbSlots _type, void* _initData, ID3D11Device* _dxDevice) {
@@ -180,7 +178,8 @@ void ParticleEmitter::MakeDynamicBuffer(UINT _itemSize, vbSlots _type, void* _in
 }
 
 void ParticleEmitter::UpdateDynamicBuffer(UINT _itemSize, vbSlots _type, void * _newData, ID3D11DeviceContext * _dxContext) {
-	D3D11_MAPPED_SUBRESOURCE mapped = {};
+	D3D11_MAPPED_SUBRESOURCE mapped;
+	ZeroMemory(&mapped, sizeof(D3D11_MAPPED_SUBRESOURCE));
 	_dxContext->Map(buffers[_type], 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
 	memcpy(mapped.pData, _newData, sizeof(_itemSize) * particles.aliveCount);
 	_dxContext->Unmap(buffers[_type], 0);
@@ -196,12 +195,12 @@ void ParticleEmitter::WakeNext() {
 	forceBufferUpdate = true;
 	//TODO: Set the new particle's properties according to the emitter's settings
 	UINT i = particles.aliveCount - 1;
-	particles.iPos[i] = float3(-3.0f * i, 0.0f, 0.0f);
+	particles.iPos[i] = float3(-1.0f * i, 0.0f, 0.0f);
 	particles.iVel[i] = float3(0.0f, 0.0f, 0.0f);
-	particles.accel[i] = float3(0.0f, 1.0f, 0.0f);
+	particles.accel[i] = float3(0.0f, 0.0f, 0.0f);
 	particles.iRot[i] = 0.0f;
 	particles.angularVel[i] = 0.0f;
-	particles.startSize[i] = 0.1f;
+	particles.startSize[i] = 0.5f;
 	particles.endSize[i] = 0.01f;
 	particles.startColor[i] = float4(1.0f, 0.0f, 0.0f, 1.0f);
 	particles.endColor[i] = float4(0.0f, 0.0f, 1.0f, 1.0f);
