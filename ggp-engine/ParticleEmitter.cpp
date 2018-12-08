@@ -7,6 +7,7 @@
 #include "RenderManager.h"
 #include "ResourceManager.h"
 #include "Camera.h"
+#include <iostream>
 
 #pragma region Particle Data Struct
 ParticleData::ParticleData(UINT _maxCount) { generate(_maxCount); }
@@ -84,8 +85,10 @@ void ParticleEmitter::Update(float _dt) {
 		particles.remainLife[i] -= _dt;
 		if (particles.remainLife[i] <= 0.0f) {
 			particles.kill(i);
+			forceBufferUpdate = true;
 		}
 	}
+	std::cout << particles.remainLife[0] << std::endl;
 
 	//Last thing we do
 	UploadParticleBuffers(ResourceManager::GetContextPointer());
@@ -128,38 +131,38 @@ void ParticleEmitter::GenerateParticleBuffers(ID3D11Device * _dxDevice) {
 	strides[vbSlots::BVERTEX_DATA] = sizeof(float2);
 
 	//Create a buffer for every particle property
-	MakeDynamicBuffer(sizeof(float3), vbSlots::BPOS, _dxDevice);
-	MakeDynamicBuffer(sizeof(float3), vbSlots::BVEL, _dxDevice);
-	MakeDynamicBuffer(sizeof(float3), vbSlots::BACCEL, _dxDevice);
-	MakeDynamicBuffer(sizeof(float), vbSlots::BROT, _dxDevice);
-	MakeDynamicBuffer(sizeof(float), vbSlots::BANGULAR_VEL, _dxDevice);
-	MakeDynamicBuffer(sizeof(float), vbSlots::BSTART_SIZE, _dxDevice);
-	MakeDynamicBuffer(sizeof(float), vbSlots::BEND_SIZE, _dxDevice);
-	MakeDynamicBuffer(sizeof(float4), vbSlots::BSTART_COLOR, _dxDevice);
-	MakeDynamicBuffer(sizeof(float4), vbSlots::BEND_COLOR, _dxDevice);
-	MakeDynamicBuffer(sizeof(float), vbSlots::BSTART_LIFE, _dxDevice);
-	MakeDynamicBuffer(sizeof(float), vbSlots::BREMAIN_LIFE, _dxDevice);
+	MakeDynamicBuffer(sizeof(float3), vbSlots::BPOS, particles.iPos.get(), _dxDevice);
+	MakeDynamicBuffer(sizeof(float3), vbSlots::BVEL, particles.iVel.get(), _dxDevice);
+	MakeDynamicBuffer(sizeof(float3), vbSlots::BACCEL, particles.accel.get(), _dxDevice);
+	MakeDynamicBuffer(sizeof(float), vbSlots::BROT, particles.iRot.get(), _dxDevice);
+	MakeDynamicBuffer(sizeof(float), vbSlots::BANGULAR_VEL, particles.angularVel.get(), _dxDevice);
+	MakeDynamicBuffer(sizeof(float), vbSlots::BSTART_SIZE, particles.startSize.get(), _dxDevice);
+	MakeDynamicBuffer(sizeof(float), vbSlots::BEND_SIZE, particles.endSize.get(),_dxDevice);
+	MakeDynamicBuffer(sizeof(float4), vbSlots::BSTART_COLOR, particles.startColor.get(), _dxDevice);
+	MakeDynamicBuffer(sizeof(float4), vbSlots::BEND_COLOR, particles.endColor.get(), _dxDevice);
+	MakeDynamicBuffer(sizeof(float), vbSlots::BSTART_LIFE, particles.startLife.get(), _dxDevice);
+	MakeDynamicBuffer(sizeof(float), vbSlots::BREMAIN_LIFE, particles.remainLife.get(), _dxDevice);
 }
 
 void ParticleEmitter::UploadParticleBuffers(ID3D11DeviceContext * _dxContext) {
 	//Only update the remainLife buffer by default
-	UpdateDynamicBuffer(sizeof(float), vbSlots::BREMAIN_LIFE, &particles.remainLife, _dxContext);
+	UpdateDynamicBuffer(sizeof(float), vbSlots::BREMAIN_LIFE, particles.remainLife.get(), _dxContext);
 
 	if (forceBufferUpdate) {
-		UpdateDynamicBuffer(sizeof(float3), vbSlots::BPOS, &particles.iPos, _dxContext);
-		UpdateDynamicBuffer(sizeof(float3), vbSlots::BVEL, &particles.iVel, _dxContext);
-		UpdateDynamicBuffer(sizeof(float3), vbSlots::BACCEL, &particles.accel, _dxContext);
-		UpdateDynamicBuffer(sizeof(float), vbSlots::BROT, &particles.iRot, _dxContext);
-		UpdateDynamicBuffer(sizeof(float), vbSlots::BANGULAR_VEL, &particles.angularVel, _dxContext);
-		UpdateDynamicBuffer(sizeof(float), vbSlots::BSTART_SIZE, &particles.startSize, _dxContext);
-		UpdateDynamicBuffer(sizeof(float), vbSlots::BEND_SIZE, &particles.endSize, _dxContext);
-		UpdateDynamicBuffer(sizeof(float4), vbSlots::BSTART_COLOR, &particles.startColor, _dxContext);
-		UpdateDynamicBuffer(sizeof(float4), vbSlots::BEND_COLOR, &particles.endColor, _dxContext);
-		UpdateDynamicBuffer(sizeof(float), vbSlots::BSTART_LIFE, &particles.startLife, _dxContext);
+		UpdateDynamicBuffer(sizeof(float3), vbSlots::BPOS, particles.iPos.get(), _dxContext);
+		UpdateDynamicBuffer(sizeof(float3), vbSlots::BVEL, particles.iVel.get(), _dxContext);
+		UpdateDynamicBuffer(sizeof(float3), vbSlots::BACCEL, particles.accel.get(), _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BROT, particles.iRot.get(), _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BANGULAR_VEL, particles.angularVel.get(), _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BSTART_SIZE, particles.startSize.get(), _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BEND_SIZE, particles.endSize.get(), _dxContext);
+		UpdateDynamicBuffer(sizeof(float4), vbSlots::BSTART_COLOR, particles.startColor.get(), _dxContext);
+		UpdateDynamicBuffer(sizeof(float4), vbSlots::BEND_COLOR, particles.endColor.get(), _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BSTART_LIFE, particles.startLife.get(), _dxContext);
 	}
 }
 
-void ParticleEmitter::MakeDynamicBuffer(UINT _itemSize, vbSlots _type, ID3D11Device* _dxDevice) {
+void ParticleEmitter::MakeDynamicBuffer(UINT _itemSize, vbSlots _type, void* _initData, ID3D11Device* _dxDevice) {
 	D3D11_BUFFER_DESC buffDesc = {
 		_itemSize * particles.particleCount,
 		D3D11_USAGE_DYNAMIC,
@@ -169,7 +172,11 @@ void ParticleEmitter::MakeDynamicBuffer(UINT _itemSize, vbSlots _type, ID3D11Dev
 		0
 	};
 	strides[_type] = _itemSize;
-	ThrowIfFail(_dxDevice->CreateBuffer(&buffDesc, 0, &buffers[_type]));
+	D3D11_SUBRESOURCE_DATA subRes;
+	subRes.pSysMem = _initData;
+	subRes.SysMemPitch = 0;
+	subRes.SysMemSlicePitch = 0;
+	ThrowIfFail(_dxDevice->CreateBuffer(&buffDesc, &subRes, &buffers[_type]));
 }
 
 void ParticleEmitter::UpdateDynamicBuffer(UINT _itemSize, vbSlots _type, void * _newData, ID3D11DeviceContext * _dxContext) {
@@ -189,11 +196,17 @@ void ParticleEmitter::WakeNext() {
 	forceBufferUpdate = true;
 	//TODO: Set the new particle's properties according to the emitter's settings
 	UINT i = particles.aliveCount - 1;
-	particles.iPos[i] = float3(0.0f, (float)i, 0.0f);
+	particles.iPos[i] = float3(-3.0f * i, 0.0f, 0.0f);
 	particles.iVel[i] = float3(0.0f, 0.0f, 0.0f);
-	particles.startLife[i] = 10.0f;
-	particles.remainLife[i] = 10.0f;
+	particles.accel[i] = float3(0.0f, 1.0f, 0.0f);
+	particles.iRot[i] = 0.0f;
+	particles.angularVel[i] = 0.0f;
+	particles.startSize[i] = 0.1f;
+	particles.endSize[i] = 0.01f;
 	particles.startColor[i] = float4(1.0f, 0.0f, 0.0f, 1.0f);
+	particles.endColor[i] = float4(0.0f, 0.0f, 1.0f, 1.0f);
+	particles.startLife[i] = 10.0f;
+	particles.remainLife[i] = particles.startLife[i];
 }
 void ParticleEmitter::ThrowIfFail(HRESULT _result) {
 	if (FAILED(_result)) {

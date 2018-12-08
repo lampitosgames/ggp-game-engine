@@ -38,12 +38,12 @@ struct ParticleVertexShaderInput {
 	float endSize       : END_SIZE;
 	float4 startColor   : START_COLOR;
 	float4 endColor     : END_COLOR;
-	float startLife     : INITIAL_TIME;
-	float remainLife    : REMAIN_TIME;
+	float startLife     : START_LIFE;
+	float remainLife    : REMAIN_LIFE;
 };
 
 struct ParticleVertexToPixel {
 	float4 position		: SV_POSITION;
-	float2 uv           : TEXCOORD0;
-	float4 color		: TEXCOORD1;
+	float2 uv           : TEXCOORD;
+	float4 color		: COLOR;
 };
