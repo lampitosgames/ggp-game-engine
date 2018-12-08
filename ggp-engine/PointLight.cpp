@@ -24,7 +24,9 @@ PointLight::PointLight(GameObject* _gameObject, XMFLOAT4 _color, float _intensit
 	LightManager::GetInstance()->AddPointLight(this);
 }
 
-PointLight::~PointLight() {}
+PointLight::~PointLight() {
+	LightManager::GetInstance()->RemovePointLight(this);
+}
 
 DirectX::XMFLOAT4 PointLight::GetColor() {
 	return lightData.color;

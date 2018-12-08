@@ -126,6 +126,11 @@ public:
 				);
 	}
 
+	template<typename T>
+	void RemoveComponent() {
+		this->componentManager->RemoveComponent<T>(this->uniqueID);
+	}
+
 	//Gets for member variables
 	std::string GetUniqueID();
 	GOType GetType();

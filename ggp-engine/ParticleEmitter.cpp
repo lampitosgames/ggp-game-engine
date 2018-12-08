@@ -73,6 +73,7 @@ ParticleEmitter::~ParticleEmitter() {
 	for (UINT i = 1; i < bufferCount; i++) {
 		buffers[i]->Release();
 	}
+	ParticleManager::GetInstance()->RemoveParticleEmitter(this);
 }
 
 void ParticleEmitter::Update(float _dt) {
@@ -83,7 +84,10 @@ void ParticleEmitter::Update(float _dt) {
 	UploadParticleBuffers(ResourceManager::GetContextPointer());
 }
 
-void ParticleEmitter::Render() {}
+void ParticleEmitter::Render() {
+	ID3D11DeviceContext* dxContext = ResourceManager::GetContextPointer();
+	dxContext->IASetVertexBuffers(0, bufferCount, buffers, strides, offsets);
+}
 
 #pragma region Get/Set
 SimpleVertexShader * ParticleEmitter::GetVertexShader() { return particleVS; }

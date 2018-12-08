@@ -19,7 +19,9 @@ DirLight::DirLight(GameObject* _gameObject, XMFLOAT4 _color, XMFLOAT3 _direction
 	LightManager::GetInstance()->AddDirLight(this);
 }
 
-DirLight::~DirLight() {}
+DirLight::~DirLight() {
+	LightManager::GetInstance()->RemoveDirLight(this);
+}
 
 DirLightStruct DirLight::buildLightStruct() {
 	return lightData;

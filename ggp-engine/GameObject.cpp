@@ -183,6 +183,9 @@ void GameObject::Init() {
 void GameObject::Release() {
 	//Remove self from the global list of gameObjects
 	goUIDMap.erase(uniqueID);
+	//Delete components
+	componentManager->CleanupComponents(uniqueID);
+
 	//Delete all children
 	for (UINT i = 0; i < childCount; i++) {
 		delete children[i];

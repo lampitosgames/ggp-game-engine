@@ -24,7 +24,9 @@ SpotLight::SpotLight(GameObject* _gameObject, DirectX::XMFLOAT4 _color, DirectX:
 	LightManager::GetInstance()->AddSpotLight(this);
 }
 
-SpotLight::~SpotLight() {}
+SpotLight::~SpotLight() {
+	LightManager::GetInstance()->RemoveSpotLight(this);
+}
 
 DirectX::XMFLOAT4 SpotLight::GetColor() {
 	return lightData.color;

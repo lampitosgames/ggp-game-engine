@@ -40,7 +40,6 @@ public:
 	/*
 		GET/SET
 	*/
-
 	ID3D11SamplerState* GetParticleSamplerState();
 	ID3D11InputLayout* GetInputLayout();
 	ID3D11Buffer* GetParticleVertexBuffer();
@@ -52,6 +51,7 @@ public:
 	*/
 	ParticleEmitterID AddParticleEmitter(ParticleEmitter* _particleEmitter);
 	ParticleEmitter* GetParticleEmitter(ParticleEmitterID _uniqueID);
+	void RemoveParticleEmitter(ParticleEmitter* _particleEmitter);
 private:
 	ParticleManager();
 	~ParticleManager();

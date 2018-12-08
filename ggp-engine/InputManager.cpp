@@ -69,6 +69,15 @@ InputListener* InputManager::GetInputListener(InputListenerID _uniqueID) {
 	return nullptr;
 }
 
+void InputManager::RemoveInputListener(InputListener * _inputListener) {
+	auto ilIt = inputListenerUIDMap.begin();
+	for (; ilIt != inputListenerUIDMap.end(); ++ilIt) {
+		if (ilIt->second == _inputListener) {
+			inputListenerUIDMap[ilIt->first] = nullptr;
+		}
+	}
+}
+
 bool InputManager::ActionPressed(string _action) {
 	//Nothing is being pressed until proven otherwise
 	bool actionPressed = false;
@@ -252,8 +261,13 @@ void InputManager::Release() {
 void InputManager::Dispatch(InputEvent _event) {
 	//Loop through every input listener
 	map<UINT, InputListener*>::iterator ilIt;
-	for (ilIt = inputListenerUIDMap.begin(); ilIt != inputListenerUIDMap.end(); ++ilIt) {
+	for (ilIt = inputListenerUIDMap.begin(); ilIt != inputListenerUIDMap.end();) {
+		if (ilIt->second == nullptr) {
+			inputListenerUIDMap.erase(ilIt++);
+			continue;
+		}
 		//Dispatch this input event to the listener
 		ilIt->second->Input(_event);
+		ilIt++;
 	}
 }

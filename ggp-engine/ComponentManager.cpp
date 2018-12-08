@@ -21,6 +21,17 @@ void ECS::ComponentManager::ReleaseInstance() {
 	}
 }
 
+void ECS::ComponentManager::CleanupComponents(const EntityID aEntityID) {
+	if (activeComponents.find(aEntityID) == activeComponents.end()) { return; }
+	auto vec_itr = activeComponents[aEntityID].begin();
+	for (; vec_itr != activeComponents[aEntityID].end(); ++vec_itr) {
+		if (vec_itr->second != nullptr) {
+			delete vec_itr->second;
+			activeComponents[aEntityID][vec_itr->first] = nullptr;
+		}
+	}
+}
+
 ECS::ComponentManager::ComponentManager() {}
 
 ECS::ComponentManager::~ComponentManager() {

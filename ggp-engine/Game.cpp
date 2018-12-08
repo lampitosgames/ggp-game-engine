@@ -60,6 +60,8 @@ Game::~Game() {
 	if (vertexBuffer) { vertexBuffer->Release(); }
 	if (indexBuffer) { indexBuffer->Release(); }
 
+	delete activeScene;
+
 	//Release all singletons
 	resourceManager->ReleaseInstance();
 	renderManager->ReleaseInstance();
@@ -68,8 +70,6 @@ Game::~Game() {
 	particleManager->ReleaseInstance();
 	physicsManager->ReleaseInstance();
 	ECS::ComponentManager::ReleaseInstance();
-
-	delete activeScene;
 }
 
 // --------------------------------------------------------

@@ -22,6 +22,7 @@ RigidBody::RigidBody(GameObject* aGameObj, float aMass, EPhysicsLayer aPhysicsLa
 RigidBody::~RigidBody() {
 	gameObject = nullptr;
 	// remove from Physics Manager
+	Physics::PhysicsManager::GetInstance()->RemoveRigidBody(this);
 }
 
 void RigidBody::ApplyForce(const DirectX::XMFLOAT3 & aForce) {

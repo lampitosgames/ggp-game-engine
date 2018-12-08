@@ -40,8 +40,8 @@ void ParticleManager::Init() {
 	defaultPartVS = resourceManager->GetVertexShader(L"ParticleVertexShader.cso");
 	defaultPartPS = resourceManager->GetPixelShader(L"ParticlePixelShader.cso");
 	//Create the actual input layout resource and pass it to the vertex shader
-	ResourceManager::GetDevicePointer()->CreateInputLayout(layout, sizeof(layout) / sizeof(layout[0]), defaultPartVS->GetShaderBlob()->GetBufferPointer(), defaultPartVS->GetShaderBlob()->GetBufferSize(), &inputLayout);
-	defaultPartVS->SetInputLayout(inputLayout);
+	HRESULT asdfresult = ResourceManager::GetDevicePointer()->CreateInputLayout(layout, sizeof(layout) / sizeof(layout[0]), defaultPartVS->GetShaderBlob()->GetBufferPointer(), defaultPartVS->GetShaderBlob()->GetBufferSize(), &inputLayout);
+	//defaultPartVS->SetInputLayout(inputLayout);
 
 	//Build the particle sampler state
 	D3D11_SAMPLER_DESC samplerDesc = {};
@@ -96,9 +96,29 @@ void ParticleManager::Init() {
 	ResourceManager::GetDevicePointer()->CreateBuffer(&indexBufferDesc, &indData, &partIBuffer);
 }
 
-void ParticleManager::Update(float _dt) {}
+void ParticleManager::Update(float _dt) {
+	//Loop through every particle emitter
+	std::map<ParticleEmitterID, ParticleEmitter*>::iterator peIterator;
+	for (peIterator = particleEmitterUIDMap.begin(); peIterator != particleEmitterUIDMap.end();) {
+		ParticleEmitter* peTemp = peIterator->second;
+		//Make sure it hasn't been cleaned up by the component system
+		if (peTemp == nullptr) {
+			particleEmitterUIDMap.erase(peIterator++);
+			continue;
+		}
+		else {
+			peIterator++;
+		}
+	}
+}
 
-void ParticleManager::Render() {}
+void ParticleManager::Render() {
+	//Loop through every particle emitter
+	std::map<ParticleEmitterID, ParticleEmitter*>::iterator peIterator;
+	for (peIterator = particleEmitterUIDMap.begin(); peIterator != particleEmitterUIDMap.end(); ++peIterator) {
+
+	}
+}
 
 ID3D11SamplerState * ParticleManager::GetParticleSamplerState() { return particleSS; }
 ID3D11InputLayout * ParticleManager::GetInputLayout() { return inputLayout; }
@@ -126,6 +146,15 @@ ParticleEmitter * ParticleManager::GetParticleEmitter(ParticleEmitterID _uniqueI
 	return nullptr;
 }
 
+void ParticleManager::RemoveParticleEmitter(ParticleEmitter * _particleEmitter) {
+	auto peIt = particleEmitterUIDMap.begin();
+	for (; peIt != particleEmitterUIDMap.end(); ++peIt) {
+		if (peIt->second == _particleEmitter) {
+			particleEmitterUIDMap[peIt->first] = nullptr;
+		}
+	}
+}
+
 ParticleManager::ParticleManager() {
 	peCount = 0;
 	resourceManager = ResourceManager::GetInstance();
@@ -136,7 +165,9 @@ ParticleManager::~ParticleManager() { Release(); }
 void ParticleManager::Release() {
 	peCount = 0;
 	particleEmitterUIDMap.clear();
+	//inputLayout->Release();
 	particleSS->Release();
 	partVBuffer->Release();
 	partIBuffer->Release();
+
 }

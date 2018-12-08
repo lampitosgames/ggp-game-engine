@@ -78,6 +78,7 @@ public:
 	UINT AddMeshRenderer(MeshRenderer* _meshRenderer);
 	//Get a mesh renderer given its unique identifier
 	MeshRenderer* GetMeshRenderer(MeshRendererID _uniqueID);
+	void RemoveMeshRenderer(MeshRenderer* _meshRenderer);
 
 	/// <summary>
 	/// Set the current skybox pixel shader
