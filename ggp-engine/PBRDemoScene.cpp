@@ -87,7 +87,7 @@ void PBRDemoScene::Init() {
 	pointLight2->transform.position.y += 3.0f;
 
 	GameObject* spotLight1 = new GameObject("spotLight1");
-	AddChild(spotLight1);
+	dirLight->AddChild(spotLight1);
 	spotLight1->AddComponent<SpotLight>(spotLight1, XMFLOAT4(0.901f, 0.239f, 0.337f, 1.0f));
 	spotLight1->GetComponentType<SpotLight>()->SetCone(15.0f);
 	spotLight1->GetComponentType<SpotLight>()->SetRange(80.0f);
@@ -122,6 +122,6 @@ void PBRDemoScene::Update(float _deltaTime) {
 	pointLight2->transform.position.z = 3 * sin(totalTime);
 
 	if (inputManager->ActionPressed("delete_object")) {
-		DeleteChild("dirLight1");
+		delete GetGameObject<GameObject>("dirLight1");
 	}
 }

@@ -100,8 +100,8 @@ public:
 	//Adds a child
 	virtual void AddChild(GameObject* _newChild);
 	//Removes a child without deleting the object
-	void RemoveChild(std::string _uniqueID);
-	void RemoveChild(UINT _index);
+	void RemoveChild(std::string _uniqueID, bool _decrimentChildCount = true);
+	void RemoveChild(UINT _index, bool _decrimentChildCount = true);
 	//Removes and deletes a child object
 	void DeleteChild(std::string _uniqueID);
 	void DeleteChild(UINT _index);

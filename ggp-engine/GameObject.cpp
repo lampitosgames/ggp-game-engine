@@ -53,6 +53,7 @@ void GameObject::Update(float _deltaTime) {
 	if (!isActive) { return; }
 	//Update all children
 	for (UINT i = 0; i < childCount; i++) {
+		if (children[i] == nullptr) { RemoveChild(i); }
 		children[i]->Update(_deltaTime);
 	}
 }
@@ -76,21 +77,33 @@ void GameObject::AddChild(GameObject* _newChild) {
 	++childCount;
 }
 
-void GameObject::RemoveChild(std::string _uniqueID) {
+void GameObject::RemoveChild(std::string _uniqueID, bool _decrimentChildCount) {
 	for (UINT i = 0; i < childCount; i++) {
+		if (children[i] == nullptr) { continue; }
 		if (children[i]->uniqueID == _uniqueID) {
-			//Swap this child with the last child
-			children[i] = children[--childCount];
-			children[childCount] = nullptr;
-			break;
+			if (_decrimentChildCount) {
+				//Swap this child with the last child
+				children[i] = children[--childCount];
+				children[childCount] = nullptr;
+				break;
+			}
+			else {
+				children[i] = nullptr;
+				break;
+			}
 		}
 	}
 }
 
-void GameObject::RemoveChild(UINT _index) {
+void GameObject::RemoveChild(UINT _index, bool _decrimentChildCount) {
 	if (_index < childCount) {
-		children[_index] = children[--childCount];
-		children[childCount] = nullptr;
+		if (_decrimentChildCount) {
+			children[_index] = children[--childCount];
+			children[childCount] = nullptr;
+		}
+		else {
+			children[_index] = nullptr;
+		}
 	}
 }
 
@@ -188,6 +201,12 @@ void GameObject::Release() {
 
 	//Delete all children
 	for (UINT i = 0; i < childCount; i++) {
-		delete children[i];
+		if (children[i] != nullptr) {
+			delete children[i];
+		}
+	}
+
+	if (parent != nullptr) {
+		parent->RemoveChild(uniqueID, false);
 	}
 }
