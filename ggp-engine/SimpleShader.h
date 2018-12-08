@@ -151,6 +151,7 @@ public:
 	~SimpleVertexShader();
 	ID3D11VertexShader* GetDirectXShader() { return shader; }
 	ID3D11InputLayout* GetInputLayout() { return inputLayout; }
+	void SetInputLayout(ID3D11InputLayout* _newLayout) { inputLayout = _newLayout; }
 	bool GetPerInstanceCompatible() { return perInstanceCompatible; }
 
 	bool SetShaderResourceView(std::string name, ID3D11ShaderResourceView* srv);

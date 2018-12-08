@@ -81,6 +81,9 @@ void Game::Init() {
 	ResourceManager::SetDevicePointer(dxDevice);
 	ResourceManager::SetContextPointer(dxContext);
 
+	//Call init on singletons that need it
+	particleManager->Init();
+
 	//Create and init the active scene
 	activeScene = new PBRDemoScene("PBR_Demo");
 	//activeScene = new DebugScene( "Debug Scene" );
@@ -93,7 +96,6 @@ void Game::Init() {
 
 	//Call start on the singletons that need it
 	renderManager->Start();
-	particleManager->Start();
 	//Call start on the active scene
 	activeScene->Start();
 }

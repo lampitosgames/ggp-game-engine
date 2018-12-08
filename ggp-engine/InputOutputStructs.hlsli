@@ -32,7 +32,12 @@ struct ParticleVertexShaderInput {
 	float3 iPos         : INITIAL_POSITION;
 	float3 iVel         : INITIAL_VELOCITY;
 	float3 accel        : ACCELERATION;
-	float4 color        : TEXCOORD1;
+	float iRot          : INITIAL_ROTATION;
+	float angularVel    : ANGULAR_VELOCITY;
+	float startSize     : START_SIZE;
+	float endSize       : END_SIZE;
+	float4 startColor   : START_COLOR;
+	float4 endColor     : END_COLOR;
 	float startLife     : INITIAL_TIME;
 	float remainLife    : REMAIN_TIME;
 };

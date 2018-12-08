@@ -16,6 +16,7 @@ class ParticleManager {
 	//Shared DirectX resources
 	SimpleVertexShader* defaultPartVS;
 	SimplePixelShader* defaultPartPS;
+	ID3D11InputLayout* inputLayout;
 	ID3D11SamplerState* particleSS;
 	ID3D11Buffer* partVBuffer;
 	ID3D11Buffer* partIBuffer;
@@ -30,7 +31,7 @@ public:
 	ParticleManager(ParticleManager const&) = delete;
 	void operator=(ParticleManager const&) = delete;
 
-	void Start();
+	void Init();
 
 	void Update(float _dt);
 
@@ -41,6 +42,7 @@ public:
 	*/
 
 	ID3D11SamplerState* GetParticleSamplerState();
+	ID3D11InputLayout* GetInputLayout();
 	ID3D11Buffer* GetParticleVertexBuffer();
 	ID3D11Buffer* GetParticleIndexBuffer();
 

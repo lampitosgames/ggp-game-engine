@@ -16,7 +16,6 @@
 #include "InputEvent.h"
 #include "Transform.h"
 #include "ComponentManager.h"
-
 class InputManager;
 class LightManager;
 class ResourceManager;

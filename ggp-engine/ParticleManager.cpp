@@ -2,6 +2,8 @@
 #include "Math.h"
 #include "ResourceManager.h"
 
+ParticleManager* ParticleManager::instance = nullptr;
+
 ParticleManager * ParticleManager::GetInstance() {
 	if (instance == nullptr) {
 		instance = new ParticleManager();
@@ -16,9 +18,31 @@ void ParticleManager::ReleaseInstance() {
 	}
 }
 
-void ParticleManager::Start() {
-	defaultPartVS = resourceManager->GetVertexShader(L"");
-	defaultPartPS = resourceManager->GetPixelShader(L"");
+void ParticleManager::Init() {
+	//Map all of our buffers to what the vertex shader expects as input
+	D3D11_INPUT_ELEMENT_DESC layout[] = {
+		//PER-VERTEX
+		{"TEXCOORD0", 0, DXGI_FORMAT_R32G32_FLOAT, vbSlots::BVERTEX_DATA, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		//PER-INSTANCE
+		{"INITIAL_POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, vbSlots::BPOS, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+		{"INITIAL_VELOCITY", 0, DXGI_FORMAT_R32G32B32_FLOAT, vbSlots::BVEL, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+		{"ACCELERATION", 0, DXGI_FORMAT_R32G32B32_FLOAT, vbSlots::BACCEL, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+		{"INITIAL_ROTATION", 0, DXGI_FORMAT_R32_FLOAT, vbSlots::BROT, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+		{"ANGULAR_VELOCITY", 0, DXGI_FORMAT_R32_FLOAT, vbSlots::BANGULAR_VEL, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+		{"START_SIZE", 0, DXGI_FORMAT_R32_FLOAT, vbSlots::BSTART_SIZE, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+		{"END_SIZE", 0, DXGI_FORMAT_R32_FLOAT, vbSlots::BEND_SIZE, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+		{"START_COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, vbSlots::BSTART_COLOR, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+		{"END_COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, vbSlots::BEND_COLOR, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+		{"INITIAL_TIME", 0, DXGI_FORMAT_R32_FLOAT, vbSlots::BSTART_LIFE, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+		{"REMAIN_TIME", 0, DXGI_FORMAT_R32_FLOAT, vbSlots::BREMAIN_LIFE, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1}
+	};
+	//Create default particle shaders
+	defaultPartVS = resourceManager->GetVertexShader(L"ParticleVertexShader.cso");
+	defaultPartPS = resourceManager->GetPixelShader(L"ParticlePixelShader.cso");
+	//Create the actual input layout resource and pass it to the vertex shader
+	ResourceManager::GetDevicePointer()->CreateInputLayout(layout, sizeof(layout) / sizeof(layout[0]), defaultPartVS->GetShaderBlob()->GetBufferPointer(), defaultPartVS->GetShaderBlob()->GetBufferSize(), &inputLayout);
+	defaultPartVS->SetInputLayout(inputLayout);
+
 	//Build the particle sampler state
 	D3D11_SAMPLER_DESC samplerDesc = {};
 	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
@@ -44,6 +68,7 @@ void ParticleManager::Start() {
 	vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vertexBufferDesc.ByteWidth = sizeof(float2) * 4;
+	vertexBufferDesc.CPUAccessFlags = 0;
 	vertexBufferDesc.MiscFlags = 0;
 	vertexBufferDesc.StructureByteStride = 0;
 	//Vertex resource
@@ -52,7 +77,7 @@ void ParticleManager::Start() {
 	vertData.SysMemPitch = 0;
 	vertData.SysMemSlicePitch = 0;
 	//Create and store the vertex buffer
-	ResourceManager::GetDevicePointer()->CreateBuffer(&vertexBufferDesc, &vertData, &partVBuffer);
+	HRESULT successVBCreate = ResourceManager::GetDevicePointer()->CreateBuffer(&vertexBufferDesc, &vertData, &partVBuffer);
 
 	//Create an index buffer description ...
 	D3D11_BUFFER_DESC indexBufferDesc;
@@ -67,15 +92,26 @@ void ParticleManager::Start() {
 	indData.pSysMem = indices;
 	indData.SysMemPitch = 0;
 	indData.SysMemSlicePitch = 0;
-
-
+	//Create and store the index buffer
+	ResourceManager::GetDevicePointer()->CreateBuffer(&indexBufferDesc, &indData, &partIBuffer);
 }
 
 void ParticleManager::Update(float _dt) {}
 
 void ParticleManager::Render() {}
 
+ID3D11SamplerState * ParticleManager::GetParticleSamplerState() { return particleSS; }
+ID3D11InputLayout * ParticleManager::GetInputLayout() { return inputLayout; }
+ID3D11Buffer * ParticleManager::GetParticleVertexBuffer() { return partVBuffer; }
+ID3D11Buffer * ParticleManager::GetParticleIndexBuffer() { return partIBuffer; }
+
 ParticleEmitterID ParticleManager::AddParticleEmitter(ParticleEmitter * _particleEmitter) {
+	//Inject the particle emitter with DirectX resources
+	_particleEmitter->SetVertexShader(defaultPartVS);
+	_particleEmitter->SetPixelShader(defaultPartPS);
+	_particleEmitter->SetSamplerState(particleSS);
+	_particleEmitter->SetVertexBuffer(partVBuffer);
+	_particleEmitter->SetIndexBuffer(partIBuffer);
 	particleEmitterUIDMap[peCount] = _particleEmitter;
 	peCount++;
 	return peCount - 1;

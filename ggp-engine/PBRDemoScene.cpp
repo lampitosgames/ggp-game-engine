@@ -10,6 +10,10 @@
 #include "Mesh.h"
 #include "MeshRenderer.h"
 #include "InputListener.h"
+#include "DirLight.h"
+#include "PointLight.h"
+#include "SpotLight.h"
+#include "ParticleEmitter.h"
 
 using namespace DirectX;
 using namespace std;
@@ -60,6 +64,10 @@ void PBRDemoScene::Init() {
 	pointLight1->GetComponentType<PointLight>()->SetRange(10.0f);
 	pointLight1->transform.position.x += 2.0f;
 	pointLight1->transform.position.y += 4.0f;
+
+	//Debug particle emitter
+	EmitterOptions emitterOpts = { 512 };
+	pointLight1->AddComponent<ParticleEmitter>(pointLight1, emitterOpts);
 
 	GameObject* pointLight2 = new GameObject("pointLight2");
 	AddChild(pointLight2);
