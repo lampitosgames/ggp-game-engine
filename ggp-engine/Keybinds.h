@@ -40,6 +40,9 @@ static std::map<std::string, std::vector<int>> create_binds() {
 	//Toggle mouse lock
 	m["toggle_mouse_lock"].push_back('X');
 
+	//Delete something
+	m["delete_object"].push_back(VK_DELETE);
+
 	return m;
 };
 

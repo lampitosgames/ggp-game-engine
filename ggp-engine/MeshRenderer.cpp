@@ -23,7 +23,9 @@ MeshRenderer::MeshRenderer(GameObject* _gameObject, Mesh* _mesh, Material* _mate
 	RenderManager::GetInstance()->AddMeshRenderer(this);
 }
 
-MeshRenderer::~MeshRenderer() {}
+MeshRenderer::~MeshRenderer() {
+	RenderManager::GetInstance()->RemoveMeshRenderer(this);
+}
 
 void MeshRenderer::SetMesh(Mesh* _mesh) {
 	mesh = _mesh;

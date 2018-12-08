@@ -13,6 +13,7 @@
 #include "SpotLight.h"
 #include "Material.h"
 #include "RigidBody.h"
+#include "DirLight.h"
 
 using namespace DirectX;
 using namespace std;

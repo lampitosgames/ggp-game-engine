@@ -7,6 +7,7 @@
 #include "GameObject.h"
 #include "MeshRenderer.h"
 #include "ResourceManager.h"
+#include "ParticleManager.h"
 #include "LightManager.h"
 #include "Texture.h"
 #include "Material.h"
@@ -82,21 +83,34 @@ MeshRenderer* RenderManager::GetMeshRenderer(MeshRendererID _uniqueID) {
 	return nullptr;
 }
 
+void RenderManager::RemoveMeshRenderer(MeshRenderer * _meshRenderer) {
+	auto mrIt = meshRendererUIDMap.begin();
+	for (; mrIt != meshRendererUIDMap.end(); ++mrIt) {
+		if (mrIt->second == _meshRenderer) {
+			meshRendererUIDMap[mrIt->first] = nullptr;
+		}
+	}
+}
+
 void RenderManager::SetSkyboxPS(SimplePixelShader * aSkyPS) {
 	assert(aSkyPS != nullptr);
 
 	skyboxPS = aSkyPS;
 }
 
-void RenderManager::Render(ID3D11DeviceContext* _dxContext) {
+void RenderManager::Render() {
+	ID3D11DeviceContext* _dxContext = ResourceManager::GetContextPointer();
 	//Loop through and render every object
 	std::map<UINT, MeshRenderer*>::iterator mrIterator;
-	for (mrIterator = meshRendererUIDMap.begin(); mrIterator != meshRendererUIDMap.end(); ++mrIterator) {
+	for (mrIterator = meshRendererUIDMap.begin(); mrIterator != meshRendererUIDMap.end();) {
 		MeshRenderer* mrTemp = mrIterator->second;
 		//Make sure the mesh renderer still exists
 		if (mrTemp == nullptr) {
-			meshRendererUIDMap.erase(mrIterator->first);
+			meshRendererUIDMap.erase(mrIterator++);
 			continue;
+		}
+		else {
+			mrIterator++;
 		}
 		//If the mesh renderer doesn't have a mesh to render, continue
 		if (mrTemp->GetMesh() == nullptr) { continue; }
@@ -134,6 +148,9 @@ void RenderManager::Render(ID3D11DeviceContext* _dxContext) {
 		psTemp->SetShader();
 		mrTemp->Draw(_dxContext);
 	}
+
+	// Render particles -------------------------
+	ParticleManager::GetInstance()->Render();
 
 	// Render the skybox ------------------------
 	// Set up sky render states

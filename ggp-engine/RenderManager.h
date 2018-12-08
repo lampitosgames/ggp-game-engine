@@ -9,6 +9,7 @@ class MeshRenderer;
 class GameObject;
 class ResourceManager;
 class LightManager;
+class ParticleManager;
 struct ID3D11SamplerState;
 class Camera;
 
@@ -20,6 +21,7 @@ class RenderManager {
 
 	ResourceManager* resourceManager;
 	LightManager* lightManager;
+	ParticleManager* particleManager;
 
 	//Texture sampler used for all textures currently (Add more later for different settings)
 	ID3D11SamplerState* samplerState;
@@ -59,7 +61,7 @@ public:
 	void Start();
 
 	//Called once per frame from the Game.cpp. Renders the active scene
-	void Render(ID3D11DeviceContext* _dxContext);
+	void Render();
 
 	//Gamma correction get/set
 	float GetGammaCorrection();
@@ -76,6 +78,7 @@ public:
 	UINT AddMeshRenderer(MeshRenderer* _meshRenderer);
 	//Get a mesh renderer given its unique identifier
 	MeshRenderer* GetMeshRenderer(MeshRendererID _uniqueID);
+	void RemoveMeshRenderer(MeshRenderer* _meshRenderer);
 
 	/// <summary>
 	/// Set the current skybox pixel shader

@@ -40,9 +40,6 @@ namespace Physics {
 		/// <param name="aMass">The mass of this rigidbody</param>
 		/// <param name="aLayer">Physics layer of this rigidbody</param>
 		/// <returns>Unique ID of this rigid body</returns>
-		//RigidBodyID AddRigidBody( GameObject* aGameObj, float aMass, EPhysicsLayer aLayer );
-
-
 		RigidBodyID AddRigidBody(RigidBody* aRigidBody);
 
 		/// <summary>
@@ -51,6 +48,12 @@ namespace Physics {
 		/// <param name="uID">ID to look for</param>
 		/// <returns>Pointer to that rigidbody</returns>
 		RigidBody* GetRigidBody(RigidBodyID uID);
+
+		/// <summary>
+		/// Remove a rigidbody's reference from the physics manager
+		/// </summary>
+		/// <param name="aRigidBody">Rigid Body pointer to remove</param>
+		void RemoveRigidBody(RigidBody* aRigidBody);
 
 		/// <summary>
 		/// Update the physics on all rigidbodies

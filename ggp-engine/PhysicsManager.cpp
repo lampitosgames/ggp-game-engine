@@ -67,13 +67,30 @@ RigidBody * PhysicsManager::GetRigidBody(RigidBodyID uID) {
 	return nullptr;
 }
 
+void Physics::PhysicsManager::RemoveRigidBody(RigidBody * aRigidBody) {
+	auto rbIt = RigidBodyUIDMap.begin();
+	for (; rbIt != RigidBodyUIDMap.end(); ++rbIt) {
+		if (rbIt->second == aRigidBody) {
+			RigidBodyUIDMap[rbIt->first] = nullptr;
+		}
+	}
+}
+
 /** Iteration over a map is o(n), but it is not optimal for caching
 because the data is not stored contiguously. */
 void PhysicsManager::UpdatePhysics(float deltaTime) {
 	RigidBody* entityA = nullptr;
 
-	for (auto itr = RigidBodyUIDMap.begin(); itr != RigidBodyUIDMap.end(); ++itr) {
+	for (auto itr = RigidBodyUIDMap.begin(); itr != RigidBodyUIDMap.end();) {
 		entityA = itr->second;
+
+		if (entityA == nullptr) {
+			RigidBodyUIDMap.erase(itr++);
+			continue;
+		}
+		else {
+			itr++;
+		}
 
 		if (entityA->GetPhysicsLayer() == EPhysicsLayer::STATIC) continue;
 
@@ -119,7 +136,6 @@ void PhysicsManager::UpdatePhysics(float deltaTime) {
 			entityA->ApplyForce(opposingVel);
 		}
 		entityA->ApplyAcceleration();
-
 	}
 
 }

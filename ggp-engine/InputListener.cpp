@@ -10,7 +10,9 @@ InputListener::InputListener(GameObject* _gameObject) {
 	InputManager::GetInstance()->AddInputListener(this);
 }
 
-InputListener::~InputListener() {}
+InputListener::~InputListener() {
+	InputManager::GetInstance()->RemoveInputListener(this);
+}
 
 void InputListener::Input(InputEvent _event) {
 	gameObject->Input(_event);

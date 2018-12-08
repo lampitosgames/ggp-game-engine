@@ -45,6 +45,8 @@ public:
 	InputListenerID AddInputListener(InputListener* _inputListener);
 	//Get an input listener given its UID
 	InputListener* GetInputListener(InputListenerID _uniqueID);
+	//Remove the reference to an input listener from the InputManager
+	void RemoveInputListener(InputListener* _inputListener);
 
 	/*
 		Public functions to check different action states

@@ -2,14 +2,20 @@
 
 #include "PBRDemoScene.h"
 #include <DirectXMath.h>
+#include "InputManager.h"
 #include "RenderManager.h"
 #include "ResourceManager.h"
 #include "FlyingCamera.h"
 #include "Material.h"
+#include "RigidBody.h"
 #include "PBRMaterial.h"
 #include "Mesh.h"
 #include "MeshRenderer.h"
 #include "InputListener.h"
+#include "DirLight.h"
+#include "PointLight.h"
+#include "SpotLight.h"
+#include "ParticleEmitter.h"
 
 using namespace DirectX;
 using namespace std;
@@ -46,7 +52,6 @@ void PBRDemoScene::Init() {
 	//Create a single, white directional light
 	GameObject* dirLight = new GameObject("dirLight1");
 	AddChild(dirLight);
-	dirLight->AddComponent<DirLight>(dirLight, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 1.0f), 0.8f, 0.00f);
 	GameObject* dirLight2 = new GameObject("dirLight2");
 	AddChild(dirLight2);
 	dirLight2->AddComponent<DirLight>(dirLight2, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, -0.25f, 0.0f), 0.2f, 0.00f);
@@ -61,6 +66,10 @@ void PBRDemoScene::Init() {
 	pointLight1->transform.position.x += 2.0f;
 	pointLight1->transform.position.y += 4.0f;
 
+	//Debug particle emitter
+	//EmitterOptions emitterOpts = { 32 };
+	//pointLight1->AddComponent<ParticleEmitter>(pointLight1, emitterOpts);
+
 	GameObject* pointLight2 = new GameObject("pointLight2");
 	AddChild(pointLight2);
 	pointLight2->AddComponent<PointLight>(pointLight2, XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f));
@@ -69,7 +78,7 @@ void PBRDemoScene::Init() {
 	pointLight2->transform.position.y += 3.0f;
 
 	GameObject* spotLight1 = new GameObject("spotLight1");
-	AddChild(spotLight1);
+	dirLight->AddChild(spotLight1);
 	spotLight1->AddComponent<SpotLight>(spotLight1, XMFLOAT4(0.901f, 0.239f, 0.337f, 1.0f));
 	spotLight1->GetComponentType<SpotLight>()->SetCone(15.0f);
 	spotLight1->GetComponentType<SpotLight>()->SetRange(80.0f);
@@ -102,4 +111,8 @@ void PBRDemoScene::Update(float _deltaTime) {
 	GameObject* pointLight2 = GetGameObject<GameObject>("pointLight2");
 	pointLight2->transform.position.x = 3 + 3 * cos(totalTime);
 	pointLight2->transform.position.z = 3 * sin(totalTime);
+
+	if (inputManager->ActionPressed("delete_object")) {
+		delete GetGameObject<GameObject>("dirLight1");
+	}
 }

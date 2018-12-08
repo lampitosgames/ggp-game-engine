@@ -2,7 +2,6 @@
 #include <Windows.h>
 #include "Game.h"
 #include <iostream>
-
 //Overwrite the new keyword in debug mode.  Allows us to create memory allocation break points
 #ifdef DEBUG
 #define DEBUG_NEW new( _NORMAL_BLOCK, __FILE__, __LINE__) 
@@ -24,7 +23,7 @@ int WINAPI WinMain(
 	//  - You may want to use something more advanced, like Visual Leak Detector
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	// TO DEBUG MEMORY LEAKS: uncomment the next line and change the number to the heap location
-	//_crtBreakAlloc = 1993;
+	//_crtBreakAlloc = 1878;
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 
 	#endif
@@ -52,7 +51,7 @@ int WINAPI WinMain(
 			*lastSlash = 0; // End the string at the last slash character
 			SetCurrentDirectory(currentDir);
 		}
-	}
+	}	
 
 	// Create the Game object using
 	// the app handle we got from WinMain

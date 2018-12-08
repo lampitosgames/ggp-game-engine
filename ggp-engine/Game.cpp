@@ -37,6 +37,7 @@ Game::Game(HINSTANCE hInstance)
 	renderManager = RenderManager::GetInstance();
 	inputManager = InputManager::GetInstance();
 	lightManager = LightManager::GetInstance();
+	particleManager = ParticleManager::GetInstance();
 	physicsManager = Physics::PhysicsManager::GetInstance();
 	componentManager = ECS::ComponentManager::GetInstance();
 
@@ -59,15 +60,16 @@ Game::~Game() {
 	if (vertexBuffer) { vertexBuffer->Release(); }
 	if (indexBuffer) { indexBuffer->Release(); }
 
+	delete activeScene;
+
 	//Release all singletons
 	resourceManager->ReleaseInstance();
 	renderManager->ReleaseInstance();
 	inputManager->ReleaseInstance();
 	lightManager->ReleaseInstance();
+	particleManager->ReleaseInstance();
 	physicsManager->ReleaseInstance();
 	ECS::ComponentManager::ReleaseInstance();
-
-	delete activeScene;
 }
 
 // --------------------------------------------------------
@@ -78,6 +80,9 @@ void Game::Init() {
 	//Give the device and context to the resource manager
 	ResourceManager::SetDevicePointer(dxDevice);
 	ResourceManager::SetContextPointer(dxContext);
+
+	//Call init on singletons that need it
+	particleManager->Init();
 
 	//Create and init the active scene
 	activeScene = new PBRDemoScene("PBR_Demo");
@@ -118,6 +123,7 @@ void Game::Update(float deltaTime, float totalTime) {
 	HandleMouseMove();
 
 	inputManager->Update();
+	particleManager->Update(deltaTime);
 	physicsManager->UpdatePhysics(deltaTime);
 	activeScene->Update(deltaTime);
 }
@@ -140,7 +146,7 @@ void Game::Draw(float deltaTime, float totalTime) {
 		0);
 
 	//Call render on the renderManager
-	renderManager->Render(dxContext);
+	renderManager->Render();
 
 	#if defined(ENABLE_UI)
 		// Create a new IMGui frame

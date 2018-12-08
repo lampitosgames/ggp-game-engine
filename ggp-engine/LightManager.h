@@ -58,6 +58,7 @@ public:
 	*/
 	DirLightID AddDirLight(DirLight* _dirLight);
 	DirLight* GetDirLight(DirLightID _uniqueID);
+	void RemoveDirLight(DirLight* _dirLight);
 	DirLightStruct GetDirLightStruct(DirLightID _uniqueID);
 
 	/*
@@ -66,6 +67,7 @@ public:
 	*/
 	PointLightID AddPointLight(PointLight* _pointLight);
 	PointLight* GetPointLight(PointLightID _uniqueID);
+	void RemovePointLight(PointLight* _pointLight);
 	PointLightStruct GetPointLightStruct(PointLightID _uniqueID);
 
 	/*
@@ -74,6 +76,7 @@ public:
 	*/
 	SpotLightID AddSpotLight(SpotLight* _spotLight);
 	SpotLight* GetSpotLight(SpotLightID _uniqueID);
+	void RemoveSpotLight(SpotLight* _spotLight);
 	SpotLightStruct GetSpotLightStruct(SpotLightID _uniqueID);
 private:
 	LightManager();

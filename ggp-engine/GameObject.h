@@ -14,13 +14,13 @@
 #include <vector>
 #include "GameObjectTypes.h"
 #include "InputEvent.h"
-#include "InputManager.h"
-#include "LightManager.h"
 #include "Transform.h"
 #include "ComponentManager.h"
-
+class InputManager;
+class LightManager;
 class ResourceManager;
 class RenderManager;
+class ParticleManager;
 
 typedef unsigned int UINT;
 
@@ -50,6 +50,7 @@ protected:
 	InputManager* inputManager;
 	ResourceManager* resourceManager;
 	LightManager* lightManager;
+	ParticleManager* particleManager;
 
 	ECS::ComponentManager* componentManager = nullptr;
 
@@ -99,8 +100,8 @@ public:
 	//Adds a child
 	virtual void AddChild(GameObject* _newChild);
 	//Removes a child without deleting the object
-	void RemoveChild(std::string _uniqueID);
-	void RemoveChild(UINT _index);
+	void RemoveChild(std::string _uniqueID, bool _decrimentChildCount = true);
+	void RemoveChild(UINT _index, bool _decrimentChildCount = true);
 	//Removes and deletes a child object
 	void DeleteChild(std::string _uniqueID);
 	void DeleteChild(UINT _index);
@@ -123,6 +124,11 @@ public:
 				this->uniqueID,
 				std::forward<P>(param)...
 				);
+	}
+
+	template<typename T>
+	void RemoveComponent() {
+		this->componentManager->RemoveComponent<T>(this->uniqueID);
 	}
 
 	//Gets for member variables

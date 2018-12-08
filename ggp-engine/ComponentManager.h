@@ -74,6 +74,12 @@ namespace ECS {
 			activeComponents[aEntityID][CTID] = nullptr;
 		}
 
+		/// <summary>
+		/// Clean up an entity's components
+		/// </summary>
+		/// <param name="aEntityID">The entity who's components should be cleaned up</param>
+		void CleanupComponents(const EntityID aEntityID);
+
 	private:
 
 		ComponentManager();
