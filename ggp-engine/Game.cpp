@@ -37,8 +37,9 @@ Game::Game(HINSTANCE hInstance)
 	renderManager = RenderManager::GetInstance();
 	inputManager = InputManager::GetInstance();
 	lightManager = LightManager::GetInstance();
-    physicsManager = Physics::PhysicsManager::GetInstance();
-    componentManager = ECS::ComponentManager::GetInstance();
+	particleManager = ParticleManager::GetInstance();
+	physicsManager = Physics::PhysicsManager::GetInstance();
+	componentManager = ECS::ComponentManager::GetInstance();
 
 	#if defined(DEBUG) || defined(_DEBUG)
 		// Do we want a console window?  Probably only in debug mode
@@ -59,15 +60,16 @@ Game::~Game() {
 	if (vertexBuffer) { vertexBuffer->Release(); }
 	if (indexBuffer) { indexBuffer->Release(); }
 
+	delete activeScene;
+
 	//Release all singletons
 	resourceManager->ReleaseInstance();
 	renderManager->ReleaseInstance();
 	inputManager->ReleaseInstance();
 	lightManager->ReleaseInstance();
-    physicsManager->ReleaseInstance();
-    ECS::ComponentManager::ReleaseInstance();
-
-	delete activeScene;
+	particleManager->ReleaseInstance();
+	physicsManager->ReleaseInstance();
+	ECS::ComponentManager::ReleaseInstance();
 }
 
 // --------------------------------------------------------
@@ -79,9 +81,12 @@ void Game::Init() {
 	ResourceManager::SetDevicePointer(dxDevice);
 	ResourceManager::SetContextPointer(dxContext);
 
+	//Call init on singletons that need it
+	particleManager->Init();
+
 	//Create and init the active scene
 	activeScene = new PBRDemoScene("PBR_Demo");
-    //activeScene = new DebugScene( "Debug Scene" );
+	//activeScene = new DebugScene( "Debug Scene" );
 	activeScene->Init();
 
 	// Tell the input assembler stage of the pipeline what kind of
@@ -118,7 +123,8 @@ void Game::Update(float deltaTime, float totalTime) {
 	HandleMouseMove();
 
 	inputManager->Update();
-    physicsManager->UpdatePhysics( deltaTime );
+	particleManager->Update(deltaTime);
+	physicsManager->UpdatePhysics(deltaTime);
 	activeScene->Update(deltaTime);
 }
 
@@ -140,45 +146,45 @@ void Game::Draw(float deltaTime, float totalTime) {
 		0);
 
 	//Call render on the renderManager
-	renderManager->Render(dxContext);
+	renderManager->Render();
 
-#if defined(ENABLE_UI)
-    // Create a new IMGui frame
-    ImGui_ImplDX11_NewFrame();
-    ImGui_ImplWin32_NewFrame();
-    ImGui::NewFrame();
+	#if defined(ENABLE_UI)
+		// Create a new IMGui frame
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
 
-    // Draw the UI options here -----------------------------------
+	// Draw the UI options here -----------------------------------
 
-    // Create a window named test
-    //ImGui::Begin( "Light Options" );
+	// Create a window named test
+	//ImGui::Begin( "Light Options" );
 
-    //ImGui::Checkbox( "Use Dir Lights", &UseDirLights );
-    //ImGui::Checkbox( "Draw Light Gizmos", &DrawLightGizmos );
-    //ImGui::Checkbox( "Move Point Lights", &MovePointLights );
-    //ImGui::Checkbox( "Use SkyBox", &DrawSkyBox );
+	//ImGui::Checkbox( "Use Dir Lights", &UseDirLights );
+	//ImGui::Checkbox( "Draw Light Gizmos", &DrawLightGizmos );
+	//ImGui::Checkbox( "Move Point Lights", &MovePointLights );
+	//ImGui::Checkbox( "Use SkyBox", &DrawSkyBox );
 
-    //ImGui::End();   // If you want more than one window, then use ImGui::Beigin
+	//ImGui::End();   // If you want more than one window, then use ImGui::Beigin
 
-    ImGui::Begin( "Controls" );
+	ImGui::Begin("Controls");
 
-    ImGui::Text( "Mouse   - Rotate" );
-    ImGui::Text( "WASD    - Move" );
-    ImGui::Text( "E       - Go Up" );
-    ImGui::Text( "Q       - Go Down" );
-    ImGui::Text( "X       - Release Mouse" );
+	ImGui::Text("Mouse   - Rotate");
+	ImGui::Text("WASD    - Move");
+	ImGui::Text("E       - Go Up");
+	ImGui::Text("Q       - Go Down");
+	ImGui::Text("X       - Release Mouse");
 
-    ImGui::End();
-
-
-    ImGui::Render();
-    ImGui_ImplDX11_RenderDrawData( ImGui::GetDrawData() );
-#endif
+	ImGui::End();
 
 
-	// Present the back buffer to the user
-	//  - Puts the final frame we're drawing into the window so the user can see it
-	//  - Do this exactly ONCE PER FRAME (always at the very end of the frame)
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	#endif
+
+
+		// Present the back buffer to the user
+		//  - Puts the final frame we're drawing into the window so the user can see it
+		//  - Do this exactly ONCE PER FRAME (always at the very end of the frame)
 	swapChain->Present(0, 0);
 }
 

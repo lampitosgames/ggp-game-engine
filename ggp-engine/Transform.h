@@ -5,7 +5,7 @@
 
 class Transform {
 public:
-	Transform* parent;
+	Transform * parent;
 
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 rotation;
@@ -13,7 +13,7 @@ public:
 
 	Transform(DirectX::XMFLOAT3 _position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 			  DirectX::XMFLOAT3 _rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-			  DirectX::XMFLOAT3 _scale    = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
+			  DirectX::XMFLOAT3 _scale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 
 	DirectX::XMFLOAT3 Up();
 	DirectX::XMFLOAT3 Forward();

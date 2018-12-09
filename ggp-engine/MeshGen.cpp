@@ -199,7 +199,7 @@ MeshGen::MeshGen(ID3D11Device* _dxDevice) {
 	dxDevice = _dxDevice;
 }
 
-Mesh* MeshGen::LoadTerrain(std::string _rawFilepath, int _resolution, float _heightScale, float _uvScale) {
+Mesh* MeshGen::LoadTerrain(std::string _rawFilepath, UINT _resolution, float _heightScale, float _uvScale) {
 	StartMesh();
 	unsigned char* heights = new unsigned char[_resolution * _resolution];
 	std::ifstream file;
@@ -222,7 +222,7 @@ Mesh* MeshGen::LoadTerrain(std::string _rawFilepath, int _resolution, float _hei
 
 		//Average surrounding heights
 		float avgHeight = 0.0f;
-		int neighborInds[] = {
+		UINT neighborInds[] = {
 			j - _resolution - 1, //NW
 			j - _resolution,     //N
 			j - _resolution + 1, //NE

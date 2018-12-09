@@ -7,48 +7,48 @@ ECS::ComponentManager* ECS::ComponentManager::instance = nullptr;
 
 using namespace ECS;
 
-ECS::ComponentManager* ECS::ComponentManager::GetInstance()
-{
-    if ( instance == nullptr )
-    {
-        instance = new ComponentManager();
-    }
-    return instance;
+ECS::ComponentManager* ECS::ComponentManager::GetInstance() {
+	if (instance == nullptr) {
+		instance = new ComponentManager();
+	}
+	return instance;
 }
 
-void ECS::ComponentManager::ReleaseInstance()
-{
-    if ( instance != nullptr )
-    {
-        delete instance;
-        instance = nullptr;
-    }
+void ECS::ComponentManager::ReleaseInstance() {
+	if (instance != nullptr) {
+		delete instance;
+		instance = nullptr;
+	}
 }
 
-ECS::ComponentManager::ComponentManager()
-{
+void ECS::ComponentManager::CleanupComponents(const EntityID aEntityID) {
+	if (activeComponents.find(aEntityID) == activeComponents.end()) { return; }
+	auto vec_itr = activeComponents[aEntityID].begin();
+	for (; vec_itr != activeComponents[aEntityID].end(); ++vec_itr) {
+		if (vec_itr->second != nullptr) {
+			delete vec_itr->second;
+			activeComponents[aEntityID][vec_itr->first] = nullptr;
+		}
+	}
 }
 
-ECS::ComponentManager::~ComponentManager()
-{
-    CleanupAllComponents();
+ECS::ComponentManager::ComponentManager() {}
+
+ECS::ComponentManager::~ComponentManager() {
+	CleanupAllComponents();
 }
 
-void ECS::ComponentManager::CleanupAllComponents()
-{
-    auto map_itr = activeComponents.begin();
-    
-    for ( ; map_itr != activeComponents.end(); ++map_itr )
-    {
-        auto vec_itr = map_itr->second.begin();
-        for ( ; vec_itr != map_itr->second.end(); ++vec_itr )
-        {
-            if ( ( vec_itr->second ) != nullptr )
-            {
-                delete vec_itr->second;
-            }         
-        }
-    }
+void ECS::ComponentManager::CleanupAllComponents() {
+	auto map_itr = activeComponents.begin();
 
-    ComponentCount = 0;
+	for (; map_itr != activeComponents.end(); ++map_itr) {
+		auto vec_itr = map_itr->second.begin();
+		for (; vec_itr != map_itr->second.end(); ++vec_itr) {
+			if ((vec_itr->second) != nullptr) {
+				delete vec_itr->second;
+			}
+		}
+	}
+
+	ComponentCount = 0;
 }

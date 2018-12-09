@@ -1,6 +1,12 @@
 #include "stdafx.h"
 #include <Windows.h>
 #include "Game.h"
+#include <iostream>
+//Overwrite the new keyword in debug mode.  Allows us to create memory allocation break points
+#ifdef DEBUG
+#define DEBUG_NEW new( _NORMAL_BLOCK, __FILE__, __LINE__) 
+#define new DEBUG_NEW
+#endif
 
 // --------------------------------------------------------
 // Entry point for a graphical (non-console) Windows application
@@ -11,29 +17,30 @@ int WINAPI WinMain(
 	LPSTR lpCmdLine,			// Command line params
 	int nCmdShow)				// How the window should be shown (we ignore this)
 {
-#if defined(DEBUG) | defined(_DEBUG)
-    // Enable memory leak detection as a quick and dirty
-    // way of determining if we forgot to clean something up
-    //  - You may want to use something more advanced, like Visual Leak Detector
-    _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+	#ifdef DEBUG
+	// Enable memory leak detection as a quick and dirty
+	// way of determining if we forgot to clean something up
+	//  - You may want to use something more advanced, like Visual Leak Detector
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	// TO DEBUG MEMORY LEAKS: uncomment the next line and change the number to the heap location
+	//_crtBreakAlloc = 1878;
+	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 
-    _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
+	#endif
 
-#endif
-
-		// Ensure "Current Directory" (relative path) is always the .exe's folder
-		// - Without this, the relative path is different when running through VS
-		//    and when running the .exe directly, which makes it a pain to load files
-		//    - Running through VS: Current Dir is the *project folder*
-		//    - Running from .exe:  Current Dir is the .exe's folder
-		// - This has nothing to do with DEBUG and RELEASE modes - it's purely a 
-		//    Visual Studio "thing", and isn't obvious unless you know to look 
-		//    for it.  In fact, it could be fixed by changing a setting in VS, but
-		//    the option is stored in a user file (.suo), which is ignored by most
-		//    version control packages by default.  Meaning: the option must be
-		//    changed every on every PC.  Ugh.  So instead, I fixed it here.
-		// - This is a new change this year to simplify a long-standing headache.  
-		//    If it breaks something on your end, feel free to comment this section out
+			// Ensure "Current Directory" (relative path) is always the .exe's folder
+			// - Without this, the relative path is different when running through VS
+			//    and when running the .exe directly, which makes it a pain to load files
+			//    - Running through VS: Current Dir is the *project folder*
+			//    - Running from .exe:  Current Dir is the .exe's folder
+			// - This has nothing to do with DEBUG and RELEASE modes - it's purely a 
+			//    Visual Studio "thing", and isn't obvious unless you know to look 
+			//    for it.  In fact, it could be fixed by changing a setting in VS, but
+			//    the option is stored in a user file (.suo), which is ignored by most
+			//    version control packages by default.  Meaning: the option must be
+			//    changed every on every PC.  Ugh.  So instead, I fixed it here.
+			// - This is a new change this year to simplify a long-standing headache.  
+			//    If it breaks something on your end, feel free to comment this section out
 	{
 		// Get the real, full path to this executable, end the string before
 		// the filename itself and then set that as the current directory
@@ -44,7 +51,7 @@ int WINAPI WinMain(
 			*lastSlash = 0; // End the string at the last slash character
 			SetCurrentDirectory(currentDir);
 		}
-	}
+	}	
 
 	// Create the Game object using
 	// the app handle we got from WinMain
@@ -65,5 +72,6 @@ int WINAPI WinMain(
 
 	// Begin the message and game loop, and then return
 	// whatever we get back once the game loop is over
-	return dxGame.Run();
+	HRESULT dxGameResult = dxGame.Run();
+	return dxGameResult;
 }

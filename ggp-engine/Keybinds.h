@@ -13,7 +13,7 @@
 */
 static std::map<std::string, std::vector<int>> create_binds() {
 	std::map<std::string, std::vector<int>> m;
-	
+
 	//Forward action
 	m["move_forward"].push_back('W');
 	m["move_forward"].push_back(VK_UP);
@@ -33,12 +33,15 @@ static std::map<std::string, std::vector<int>> create_binds() {
 	//Up action
 	m["move_up"].push_back('E');
 	m["move_up"].push_back(VK_SPACE);
-	
+
 	//Down action
 	m["move_down"].push_back('Q');
 
 	//Toggle mouse lock
 	m["toggle_mouse_lock"].push_back('X');
+
+	//Delete something
+	m["delete_object"].push_back(VK_DELETE);
 
 	return m;
 };

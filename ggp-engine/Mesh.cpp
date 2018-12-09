@@ -3,10 +3,10 @@
 #include "Mesh.h"
 
 //Mesh constructor
-Mesh::Mesh(Vertex* _vertexArray, 
-		   UINT _vertexCount, 
-		   UINT* _indexArray, 
-		   UINT _indexCount, 
+Mesh::Mesh(Vertex* _vertexArray,
+		   UINT _vertexCount,
+		   UINT* _indexArray,
+		   UINT _indexCount,
 		   ID3D11Device * _dxDevice) {
 	//Store the index count locally
 	indexCount = _indexCount;
