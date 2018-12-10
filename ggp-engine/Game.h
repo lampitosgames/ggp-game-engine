@@ -57,6 +57,19 @@ private:
 
 	//Active scene
 	Scene* activeScene;
+
+	//Post Process - Bloom
+	ID3D11RenderTargetView* ppRTV; //render to a texture <--- before pp
+	ID3D11ShaderResourceView* ppSRV; //to sample from the same texture <--- original
+
+	ID3D11RenderTargetView* extractRTV; //RRT for extracting bright pixels
+	ID3D11ShaderResourceView* extractSRV; //texture with extracted pixels ready to blur
+
+	SimpleVertexShader* ppVS;
+	SimplePixelShader* ppExtract;
+	SimplePixelShader* ppBlur; //does 2 passes
+
+	ID3D11SamplerState* bloomSampler;
 };
 
 #endif //GGP_GAME_H
