@@ -151,6 +151,7 @@ public:
 	~SimpleVertexShader();
 	ID3D11VertexShader* GetDirectXShader() { return shader; }
 	ID3D11InputLayout* GetInputLayout() { return inputLayout; }
+	void SetInputLayout(ID3D11InputLayout* newLayout, bool perInstanceCompatible);
 	bool GetPerInstanceCompatible() { return perInstanceCompatible; }
 
 	bool SetShaderResourceView(std::string name, ID3D11ShaderResourceView* srv);
@@ -179,7 +180,7 @@ public:
 	bool SetSamplerState(std::string name, ID3D11SamplerState* samplerState);
 
 protected:
-	ID3D11PixelShader* shader;
+	ID3D11PixelShader * shader;
 	bool CreateShader(ID3DBlob* shaderBlob);
 	void SetShaderAndCBs();
 	void CleanUp();
@@ -198,7 +199,7 @@ public:
 	bool SetSamplerState(std::string name, ID3D11SamplerState* samplerState);
 
 protected:
-	ID3D11DomainShader* shader;
+	ID3D11DomainShader * shader;
 	bool CreateShader(ID3DBlob* shaderBlob);
 	void SetShaderAndCBs();
 	void CleanUp();
@@ -217,7 +218,7 @@ public:
 	bool SetSamplerState(std::string name, ID3D11SamplerState* samplerState);
 
 protected:
-	ID3D11HullShader* shader;
+	ID3D11HullShader * shader;
 	bool CreateShader(ID3DBlob* shaderBlob);
 	void SetShaderAndCBs();
 	void CleanUp();
@@ -241,7 +242,7 @@ public:
 
 protected:
 	// Shader itself
-	ID3D11GeometryShader* shader;
+	ID3D11GeometryShader * shader;
 
 	// Stream out related
 	bool useStreamOut;
@@ -277,7 +278,7 @@ public:
 	int GetUnorderedAccessViewIndex(std::string name);
 
 protected:
-	ID3D11ComputeShader* shader;
+	ID3D11ComputeShader * shader;
 	std::unordered_map<std::string, unsigned int> uavTable;
 
 	unsigned int threadsX;

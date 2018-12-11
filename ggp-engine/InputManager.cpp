@@ -54,14 +54,13 @@ void InputManager::Update() {
 	}
 }
 
-UINT InputManager::AddInputListener(GameObject * _gameObject) {
-	InputListener* tempIL = new InputListener(ilUID, _gameObject);
-	inputListenerUIDMap[ilUID] = tempIL;
-	ilUID++;
-	return ilUID - 1;
+UINT InputManager::AddInputListener(InputListener* _inputListener) {
+	inputListenerUIDMap[ilCount] = _inputListener;
+	ilCount++;
+	return ilCount - 1;
 }
 
-InputListener* InputManager::GetInputListener(UINT _uniqueID) {
+InputListener* InputManager::GetInputListener(InputListenerID _uniqueID) {
 	auto thisIL = inputListenerUIDMap.find(_uniqueID);
 	//If found, return it.  Else, return nullptr
 	if (thisIL != inputListenerUIDMap.end()) {
@@ -70,11 +69,12 @@ InputListener* InputManager::GetInputListener(UINT _uniqueID) {
 	return nullptr;
 }
 
-void InputManager::DeleteInputListener(UINT _uniqueID) {
-	InputListener* ilTemp = GetInputListener(_uniqueID);
-	if (ilTemp) {
-		delete ilTemp;
-		inputListenerUIDMap.erase(_uniqueID);
+void InputManager::RemoveInputListener(InputListener * _inputListener) {
+	auto ilIt = inputListenerUIDMap.begin();
+	for (; ilIt != inputListenerUIDMap.end(); ++ilIt) {
+		if (ilIt->second == _inputListener) {
+			inputListenerUIDMap[ilIt->first] = nullptr;
+		}
 	}
 }
 
@@ -220,7 +220,7 @@ void InputManager::_OnMouseWheel(float _delta) {
 
 InputManager::InputManager() {
 	//Set unique identifier for InputListeners to 0
-	ilUID = 0;
+	ilCount = 0;
 	//Loop through all keybinds and add an entry in the keyState to track each of them
 	map<string, vector<int>>::iterator kbIt;
 	for (kbIt = keybinds.begin(); kbIt != keybinds.end(); ++kbIt) {
@@ -249,16 +249,8 @@ InputManager::~InputManager() {
 }
 
 void InputManager::Release() {
-	//Loop through and delete every input listener
-	map<UINT, InputListener*>::iterator ilIterator;
-	for (ilIterator = inputListenerUIDMap.begin(); ilIterator != inputListenerUIDMap.end(); ++ilIterator) {
-		InputListener* ilTemp = ilIterator->second;
-		if (ilTemp != nullptr) {
-			delete ilTemp;
-		}
-	}
 	//Reset input listener unique ID values
-	ilUID = 0;
+	ilCount = 0;
 	//Clear the map so the singleton can be reused.
 	inputListenerUIDMap.clear();
 	//Clear the key press state
@@ -269,8 +261,13 @@ void InputManager::Release() {
 void InputManager::Dispatch(InputEvent _event) {
 	//Loop through every input listener
 	map<UINT, InputListener*>::iterator ilIt;
-	for (ilIt = inputListenerUIDMap.begin(); ilIt != inputListenerUIDMap.end(); ++ilIt) {
+	for (ilIt = inputListenerUIDMap.begin(); ilIt != inputListenerUIDMap.end();) {
+		if (ilIt->second == nullptr) {
+			inputListenerUIDMap.erase(ilIt++);
+			continue;
+		}
 		//Dispatch this input event to the listener
 		ilIt->second->Input(_event);
+		ilIt++;
 	}
 }

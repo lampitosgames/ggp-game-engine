@@ -59,7 +59,7 @@ public:
 	MeshGen();
 	MeshGen(ID3D11Device* _dxDevice);
 
-	Mesh* LoadTerrain(std::string _rawFilepath, int _resolution, float _heightScale = 50.0f, float _uvScale = 30.0f);
+	Mesh* LoadTerrain(std::string _rawFilepath, UINT _resolution, float _heightScale = 50.0f, float _uvScale = 30.0f);
 
 	Mesh* GenerateCube(float _sideLength, float _uvScale = 1.0f);
 	Mesh* GenerateSphere(float _radius, UINT _subdivs = 4, float _uvScale = 1.0f);

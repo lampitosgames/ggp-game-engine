@@ -39,9 +39,9 @@ public:
 	static ResourceManager* GetInstance();
 	static void ReleaseInstance();
 
-    // We don't want anything making copies of this class so delete these operators
-    ResourceManager( ResourceManager const& ) = delete;
-    void operator=( ResourceManager const& ) = delete;
+	// We don't want anything making copies of this class so delete these operators
+	ResourceManager(ResourceManager const&) = delete;
+	void operator=(ResourceManager const&) = delete;
 
 	//Sets the device and context needed to actually interact with the window
 	static void SetDevicePointer(ID3D11Device* _dxDevice);
@@ -68,12 +68,12 @@ public:
 	//Create and return a new basic texture material without shaders
 	Material* AddMaterial(std::string _uniqueID, LPCWSTR _textureFilestring);
 
-    /// <summary>
-    /// Load in a DDS texture
-    /// </summary>
-    /// <param name="_textureFileString"></param>
-    /// <returns></returns>
-    ID3D11ShaderResourceView* LoadSRV_DDS( LPCWSTR _textureFileString );
+	/// <summary>
+	/// Load in a DDS texture
+	/// </summary>
+	/// <param name="_textureFileString"></param>
+	/// <returns></returns>
+	ID3D11ShaderResourceView* LoadSRV_DDS(LPCWSTR _textureFileString);
 	/*
 		PBR MATERIAL MANAGEMENT
 	*/

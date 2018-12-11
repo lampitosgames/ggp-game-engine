@@ -59,5 +59,5 @@ void Basis::setAxis(int _axisIndex, const DirectX::XMFLOAT3 & _axisVals) {
 
 XMFLOAT3 & Basis::operator[](int _axisIndex) const {
 	//Get the specified axis vector for this local space
-	return XMFLOAT3(m(_axisIndex, 0), m(_axisIndex, 1), m(_axisIndex, 2));
+	return XMFLOAT3();//XMFLOAT3(m(_axisIndex, 0), m(_axisIndex, 1), m(_axisIndex, 2));
 }

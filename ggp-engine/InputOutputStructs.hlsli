@@ -22,3 +22,28 @@ struct VertexToPixel {
 	float3 tangent      : TANGENT;      // Tangent vector
 	float3 worldPos     : POSITION;     // World-space position of the vertex
 };
+
+
+// Struct representing the particle shader input
+struct ParticleVertexShaderInput {
+	//Per-vertex
+	float2 uv           : TEXCOORD;
+	//Per-instance
+	float3 iPos         : INITIAL_POSITION;
+	float3 iVel         : INITIAL_VELOCITY;
+	float3 accel        : ACCELERATION;
+	float iRot          : INITIAL_ROTATION;
+	float angularVel    : ANGULAR_VELOCITY;
+	float startSize     : START_SIZE;
+	float endSize       : END_SIZE;
+	float4 startColor   : START_COLOR;
+	float4 endColor     : END_COLOR;
+	float startLife     : START_LIFE;
+	float remainLife    : REMAIN_LIFE;
+};
+
+struct ParticleVertexToPixel {
+	float4 position		: SV_POSITION;
+	float2 uv           : TEXCOORD;
+	float4 color		: COLOR;
+};

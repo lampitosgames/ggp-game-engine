@@ -1,15 +1,18 @@
 #include "stdafx.h"
 
+#include "InputManager.h"
 #include "InputListener.h"
 #include "GameObject.h"
 
-InputListener::InputListener(UINT _uniqueID, GameObject* _gameObject) {
-	type = CompType::INPUT_LISTENER;
-	uniqueID = _uniqueID;
+InputListener::InputListener(GameObject* _gameObject) {
 	gameObject = _gameObject;
+	owner = _gameObject->GetUniqueID();
+	InputManager::GetInstance()->AddInputListener(this);
 }
 
-InputListener::~InputListener() {}
+InputListener::~InputListener() {
+	InputManager::GetInstance()->RemoveInputListener(this);
+}
 
 void InputListener::Input(InputEvent _event) {
 	gameObject->Input(_event);

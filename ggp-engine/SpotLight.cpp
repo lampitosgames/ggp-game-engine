@@ -1,75 +1,68 @@
 #include "stdafx.h"
+
+#include "LightManager.h"
 #include "SpotLight.h"
 #include "GameObject.h"
 using namespace DirectX;
 
-SpotLight::SpotLight(UINT _uniqueID, GameObject * _gameObject)
-{
+SpotLight::SpotLight(GameObject* _gameObject) {
 	//call the fully parameterized constructor
-	SpotLight(_uniqueID, _gameObject, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+	SpotLight(_gameObject, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
-SpotLight::SpotLight(UINT _uniqueID, GameObject * _gameObject, DirectX::XMFLOAT4 _color, DirectX::XMFLOAT3 _direction, float _cone, float _range)
-{
-	type = CompType::SPOT_LIGHT;
-	uniqueID = _uniqueID;
+SpotLight::SpotLight(GameObject* _gameObject, DirectX::XMFLOAT4 _color, DirectX::XMFLOAT3 _direction, float _cone, float _range) {
 	gameObject = _gameObject;
+	owner = _gameObject->GetUniqueID();
 	//store light data
-	lightData = { 
+	lightData = {
 		_color,
 		_direction,
 		_cone,
 		gameObject->transform.position,
 		_range
 	};
+	LightManager::GetInstance()->AddSpotLight(this);
 }
 
-SpotLight::~SpotLight(){}
+SpotLight::~SpotLight() {
+	LightManager::GetInstance()->RemoveSpotLight(this);
+}
 
-DirectX::XMFLOAT4 SpotLight::GetColor()
-{
+DirectX::XMFLOAT4 SpotLight::GetColor() {
 	return lightData.color;
 }
 
-void SpotLight::SetColor(DirectX::XMFLOAT4 _color)
-{
+void SpotLight::SetColor(DirectX::XMFLOAT4 _color) {
 	lightData.color = _color;
 }
 
-DirectX::XMFLOAT3 SpotLight::GetDirection()
-{
+DirectX::XMFLOAT3 SpotLight::GetDirection() {
 	return lightData.direction;
 }
 
-void SpotLight::SetDirection(DirectX::XMFLOAT3 _direction)
-{
+void SpotLight::SetDirection(DirectX::XMFLOAT3 _direction) {
 	lightData.direction = _direction;
 }
 
 
 
-float SpotLight::GetCone()
-{
+float SpotLight::GetCone() {
 	return lightData.cone;
 }
 
-void SpotLight::SetCone(float _cone)
-{
+void SpotLight::SetCone(float _cone) {
 	lightData.cone = _cone;
 }
 
-float SpotLight::GetRange()
-{
+float SpotLight::GetRange() {
 	return lightData.range;
 }
 
-void SpotLight::SetRange(float _newrange)
-{
+void SpotLight::SetRange(float _newrange) {
 	lightData.range = _newrange;
 }
 
-SpotLightStruct SpotLight::buildLightStruct()
-{
+SpotLightStruct SpotLight::buildLightStruct() {
 	lightData.position = gameObject->transform.position;
 	return lightData;
 }

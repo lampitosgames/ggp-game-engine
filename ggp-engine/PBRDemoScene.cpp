@@ -2,21 +2,26 @@
 
 #include "PBRDemoScene.h"
 #include <DirectXMath.h>
+#include "InputManager.h"
 #include "RenderManager.h"
 #include "ResourceManager.h"
 #include "FlyingCamera.h"
 #include "Material.h"
+#include "RigidBody.h"
 #include "PBRMaterial.h"
 #include "Mesh.h"
 #include "MeshRenderer.h"
+#include "InputListener.h"
+#include "DirLight.h"
+#include "PointLight.h"
+#include "SpotLight.h"
+#include "ParticleEmitter.h"
 
 using namespace DirectX;
 using namespace std;
 
 void PBRDemoScene::Init() {
 	Scene::Init();
-
-
 
 	Material* blueMatte = resourceManager->AddMaterial("blueMatte", XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), 0.0f);
 	PBRMaterial* pbrMats[7];
@@ -35,12 +40,11 @@ void PBRDemoScene::Init() {
 	for (UINT i = 0; i < 7; i++) {
 		GameObject* newSphere = new GameObject("Sphere");
 		AddChild(newSphere);
-        MeshRenderer* aMeshRend = newSphere->AddComponent<MeshRenderer>( newSphere );
-        if ( aMeshRend )
-        {
-            aMeshRend->SetMesh( sphereMesh );
-            aMeshRend->SetMaterial( pbrMats[ i ] );
-        }
+		MeshRenderer* aMeshRend = newSphere->AddComponent<MeshRenderer>(newSphere);
+		if (aMeshRend) {
+			aMeshRend->SetMesh(sphereMesh);
+			aMeshRend->SetMaterial(pbrMats[i]);
+		}
 
 		newSphere->transform.position.x = (float)i * 1.2f;
 	}
@@ -48,34 +52,37 @@ void PBRDemoScene::Init() {
 	//Create a single, white directional light
 	GameObject* dirLight = new GameObject("dirLight1");
 	AddChild(dirLight);
-	dirLight->AddDirLight(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 1.0f), 0.8f, 0.00f);
 	GameObject* dirLight2 = new GameObject("dirLight2");
 	AddChild(dirLight2);
-	dirLight2->AddDirLight(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, -0.25f, 0.0f), 0.2f, 0.00f);
+	dirLight2->AddComponent<DirLight>(dirLight2, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, -0.25f, 0.0f), 0.2f, 0.00f);
 	GameObject* dirLight3 = new GameObject("dirLight3");
 	AddChild(dirLight3);
-	dirLight3->AddDirLight(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 1.0f), 0.2f, 0.00f);
+	dirLight3->AddComponent<DirLight>(dirLight3, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 1.0f), 0.2f, 0.00f);
 
 	GameObject* pointLight1 = new GameObject("pointLight1");
 	AddChild(pointLight1);
-	pointLight1->AddPointLight(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
-	pointLight1->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetRange(10.0f);
+	pointLight1->AddComponent<PointLight>(pointLight1, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+	pointLight1->GetComponentType<PointLight>()->SetRange(10.0f);
 	pointLight1->transform.position.x += 2.0f;
 	pointLight1->transform.position.y += 4.0f;
 
+	//Debug particle emitter
+	//EmitterOptions emitterOpts = { 32 };
+	//pointLight1->AddComponent<ParticleEmitter>(pointLight1, emitterOpts);
+
 	GameObject* pointLight2 = new GameObject("pointLight2");
 	AddChild(pointLight2);
-	pointLight2->AddPointLight(XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f));
-	pointLight2->GetComponent<PointLight>(CompType::POINT_LIGHT)->SetIntensity(1.0f);
+	pointLight2->AddComponent<PointLight>(pointLight2, XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f));
+	pointLight2->GetComponentType<PointLight>()->SetIntensity(1.0f);
 	pointLight2->transform.position.x += 6.0f;
 	pointLight2->transform.position.y += 3.0f;
 
 	GameObject* spotLight1 = new GameObject("spotLight1");
-	AddChild(spotLight1);
-	spotLight1->AddSpotLight(XMFLOAT4(0.901f, 0.239f, 0.337f, 1.0f));
-	spotLight1->GetComponent<SpotLight>(CompType::SPOT_LIGHT)->SetCone(15.0f);
-	spotLight1->GetComponent<SpotLight>(CompType::SPOT_LIGHT)->SetRange(80.0f);
-	spotLight1->GetComponent<SpotLight>(CompType::SPOT_LIGHT)->SetDirection(XMFLOAT3(0.0f, -1.0f, 0.0f));
+	dirLight->AddChild(spotLight1);
+	spotLight1->AddComponent<SpotLight>(spotLight1, XMFLOAT4(0.901f, 0.239f, 0.337f, 1.0f));
+	spotLight1->GetComponentType<SpotLight>()->SetCone(15.0f);
+	spotLight1->GetComponentType<SpotLight>()->SetRange(80.0f);
+	spotLight1->GetComponentType<SpotLight>()->SetDirection(XMFLOAT3(0.0f, -1.0f, 0.0f));
 	spotLight1->transform.position.y += 15.0f;
 
 	//Create a camera
@@ -85,14 +92,12 @@ void PBRDemoScene::Init() {
 	activeCamera->transform.position.z = -5.0f;
 	activeCamera->CalculateViewMatrix();
 
-	//Load terrain
-	GameObject* terrain = new GameObject("testTerrain");
-	Mesh* terrainMesh = resourceManager->GetTerrain("assets/terrain/testTerrain.raw", 513, 100.0f);
-	AddChild(terrain);
-	terrain->AddComponent<MeshRenderer>(terrain);
-	terrain->GetComponentType<MeshRenderer>()->SetMesh(terrainMesh);
-	terrain->GetComponentType<MeshRenderer>()->SetMaterial(pbrMats[6]);
-	terrain->transform.position.y = -3.0f;
+	////Load terrain
+	//GameObject* terrain = new GameObject("testTerrain");
+	//Mesh* terrainMesh = resourceManager->GetTerrain("assets/terrain/testTerrain.raw", 513, 100.0f);
+	//AddChild(terrain);
+	//terrain->AddComponent<MeshRenderer>(terrain, terrainMesh, pbrMats[0]);
+	//terrain->transform.position.y = -3.0f;
 }
 
 void PBRDemoScene::Start() {
@@ -106,4 +111,8 @@ void PBRDemoScene::Update(float _deltaTime) {
 	GameObject* pointLight2 = GetGameObject<GameObject>("pointLight2");
 	pointLight2->transform.position.x = 3 + 3 * cos(totalTime);
 	pointLight2->transform.position.z = 3 * sin(totalTime);
+
+	if (inputManager->ActionPressed("delete_object")) {
+		delete GetGameObject<GameObject>("dirLight1");
+	}
 }

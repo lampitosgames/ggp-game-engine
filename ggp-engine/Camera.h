@@ -16,10 +16,10 @@ protected:
 public:
 	//Constructor. Passes transform data to parent.
 	//FOV is in radians
-	Camera(std::string _uniqueID = "NA", 
-		   float _fov = 1.3962634f, 
-		   float _aspectRatio = 1.777777777f, 
-		   float _nearPlane = 0.01f, 
+	Camera(std::string _uniqueID = "NA",
+		   float _fov = 1.3962634f,
+		   float _aspectRatio = 1.777777777f,
+		   float _nearPlane = 0.01f,
 		   float _farPlane = 1000.0f,
 		   DirectX::XMFLOAT3 _position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 		   DirectX::XMFLOAT3 _rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),

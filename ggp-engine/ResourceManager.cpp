@@ -135,7 +135,7 @@ Material* ResourceManager::AddMaterial(string _uniqueID, DirectX::XMFLOAT4 _colo
 	//Add the material to the material map
 	materialUIDMap[_uniqueID] = newMaterial;
 	//Return new material
- 	return newMaterial;
+	return newMaterial;
 }
 Material* ResourceManager::AddMaterial(std::string _uniqueID, LPCWSTR _textureFilestring) {
 	//First, look up this material.  If it exists, just return it
@@ -153,31 +153,27 @@ Material* ResourceManager::AddMaterial(std::string _uniqueID, LPCWSTR _textureFi
 #pragma endregion
 
 #pragma region PBR Material Loading
-ID3D11ShaderResourceView * ResourceManager::LoadSRV_DDS( LPCWSTR _textureFileString )
-{
-    ID3D11ShaderResourceView* tempSRV = nullptr;
+ID3D11ShaderResourceView * ResourceManager::LoadSRV_DDS(LPCWSTR _textureFileString) {
+	ID3D11ShaderResourceView* tempSRV = nullptr;
 
-    HRESULT iResult = CreateDDSTextureFromFile(
-        dxDevice,
-        dxContext,
-        _textureFileString,
-        0,
-        &tempSRV
-    );
-    
-    // if success
-    if ( iResult == S_OK )
-    {
-        return tempSRV;
-    }
-    else
-    {
-        DEBUG_PRINT( "DDS SRV LOADING FAILURE!" );
-        // #RemoveWhenDoneDebugging
-        throw "DDS SRV LOADING FAILURE!";
+	HRESULT iResult = CreateDDSTextureFromFile(
+		dxDevice,
+		dxContext,
+		_textureFileString,
+		0,
+		&tempSRV
+	);
 
-        return nullptr;
-    }
+	// if success
+	if (iResult == S_OK) {
+		return tempSRV;
+	} else {
+		DEBUG_PRINT("DDS SRV LOADING FAILURE!");
+		// #RemoveWhenDoneDebugging
+		throw "DDS SRV LOADING FAILURE!";
+
+		return nullptr;
+	}
 }
 PBRMaterial* ResourceManager::GetPBRMaterial(std::string _uniqueID, LPCWSTR _vertexShaderFilestring, LPCWSTR _pixelShaderFilestring, XMFLOAT4 _color, float _roughness, float _metalness) {
 	//First, look up this material.  If it exists, just return it
@@ -305,7 +301,7 @@ Mesh* ResourceManager::GenerateSphere(float _radius, int _subdivs, float _uvScal
 		return thisMesh->second;
 	}
 	//Mesh does not exist, so generate it and store it in the mesh map
-	meshUIDMap[genUID.str()] = ResourceManager::meshGen.GenerateSphere(_radius, _subdivs,_uvScale);
+	meshUIDMap[genUID.str()] = ResourceManager::meshGen.GenerateSphere(_radius, _subdivs, _uvScale);
 	//Return the mesh
 	return meshUIDMap[genUID.str()];
 }
@@ -541,8 +537,7 @@ Texture* ResourceManager::GetTexture(LPCWSTR _uniqueID) {
 	return newTex;
 }
 
-ResourceManager::ResourceManager() {
-}
+ResourceManager::ResourceManager() {}
 
 ResourceManager::~ResourceManager() {
 	Release();

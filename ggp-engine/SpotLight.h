@@ -2,19 +2,18 @@
 #define GGP_SPOT_LIGHT_H
 
 #include <DirectXMath.h>
-#include "Component.h"
+#include "BaseComponent.h"
 #include "LightStructs.h"
 class GameObject;
 
-class SpotLight : public Component {
+class SpotLight : public ECS::BaseComponent<SpotLight> {
 	SpotLightStruct lightData;
 public:
-	GameObject* gameObject;
-	SpotLight(UINT _uniqueID, GameObject* _gameObject);
-	SpotLight(UINT _uniqueID, GameObject* _gameObject, DirectX::XMFLOAT4 _color, 
-			DirectX::XMFLOAT3 _direction = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f),
-		float _cone = 30.0f,
-		float _range = 50.0f);
+	SpotLight(GameObject* _gameObject);
+	SpotLight(GameObject* _gameObject, DirectX::XMFLOAT4 _color,
+			  DirectX::XMFLOAT3 _direction = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f),
+			  float _cone = 30.0f,
+			  float _range = 50.0f);
 	~SpotLight();
 
 	//Light color
@@ -30,6 +29,8 @@ public:
 	float GetRange();
 	void SetRange(float _newrange);
 	SpotLightStruct buildLightStruct();
+
+	GameObject* gameObject;
 };
 
 #endif //GGP_SPOT_LIGHT_H

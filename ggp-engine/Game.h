@@ -8,6 +8,7 @@
 #include "RenderManager.h"
 #include "InputManager.h"
 #include "LightManager.h"
+#include "ParticleManager.h"
 #include "PhysicsManager.h"
 #include "ComponentManager.h"
 #include "Scene.h"
@@ -50,8 +51,9 @@ private:
 	RenderManager* renderManager;
 	InputManager* inputManager;
 	LightManager* lightManager;
-    Physics::PhysicsManager* physicsManager;
-    ECS::ComponentManager* componentManager;
+	ParticleManager* particleManager;
+	Physics::PhysicsManager* physicsManager;
+	ECS::ComponentManager* componentManager;
 
 	//Active scene
 	Scene* activeScene;
