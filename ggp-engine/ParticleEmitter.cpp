@@ -15,18 +15,19 @@ ParticleData::ParticleData(UINT _maxCount) { generate(_maxCount); }
 void ParticleData::generate(UINT _maxCount) {
 	particleCount = _maxCount;
 	aliveCount = 0;
-	iPos.reset(new float3[_maxCount]);
-	iVel.reset(new float3[_maxCount]);
-	accel.reset(new float3[_maxCount]);
-	iRot.reset(new float[_maxCount]);
-	angularVel.reset(new float[_maxCount]);
-	startSize.reset(new float[_maxCount]);
-	endSize.reset(new float[_maxCount]);
-	startColor.reset(new float4[_maxCount]);
-	endColor.reset(new float4[_maxCount]);
-	startLife.reset(new float[_maxCount]);
-	remainLife.reset(new float[_maxCount]);
-	alive.reset(new bool[_maxCount]);
+	release();
+	iPos = new float3[_maxCount];
+	iVel = new float3[_maxCount];
+	accel = new float3[_maxCount];
+	iRot = new float[_maxCount];
+	angularVel = new float[_maxCount];
+	startSize = new float[_maxCount];
+	endSize = new float[_maxCount];
+	startColor = new float4[_maxCount];
+	endColor = new float4[_maxCount];
+	startLife = new float[_maxCount];
+	remainLife = new float[_maxCount];
+	alive = new bool[_maxCount];
 }
 
 void ParticleData::kill(UINT _id) {
@@ -52,6 +53,21 @@ void ParticleData::swap(UINT _id1, UINT _id2) {
 	std::swap(startLife[_id1], startLife[_id2]);
 	std::swap(remainLife[_id1], remainLife[_id2]);
 	std::swap(alive[_id1], alive[_id2]);
+}
+
+void ParticleData::release() {
+	if (iPos != nullptr) { delete[] iPos; iPos = nullptr; }
+	if (iVel != nullptr) { delete[] iVel; iVel = nullptr; }
+	if (accel != nullptr) { delete[] accel; accel = nullptr; }
+	if (iRot != nullptr) { delete[] iRot; iRot = nullptr; }
+	if (angularVel != nullptr) { delete[] angularVel; angularVel = nullptr; }
+	if (startSize != nullptr) { delete[] startSize; startSize = nullptr; }
+	if (endSize != nullptr) { delete[] endSize; endSize = nullptr; }
+	if (startColor != nullptr) { delete[] startColor; startColor = nullptr; }
+	if (endColor != nullptr) { delete[] endColor; endColor = nullptr; }
+	if (startLife != nullptr) { delete[] startLife; startLife = nullptr; }
+	if (remainLife != nullptr) { delete[] remainLife; remainLife = nullptr; }
+	if (alive != nullptr) { delete[] alive; alive = nullptr; }
 }
 #pragma endregion
 
@@ -130,34 +146,34 @@ void ParticleEmitter::GenerateParticleBuffers(ID3D11Device * _dxDevice) {
 	strides[vbSlots::BVERTEX_DATA] = sizeof(float2);
 
 	//Create a buffer for every particle property
-	MakeDynamicBuffer(sizeof(float3), vbSlots::BPOS, particles.iPos.get(), _dxDevice);
-	MakeDynamicBuffer(sizeof(float3), vbSlots::BVEL, particles.iVel.get(), _dxDevice);
-	MakeDynamicBuffer(sizeof(float3), vbSlots::BACCEL, particles.accel.get(), _dxDevice);
-	MakeDynamicBuffer(sizeof(float), vbSlots::BROT, particles.iRot.get(), _dxDevice);
-	MakeDynamicBuffer(sizeof(float), vbSlots::BANGULAR_VEL, particles.angularVel.get(), _dxDevice);
-	MakeDynamicBuffer(sizeof(float), vbSlots::BSTART_SIZE, particles.startSize.get(), _dxDevice);
-	MakeDynamicBuffer(sizeof(float), vbSlots::BEND_SIZE, particles.endSize.get(),_dxDevice);
-	MakeDynamicBuffer(sizeof(float4), vbSlots::BSTART_COLOR, particles.startColor.get(), _dxDevice);
-	MakeDynamicBuffer(sizeof(float4), vbSlots::BEND_COLOR, particles.endColor.get(), _dxDevice);
-	MakeDynamicBuffer(sizeof(float), vbSlots::BSTART_LIFE, particles.startLife.get(), _dxDevice);
-	MakeDynamicBuffer(sizeof(float), vbSlots::BREMAIN_LIFE, particles.remainLife.get(), _dxDevice);
+	MakeDynamicBuffer(sizeof(float3), vbSlots::BPOS, particles.iPos, _dxDevice);
+	MakeDynamicBuffer(sizeof(float3), vbSlots::BVEL, particles.iVel, _dxDevice);
+	MakeDynamicBuffer(sizeof(float3), vbSlots::BACCEL, particles.accel, _dxDevice);
+	MakeDynamicBuffer(sizeof(float), vbSlots::BROT, particles.iRot, _dxDevice);
+	MakeDynamicBuffer(sizeof(float), vbSlots::BANGULAR_VEL, particles.angularVel, _dxDevice);
+	MakeDynamicBuffer(sizeof(float), vbSlots::BSTART_SIZE, particles.startSize, _dxDevice);
+	MakeDynamicBuffer(sizeof(float), vbSlots::BEND_SIZE, particles.endSize,_dxDevice);
+	MakeDynamicBuffer(sizeof(float4), vbSlots::BSTART_COLOR, particles.startColor, _dxDevice);
+	MakeDynamicBuffer(sizeof(float4), vbSlots::BEND_COLOR, particles.endColor, _dxDevice);
+	MakeDynamicBuffer(sizeof(float), vbSlots::BSTART_LIFE, particles.startLife, _dxDevice);
+	MakeDynamicBuffer(sizeof(float), vbSlots::BREMAIN_LIFE, particles.remainLife, _dxDevice);
 }
 
 void ParticleEmitter::UploadParticleBuffers(ID3D11DeviceContext * _dxContext) {
 	//Only update the remainLife buffer by default
-	UpdateDynamicBuffer(sizeof(float), vbSlots::BREMAIN_LIFE, particles.remainLife.get(), _dxContext);
+	UpdateDynamicBuffer(sizeof(float), vbSlots::BREMAIN_LIFE, particles.remainLife, _dxContext);
 
 	if (forceBufferUpdate) {
-		UpdateDynamicBuffer(sizeof(float3), vbSlots::BPOS, particles.iPos.get(), _dxContext);
-		UpdateDynamicBuffer(sizeof(float3), vbSlots::BVEL, particles.iVel.get(), _dxContext);
-		UpdateDynamicBuffer(sizeof(float3), vbSlots::BACCEL, particles.accel.get(), _dxContext);
-		UpdateDynamicBuffer(sizeof(float), vbSlots::BROT, particles.iRot.get(), _dxContext);
-		UpdateDynamicBuffer(sizeof(float), vbSlots::BANGULAR_VEL, particles.angularVel.get(), _dxContext);
-		UpdateDynamicBuffer(sizeof(float), vbSlots::BSTART_SIZE, particles.startSize.get(), _dxContext);
-		UpdateDynamicBuffer(sizeof(float), vbSlots::BEND_SIZE, particles.endSize.get(), _dxContext);
-		UpdateDynamicBuffer(sizeof(float4), vbSlots::BSTART_COLOR, particles.startColor.get(), _dxContext);
-		UpdateDynamicBuffer(sizeof(float4), vbSlots::BEND_COLOR, particles.endColor.get(), _dxContext);
-		UpdateDynamicBuffer(sizeof(float), vbSlots::BSTART_LIFE, particles.startLife.get(), _dxContext);
+		UpdateDynamicBuffer(sizeof(float3), vbSlots::BPOS, particles.iPos, _dxContext);
+		UpdateDynamicBuffer(sizeof(float3), vbSlots::BVEL, particles.iVel, _dxContext);
+		UpdateDynamicBuffer(sizeof(float3), vbSlots::BACCEL, particles.accel, _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BROT, particles.iRot, _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BANGULAR_VEL, particles.angularVel, _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BSTART_SIZE, particles.startSize, _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BEND_SIZE, particles.endSize, _dxContext);
+		UpdateDynamicBuffer(sizeof(float4), vbSlots::BSTART_COLOR, particles.startColor, _dxContext);
+		UpdateDynamicBuffer(sizeof(float4), vbSlots::BEND_COLOR, particles.endColor, _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BSTART_LIFE, particles.startLife, _dxContext);
 	}
 }
 
@@ -182,7 +198,7 @@ void ParticleEmitter::UpdateDynamicBuffer(UINT _itemSize, vbSlots _type, void * 
 	D3D11_MAPPED_SUBRESOURCE mapped;
 	ZeroMemory(&mapped, sizeof(D3D11_MAPPED_SUBRESOURCE));
 	_dxContext->Map(buffers[_type], 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-	memcpy(mapped.pData, _newData, sizeof(_itemSize) * particles.aliveCount);
+	memcpy(mapped.pData, _newData, _itemSize * particles.aliveCount);
 	_dxContext->Unmap(buffers[_type], 0);
 }
 
