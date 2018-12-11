@@ -1,4 +1,4 @@
-stoneEntiy = {}
+stoneEntity = {}
 
 posY = 0;
 
@@ -19,14 +19,14 @@ function start()
   );
 
   -- Create an entity
-  stoneEntiy = Entity.new(
+  stoneEntity = Entity.new(
     "Lua Stone Entity",             -- Name
     "assets/meshes/sphere.obj", -- Mesh file
     scene,						-- active scene
 	stoneMat					-- material
   );
 
-  stoneEntiy:SetPos(0, 2, 0)
+  stoneEntity:SetPos(0, 2, 0)
 
 end
 
@@ -35,6 +35,7 @@ end
 -----------------------------------
 function update( dt )
 
-	posY = posY + dt
+	posY = posY + dt * 1
+	stoneEntity:SetPos(0, posY, 0)
 
 end

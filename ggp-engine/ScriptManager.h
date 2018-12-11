@@ -120,8 +120,6 @@ namespace Scripting
                 Scene* activeScene,
                 MaterialCreationData* matData )
             {
-                DEBUG_PRINT( "Load Lua Entity: %s ", aName );
-
                 MeshName = aMeshName;
 
                 ResourceManager* resMan = ResourceManager::GetInstance();
