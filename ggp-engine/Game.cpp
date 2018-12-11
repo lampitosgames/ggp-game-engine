@@ -104,6 +104,9 @@ void Game::Init() {
 	renderManager->Start();
 	//Call start on the active scene
 	activeScene->Start();
+
+    // Load active Lua scripts
+    scriptManager->LoadScripts(activeScene);
 }
 
 // --------------------------------------------------------

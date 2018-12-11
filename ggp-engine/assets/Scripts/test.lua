@@ -1,5 +1,4 @@
-
-woodEntity = {};
+stoneEntiy = {}
 
 posY = 0;
 
@@ -9,50 +8,25 @@ posY = 0;
 function start()
 
   -- Create a new material
-
-  stoneMat = Material.new(
-    device,                                       --ID3D11Device* aDevice,
-    context,                                      --ID3D11DeviceContext* aContext
-    "VertexShader.cso",                           --FileName vertexShader
-    "PixelShader.cso",                            --FileName pixelShader
-    "Assets/Textures/cobblestone_albedo.png",     --FileName albedoTexture
-    "Assets/Textures/cobblestone_normals.png",    --FileName normalTexture
-    "Assets/Textures/cobblestone_roughness.png",  --FileName RoughnessTexture
-    "Assets/Textures/cobblestone_metal.png"       --FileName MetalTexture
+  stoneMat = Material.new( 
+	"LuaMaterial",
+    "VertexShader.cso",                         --FileName vertexShader
+    "PBRPShader.cso",							--FileName pixelShader
+    "assets/textures/PBR/bronze_a.png",			--FileName albedoTexture
+    "assets/textures/PBR/bronze_n.png",			--FileName normalTexture
+    "assets/textures/PBR/bronze_r.png",			--FileName RoughnessTexture
+    "assets/textures/PBR/bronze_m.png"		    --FileName MetalTexture
   );
 
-  bronzeMat = Material.new(
-    device,
-    context,
-    "VertexShader.cso",
-    "PixelShader.cso",
-    "Assets/Textures/bronze_albedo.png",
-    "Assets/Textures/bronze_normals.png",
-    "Assets/Textures/bronze_roughness.png",
-    "Assets/Textures/bronze_metal.png"
-  );
-
+  -- Create an entity
   stoneEntiy = Entity.new(
-    "Stone Entity",             -- Name
-    "Assets/Models/sphere.obj", -- Mesh file
-    stoneMat                    -- Material
+    "Lua Stone Entity",             -- Name
+    "assets/meshes/sphere.obj", -- Mesh file
+    scene,						-- active scene
+	stoneMat					-- material
   );
 
-  bronzeEntity = Entity.new(
-    "Bronze Entity",
-    "Assets/Models/sphere.obj",
-    bronzeMat
-  );
-
-  bronze2 = Entity.new(
-    "Bronze Entity (2)",
-    "Assets/Models/sphere.obj",
-    bronzeMat
-  );
-
-  stoneEntiy:SetPos(0, 0, 0)
-  bronzeEntity:SetPos(-2, 1 , 0)
-  bronze2:SetPos(2, 1, 0)
+  stoneEntiy:SetPos(0, 2, 0)
 
 end
 
@@ -61,9 +35,6 @@ end
 -----------------------------------
 function update( dt )
 
-  --posY = posY + totalTime * math.sin(0.8)
-
-
-  --woodEntity:SetPos(0, posY, 0)
+	posY = posY + dt
 
 end

@@ -28,20 +28,20 @@ void ScriptManager::Update( float deltaTime )
     }
 }
 
-void ScriptManager::LoadScripts()
+void ScriptManager::LoadScripts( Scene* aScene )
 {
     // #TODO 
     // Load all scripts currently here
-    LoadScript( "assets/Scripts/test.lua" );
+    LoadScript( "assets/Scripts/test.lua", aScene );
 }
 
-void ScriptManager::LoadScript( const char * aFile )
+void ScriptManager::LoadScript( const char * aFile, Scene* aScene )
 {
     sol::state lua;
     lua.open_libraries( sol::lib::base );
 
     // Set lua types
-    DefinedLuaTypes( lua );
+    DefinedLuaTypes( lua, aScene );
 
     // Load in this script...
     lua.script_file( aFile );
@@ -67,32 +67,30 @@ void ScriptManager::LoadScript( const char * aFile )
 }
 
 
-void ScriptManager::DefinedLuaTypes( sol::state & aLua )
+void ScriptManager::DefinedLuaTypes( sol::state & aLua, Scene* aScene )
 {
     aLua [ "device" ] = Device;
     aLua [ "context" ] = Context;
+    aLua [ "scene" ] = aScene;
 
     // Define the entity types
-    /*aLua.new_usertype<EntityCreationData>( "Entity",
+    aLua.new_usertype<EntityCreationData>( "Entity",
         sol::constructors<
-        EntityCreationData( std::string aName, FileName aMeshName, MaterialCreationData* matData )
-        >(),
+        EntityCreationData( 
+            std::string aName, 
+            std::string aMeshName,
+            Scene* activeScene, MaterialCreationData* matData
+        )>(),
 
         "SetPos", &EntityCreationData::SetPos,
-
-        "SetScale", &EntityCreationData::SetScale,
-
-        "SetMass", &EntityCreationData::SetMass,
-        "GetMass", &EntityCreationData::GetMass
+        "SetScale", &EntityCreationData::SetScale
 
         );
 
     aLua.new_usertype<MaterialCreationData>( "Material",
-
         sol::constructors<
         MaterialCreationData(
-            ID3D11Device* aDevice,
-            ID3D11DeviceContext* aContext,
+            std::string aName,
             FileName vertexShader,
             FileName pixelShader,
             FileName albedoTexture,
@@ -101,7 +99,7 @@ void ScriptManager::DefinedLuaTypes( sol::state & aLua )
             FileName metalTexture
         )>()
 
-        );*/
+        );
 
     aLua.new_usertype<DirectX::XMFLOAT3>( "VEC3",
         "x", &DirectX::XMFLOAT3::x,

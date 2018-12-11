@@ -57,6 +57,12 @@
     <Filter Include="Shaders\Particles">
       <UniqueIdentifier>{64edb68c-ce48-4aea-8e76-4a180606588d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Scripts">
+      <UniqueIdentifier>{e0c91953-7e03-4b48-ae27-af61e6aaa64c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scripts\Lua_SRC">
+      <UniqueIdentifier>{67e3e197-62a1-4c79-ab10-0aca15b9cef9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXCore.cpp">
@@ -332,7 +338,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ScriptManager.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Scripts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -362,7 +368,6 @@
     <None Include="InputOutputStructs.hlsli">
       <Filter>Shaders\Shader Helpers</Filter>
     </None>
-    <None Include="packages.config" />
     <None Include="LightGlobals.hlsli">
       <Filter>Shaders\Shader Helpers</Filter>
     </None>
@@ -376,5 +381,9 @@
       <Filter>Shaders\Shader Helpers</Filter>
     </None>
     <None Include="ClassDiagram.cd" />
+    <None Include="packages.config" />
+    <None Include="assets\Scripts\test.lua">
+      <Filter>Header Files\Scripts\Lua_SRC</Filter>
+    </None>
   </ItemGroup>
 </Project>
