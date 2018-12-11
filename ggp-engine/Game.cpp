@@ -40,6 +40,7 @@ Game::Game(HINSTANCE hInstance)
 	particleManager = ParticleManager::GetInstance();
 	physicsManager = Physics::PhysicsManager::GetInstance();
 	componentManager = ECS::ComponentManager::GetInstance();
+    scriptManager = new Scripting::ScriptManager( dxDevice, dxContext );
 
 	#if defined(DEBUG) || defined(_DEBUG)
 		// Do we want a console window?  Probably only in debug mode
@@ -63,6 +64,11 @@ Game::~Game() {
 	delete activeScene;
 
 	//Release all singletons
+    if ( scriptManager != nullptr )
+    {
+        delete scriptManager;
+        scriptManager = nullptr;
+    }
 	resourceManager->ReleaseInstance();
 	renderManager->ReleaseInstance();
 	inputManager->ReleaseInstance();
@@ -126,6 +132,7 @@ void Game::Update(float deltaTime, float totalTime) {
 	particleManager->Update(deltaTime);
 	physicsManager->UpdatePhysics(deltaTime);
 	activeScene->Update(deltaTime);
+    scriptManager->Update( deltaTime );
 }
 
 // --------------------------------------------------------
