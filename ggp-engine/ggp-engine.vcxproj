@@ -92,8 +92,18 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(SolutionDir)additional\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)additional\imgui;$(SolutionDir)additional\sol2;$(SolutionDir)additional\lua\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>lua52.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)additional\lua\lib;</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent>
+      <Command>rmdir /Q /S "$(OutDir)assets"
+Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"
+xcopy /e /d /y "$(SolutionDir)additional\lua\lib\lua52.dll" "$(OutDir)"</Command>
+      <Message>Copying binary...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -102,11 +112,12 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(SolutionDir)additional\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)additional\imgui;$(SolutionDir)additional\sol2;$(SolutionDir)additional\lua\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <PostBuildEvent>
       <Command>rmdir /Q /S "$(OutDir)assets"
-Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
+Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"
+xcopy /e /d /y "$(SolutionDir)additional\lua\lib\lua52.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copying binary...</Message>
@@ -114,6 +125,10 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <FxCompile>
       <ShaderModel>5.0</ShaderModel>
     </FxCompile>
+    <Link>
+      <AdditionalDependencies>lua52.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)additional\lua\lib;</AdditionalLibraryDirectories>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -123,12 +138,20 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(SolutionDir)additional\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)additional\imgui;$(SolutionDir)additional\sol2;$(SolutionDir)additional\lua\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>lua52.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)additional\lua\lib;</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>rmdir /Q /S "$(OutDir)assets"
+Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"
+xcopy /e /d /y "$(SolutionDir)additional\lua\lib\lua52.dll" "$(OutDir)"</Command>
+      <Message>Copying binary...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -138,15 +161,18 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(SolutionDir)additional\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)additional\imgui;$(SolutionDir)additional\sol2;$(SolutionDir)additional\lua\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>lua52.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)additional\lua\lib;</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>rmdir /Q /S "$(OutDir)assets"
-Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
+Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"
+xcopy /e /d /y "$(SolutionDir)additional\lua\lib\lua52.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copying binary...</Message>
@@ -191,6 +217,7 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="ScriptManager.cpp" />
     <ClCompile Include="SimpleShader.cpp" />
     <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -246,6 +273,7 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="ScriptManager.h" />
     <ClInclude Include="SimpleShader.h" />
     <ClInclude Include="SpotLight.h" />
     <ClInclude Include="stdafx.h" />
@@ -312,6 +340,7 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\Scripts\test.lua" />
     <None Include="ClassDiagram.cd" />
     <None Include="InputOutputStructs.hlsli" />
     <None Include="LightGlobals.hlsli" />
@@ -322,12 +351,12 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\directxtk_desktop_2015.2018.8.18.2\build\native\directxtk_desktop_2015.targets" Condition="Exists('..\packages\directxtk_desktop_2015.2018.8.18.2\build\native\directxtk_desktop_2015.targets')" />
+    <Import Project="..\packages\directxtk_desktop_2015.2018.11.20.1\build\native\directxtk_desktop_2015.targets" Condition="Exists('..\packages\directxtk_desktop_2015.2018.11.20.1\build\native\directxtk_desktop_2015.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\directxtk_desktop_2015.2018.8.18.2\build\native\directxtk_desktop_2015.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtk_desktop_2015.2018.8.18.2\build\native\directxtk_desktop_2015.targets'))" />
+    <Error Condition="!Exists('..\packages\directxtk_desktop_2015.2018.11.20.1\build\native\directxtk_desktop_2015.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtk_desktop_2015.2018.11.20.1\build\native\directxtk_desktop_2015.targets'))" />
   </Target>
 </Project>
