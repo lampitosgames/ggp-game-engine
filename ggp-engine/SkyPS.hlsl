@@ -12,5 +12,5 @@ SamplerState BasicSampler	: register( s0 );
 // Entry point for this pixel shader
 float4 main( VertexToPixel input ) : SV_TARGET
 {
-    return SkyTexture.Sample( BasicSampler, input.sampleDir );
+	return float4(SkyTexture.Sample(BasicSampler, input.sampleDir).rgb,0.0f);
 }

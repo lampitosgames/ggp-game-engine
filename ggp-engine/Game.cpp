@@ -76,6 +76,17 @@ Game::~Game() {
 	particleManager->ReleaseInstance();
 	physicsManager->ReleaseInstance();
 	ECS::ComponentManager::ReleaseInstance();
+
+	//delete post process stuff
+	delete ppVS;
+	delete ppExtract;
+	delete ppBlur;
+	bloomSampler->Release();
+	ppRTV->Release();
+	ppSRV->Release();
+	extractRTV->Release();
+	extractSRV->Release();
+
 }
 
 // --------------------------------------------------------
@@ -94,6 +105,71 @@ void Game::Init() {
 	activeScene = new PBRDemoScene("PBR_Demo");
 	//activeScene = new DebugScene( "Debug Scene" );
 	activeScene->Init();
+
+	//Post Process - Bloom
+	// Manually create a sampler state
+	D3D11_SAMPLER_DESC samplerDesc1 = {}; // Zero out the struct memory
+	samplerDesc1.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc1.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc1.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc1.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc1.MaxLOD = D3D11_FLOAT32_MAX;
+
+	dxDevice->CreateSamplerState(&samplerDesc1, &bloomSampler);
+	
+	//Create Render Target and Shader Resource Views
+	D3D11_TEXTURE2D_DESC textureDesc = {};
+	textureDesc.Width = width;
+	textureDesc.Height = height;
+	textureDesc.ArraySize = 1;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureDesc.MipLevels = 1;
+	textureDesc.MiscFlags = 0;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.SampleDesc.Quality = 0;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+
+	ID3D11Texture2D* ppTexture;
+	dxDevice->CreateTexture2D(&textureDesc, 0, &ppTexture);
+	// Create the Render Target View
+	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+	rtvDesc.Format = textureDesc.Format;
+	rtvDesc.Texture2D.MipSlice = 0;
+	rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+
+	dxDevice->CreateRenderTargetView(ppTexture, &rtvDesc, &ppRTV);
+
+	// Create the Shader Resource View
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = textureDesc.Format;
+	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+
+	dxDevice->CreateShaderResourceView(ppTexture, &srvDesc, &ppSRV);
+	//Done using it
+	ppTexture->Release();
+
+	ID3D11Texture2D* extractTexture;
+	dxDevice->CreateTexture2D(&textureDesc, 0, &extractTexture);
+	dxDevice->CreateRenderTargetView(extractTexture, &rtvDesc, &extractRTV);
+
+	// Create the Shader Resource View
+	dxDevice->CreateShaderResourceView(extractTexture, &srvDesc, &extractSRV);
+	//Done using it
+	extractTexture->Release();
+	
+	//Load Post Process shaders
+	ppVS = new SimpleVertexShader(dxDevice, dxContext);
+	ppVS->LoadShaderFile(L"PostProcessVS.cso");
+
+	ppExtract = new SimplePixelShader(dxDevice, dxContext);
+	ppExtract->LoadShaderFile(L"ExtractBrightPS.cso");
+
+	ppBlur = new SimplePixelShader(dxDevice, dxContext);
+	ppBlur->LoadShaderFile(L"GaussianBlur.cso");
 
 	// Tell the input assembler stage of the pipeline what kind of
 	// geometric primitives (points, lines or triangles) we want to draw.  
@@ -149,14 +225,67 @@ void Game::Draw(float deltaTime, float totalTime) {
 	//  - Do this ONCE PER FRAME
 	//  - At the beginning of Draw (before drawing *anything*)
 	dxContext->ClearRenderTargetView(backBufferRTV, color);
+	dxContext->ClearRenderTargetView(ppRTV, color);
+	dxContext->ClearRenderTargetView(extractRTV, color);
+
 	dxContext->ClearDepthStencilView(
 		depthStencilView,
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
 		1.0f,
 		0);
 
+	dxContext->OMSetRenderTargets(1, &ppRTV, depthStencilView);
 	//Call render on the renderManager
 	renderManager->Render();
+
+	//Post Process - Bloom
+	//set buffers in the input assembler
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	dxContext->OMSetRenderTargets(1, &backBufferRTV, 0);
+	dxContext->OMSetRenderTargets(1, &extractRTV, depthStencilView);
+	//Extract Bright Pixels--------------------
+	//set to post processing shaders
+	ppVS->SetShader();
+	ppExtract->SetShader();
+	ppExtract->SetShaderResourceView("Pixels", ppSRV);
+	ppExtract->SetSamplerState("Sampler", bloomSampler);
+	ppExtract->CopyAllBufferData();
+
+	//unbind vert/index buffer
+	ID3D11Buffer* nothing = 0;
+	dxContext->IASetVertexBuffers(0, 1, &nothing, &stride, &offset);
+	dxContext->IASetIndexBuffer(0, DXGI_FORMAT_R32_UINT, 0);
+
+	// Draw a triangle that will hopefully fill the screen
+	dxContext->Draw(3, 0);
+
+	// Unbind this particular register
+	ppExtract->SetShaderResourceView("Pixels", 0);
+
+
+	//Blur-----------------
+	dxContext->OMSetRenderTargets(1, &backBufferRTV, 0);
+	ppVS->SetShader();
+	ppBlur->SetShader();
+	ppBlur->SetShaderResourceView("Pixels", extractSRV);
+	ppBlur->SetShaderResourceView("Pixels2", ppSRV);
+	ppBlur->SetSamplerState("Sampler", bloomSampler);
+	ppBlur->SetInt("blurAmount", 15);
+	ppBlur->SetFloat("pixelWidth", 1.0f / width);
+	ppBlur->SetFloat("pixelHeight", 1.0f / height);
+	ppBlur->CopyAllBufferData();
+	//unbind vert/index buffer
+	dxContext->IASetVertexBuffers(0, 1, &nothing, &stride, &offset);
+	dxContext->IASetIndexBuffer(0, DXGI_FORMAT_R32_UINT, 0);
+
+	// Draw a triangle that will hopefully fill the screen
+	dxContext->Draw(3, 0);
+
+	// Unbind this particular register
+	ppBlur->SetShaderResourceView("Pixels", 0);
+	ppBlur->SetShaderResourceView("Pixels2", 0);
+
 
 	#if defined(ENABLE_UI)
 		// Create a new IMGui frame
