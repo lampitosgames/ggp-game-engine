@@ -44,7 +44,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 		}
 	}
 	//skybox, very little bloom
-	else
+	else if(finalColor.a == 0.0f)
 	{
 		if (brightness <= 0.95f)
 		{
@@ -52,7 +52,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 		}
 		else
 		{
-			finalColor.rgb /= 12.0f;
+			finalColor.rgb /= 15.0f;
 		}
 	}
 	
