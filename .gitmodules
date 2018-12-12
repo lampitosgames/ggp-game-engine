@@ -1,3 +1,7 @@
+[submodule "additional/sol2"]
+	path = additional/sol2
+	url = git@github.com:ThePhD/sol2.git
+
 [submodule "additional/assimp"]
 	path = additional/assimp
 	url = git@github.com:assimp/assimp.git

@@ -1,3 +1,6 @@
+#include "stdafx.h"
+
+
 #include "ParticleManager.h"
 #include "Math.h"
 #include "ResourceManager.h"
