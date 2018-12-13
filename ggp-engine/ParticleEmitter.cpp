@@ -7,7 +7,9 @@
 #include "RenderManager.h"
 #include "ResourceManager.h"
 #include "Camera.h"
-#include <iostream>
+#include "Texture.h"
+
+using namespace DirectX;
 
 #pragma region Particle Data Struct
 ParticleData::ParticleData(UINT _maxCount) { generate(_maxCount); }
@@ -72,6 +74,35 @@ void ParticleData::release() {
 #pragma endregion
 
 
+#pragma region Emitter Options
+EmitterOptions::EmitterOptions() {
+	maxParticleCount = 1024;
+	startDelay = 0.0f;
+	duration = 5.0f;
+	emissionRate = 0.01f;
+	looping = true;
+	playing = true;
+	hasTexture = 1;
+	textureFilepath = L"assets/textures/particles/particle.jpg";
+	shape = emitterShape::SPHERE;
+	radius = 0.1f;
+	angle = 25.0f;
+	height = 0.5f;
+	partLifetime = 4.0f;
+	partInitialSpeed = 1.0f;
+	partAccel = float3(0.0f, 0.0f, 0.0f);
+	partAccelLSpace = true;
+	partInitialRot = 0.0f;
+	partAngularVel = 0.0f;
+	partRandomRotDir = true;
+	partStartSize = 0.1f;
+	partEndSize = 0.3f;
+	partStartColor = float4(1.0f, 0.1f, 0.1f, 0.3f);
+	partEndColor = float4(1.0f, 0.6f, 0.1f, 0.0f);
+}
+#pragma endregion
+
+
 #pragma region Particle Emitter Component
 ParticleEmitter::ParticleEmitter(GameObject* _gameObject, EmitterOptions _settings) {
 	gameObject = _gameObject;
@@ -82,9 +113,16 @@ ParticleEmitter::ParticleEmitter(GameObject* _gameObject, EmitterOptions _settin
 	particles.generate(settings.maxParticleCount);
 	forceBufferUpdate = false;
 	GenerateParticleBuffers(ResourceManager::GetDevicePointer());
-
-	while (particles.aliveCount < particles.particleCount) {
-		WakeNext();
+	//Update world matrix
+	worldMatRaw = gameObject->transform.GetWorldMatrix(false);
+	//Init variables
+	totalPlayTime = 0.0f;
+	totalSpawned = 0;
+	if (settings.hasTexture) {
+		particleTexture = ResourceManager::GetInstance()->GetTexture(settings.textureFilepath);
+	}
+	else {
+		particleTexture = nullptr;
 	}
 }
 
@@ -96,12 +134,33 @@ ParticleEmitter::~ParticleEmitter() {
 }
 
 void ParticleEmitter::Update(float _dt) {
-	//Don't update all buffers unless we need to
+	//Only update if playing
+	if (!settings.playing) { return; }
+
+	//Reduce remaining duration by the time delta
+	totalPlayTime += _dt;
+	//If the duration has expired
+	if (totalPlayTime >= settings.duration && !settings.looping) {
+			totalPlayTime = 0;
+			settings.playing = false;
+			return;
+	}
+
+	//Update world matrix
+	worldMatRaw = gameObject->transform.GetWorldMatrix(false);
+
 	for (UINT i = 0; i < particles.aliveCount; i++) {
 		particles.remainLife[i] -= _dt;
 		if (particles.remainLife[i] <= 0.0f) {
 			particles.kill(i);
 			forceBufferUpdate = true;
+		}
+	}
+
+	//If we can spawn more particles
+	if (particles.aliveCount < particles.particleCount) {
+		if (settings.emissionRate * totalSpawned + settings.startDelay < totalPlayTime) {
+			WakeNext();
 		}
 	}
 
@@ -116,6 +175,13 @@ void ParticleEmitter::Render() {
 	particleVS->SetMatrix4x4("view", RenderManager::GetInstance()->GetActiveCamera()->GetViewMatrix());
 	particleVS->SetMatrix4x4("projection", RenderManager::GetInstance()->GetActiveCamera()->GetProjectionMatrix());
 	particleVS->CopyAllBufferData();
+
+	particlePS->SetData("hasTexture", &settings.hasTexture, sizeof(int));
+	if (settings.hasTexture) {
+		particlePS->SetSamplerState("trilinear", samplerState);
+		particlePS->SetShaderResourceView("partTexture", particleTexture->GetShaderResourceView());
+	}
+	particlePS->CopyAllBufferData();
 
 	particleVS->SetShader();
 	particlePS->SetShader();
@@ -209,20 +275,78 @@ void ParticleEmitter::Kill(UINT _id) {
 
 void ParticleEmitter::WakeNext() {
 	particles.wakeNext();
+	totalSpawned += 1;
 	forceBufferUpdate = true;
-	//TODO: Set the new particle's properties according to the emitter's settings
-	//Currently this is just test data.
+
+	//Get new particle index
 	UINT i = particles.aliveCount - 1;
-	particles.iPos[i] = float3(-1.0f * i, 0.0f, 0.0f);
-	particles.iVel[i] = float3(0.0f, 0.0f, 0.0f);
-	particles.accel[i] = float3(0.0f, 0.0f, 0.0f);
-	particles.iRot[i] = 0.0f;
-	particles.angularVel[i] = 0.0f;
-	particles.startSize[i] = 0.5f;
-	particles.endSize[i] = 0.01f;
-	particles.startColor[i] = float4(1.0f, 0.0f, 0.0f, 1.0f);
-	particles.endColor[i] = float4(0.0f, 0.0f, 1.0f, 1.0f);
-	particles.startLife[i] = 10.0f;
+
+
+	//Create position based on emission type
+	float ix; float iy; float iz;
+	switch (settings.shape) {
+	case EmitterOptions::emitterShape::SPHERE:
+		//Random position in a sphere
+		do {
+			ix = ((float)(rand() % (UINT)(settings.radius * 2 * 1000)) / 1000.0f) - settings.radius;
+			iy = ((float)(rand() % (UINT)(settings.radius * 2 * 1000)) / 1000.0f) - settings.radius;
+			iz = ((float)(rand() % (UINT)(settings.radius * 2 * 1000)) / 1000.0f) - settings.radius;
+		} while (ix*ix + iy*iy + iz*iz > settings.radius * settings.radius);
+		particles.iPos[i] = float3(ix, iy, iz);
+		particles.iVel[i] = particles.iPos[i];
+		XMStoreFloat3(&particles.iVel[i], XMVectorScale(
+			XMVector3Normalize(XMLoadFloat3(&particles.iVel[i])), 
+			settings.partInitialSpeed
+		));
+		break;
+	case EmitterOptions::emitterShape::CUBE:
+		ix = ((float)(rand() % (UINT)(settings.radius * 2 * 1000)) / 1000.0f) - settings.radius;
+		iy = ((float)(rand() % (UINT)(settings.radius * 2 * 1000)) / 1000.0f) - settings.radius;
+		iz = ((float)(rand() % (UINT)(settings.radius * 2 * 1000)) / 1000.0f) - settings.radius;
+		particles.iPos[i] = float3(ix, iy, iz);
+		particles.iVel[i] = float3(0.0f, 0.0f, settings.partInitialSpeed);
+		break;
+	case EmitterOptions::emitterShape::CYLINDER:
+	case EmitterOptions::emitterShape::CONE:
+	default:
+		//Default to spawning every particle from the center with a velocity of +speed on the z axis
+		particles.iPos[i] = float3(0.0f, 0.0f, 0.0f);
+		particles.iVel[i] = float3(0.0f, 0.0f, settings.partInitialSpeed);
+		break;
+	}
+	//Load world matrix
+	XMMATRIX worldMat = XMLoadFloat4x4(&worldMatRaw);
+	//Transform position into world space
+	XMVECTOR localPos = XMLoadFloat3(&particles.iPos[i]);
+	XMStoreFloat3(&particles.iPos[i], XMVector3Transform(localPos, worldMat));
+	//Transform velocity into world space
+	XMMATRIX rotMat = XMLoadFloat4x4(&gameObject->transform.GetRotationMatrix());
+	XMVECTOR localVel = XMLoadFloat3(&particles.iVel[i]);
+	XMStoreFloat3(&particles.iVel[i], XMVector3Transform(localVel, rotMat));
+	//Set constant acceleration
+	particles.accel[i] = settings.partAccel;
+	//If acceleration is in local space
+	if (settings.partAccelLSpace && (particles.accel[i].x != 0 || particles.accel[i].y != 0 || particles.accel[i].z != 0)) {
+		//Transform by the world matrix
+		XMVECTOR localAccel = XMLoadFloat3(&particles.accel[i]);
+		XMStoreFloat3(&particles.accel[i], XMVector3Transform(localAccel, worldMat));
+	}
+
+	//Set initial rotation amount
+	particles.iRot[i] = settings.partInitialRot;
+	//Set angular velocity
+	particles.angularVel[i] = settings.partAngularVel;
+	//Randomize rotation direction?
+	if (settings.partRandomRotDir) {
+		particles.angularVel[i] *= rand() % 2 == 0 ? 1 : -1;
+	}
+
+	//Grab remaining props directly from the EmitterOptions struct
+	particles.startSize[i] = settings.partStartSize;
+	particles.endSize[i] = settings.partEndSize;
+	particles.startColor[i] = settings.partStartColor;
+	particles.endColor[i] = settings.partEndColor;
+	particles.startLife[i] = settings.partLifetime;
 	particles.remainLife[i] = particles.startLife[i];
 }
 void ParticleEmitter::ThrowIfFail(HRESULT _result) {

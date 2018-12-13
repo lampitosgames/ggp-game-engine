@@ -57,6 +57,30 @@ void ParticleManager::Init() {
 		std::cout << "Sampler load error!" << std::endl;
 	}
 
+	//Build the particle blend state
+	D3D11_BLEND_DESC blendDesc = {};
+	blendDesc.AlphaToCoverageEnable = false;
+	blendDesc.IndependentBlendEnable = false;
+	blendDesc.RenderTarget[0].BlendEnable = true;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	HRESULT blendSuccessfulLoad = ResourceManager::GetDevicePointer()->CreateBlendState(&blendDesc, &particleBS);
+	if (blendSuccessfulLoad != S_OK) {
+		std::cout << "Blend state load error!" << std::endl;
+	}
+
+	//Build the particle depth stencil state
+	D3D11_DEPTH_STENCIL_DESC depthDesc = {};
+	depthDesc.DepthEnable = true;
+	depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; // Turns off depth writing
+	depthDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	ResourceManager::GetDevicePointer()->CreateDepthStencilState(&depthDesc, &particleDS);
+
 	//Create array of 4 UV coordinates. This will serve as the ENTIRE vertex buffer. All other data will come from individual
 	//particles on a per-instance basis [Instanced Rendering]
 	float2 uvCoords[] = { {0.0f,0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f} };
@@ -116,6 +140,9 @@ void ParticleManager::Update(float _dt) {
 void ParticleManager::Render() {
 	//Loop through every particle emitter
 	std::map<ParticleEmitterID, ParticleEmitter*>::iterator peIterator;
+	float blend[4] = { 1,1,1,1 };
+	ResourceManager::GetContextPointer()->OMSetBlendState(particleBS, blend, 0xffffffff);
+	ResourceManager::GetContextPointer()->OMSetDepthStencilState(particleDS, 0);
 	for (peIterator = particleEmitterUIDMap.begin(); peIterator != particleEmitterUIDMap.end();) {
 		ParticleEmitter* peTemp = peIterator->second;
 		//Make sure it hasn't been cleaned up by the component system
@@ -128,6 +155,8 @@ void ParticleManager::Render() {
 		}
 		peTemp->Render();
 	}
+	ResourceManager::GetContextPointer()->OMSetBlendState(0, blend, 0xffffffff);
+	ResourceManager::GetContextPointer()->OMSetDepthStencilState(0, 0);
 }
 
 ID3D11SamplerState * ParticleManager::GetParticleSamplerState() { return particleSS; }

@@ -18,6 +18,8 @@ class ParticleManager {
 	SimplePixelShader* defaultPartPS;
 	ID3D11InputLayout* inputLayout;
 	ID3D11SamplerState* particleSS;
+	ID3D11BlendState* particleBS;
+	ID3D11DepthStencilState* particleDS;
 	ID3D11Buffer* partVBuffer;
 	ID3D11Buffer* partIBuffer;
 
