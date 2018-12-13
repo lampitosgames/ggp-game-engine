@@ -78,14 +78,28 @@ Game::~Game() {
 	ECS::ComponentManager::ReleaseInstance();
 
 	//delete post process stuff
+	//Bloom
 	delete ppVS;
 	delete ppExtract;
 	delete ppBlur;
+	delete addBlend;
 	bloomSampler->Release();
 	ppRTV->Release();
 	ppSRV->Release();
 	extractRTV->Release();
 	extractSRV->Release();
+	blurRTV->Release();
+	blurSRV->Release();
+
+	//DoF
+	delete dofPS;
+	dofSampler->Release();
+	depthRTV->Release();
+	depthSRV->Release();
+	dofBlurRTV->Release();
+	dofBlurSRV->Release();
+	dofRTV->Release();
+	dofSRV->Release();
 
 }
 
@@ -160,6 +174,62 @@ void Game::Init() {
 	dxDevice->CreateShaderResourceView(extractTexture, &srvDesc, &extractSRV);
 	//Done using it
 	extractTexture->Release();
+
+	ID3D11Texture2D* blurTexture;
+	dxDevice->CreateTexture2D(&textureDesc, 0, &blurTexture);
+	// Create the Render Target View
+	dxDevice->CreateRenderTargetView(blurTexture, &rtvDesc, &blurRTV);
+
+	// Create the Shader Resource View
+	dxDevice->CreateShaderResourceView(blurTexture, &srvDesc, &blurSRV);
+
+	// We don't need the texture reference itself no mo'
+	blurTexture->Release();
+
+	//Post Process - DoF
+	// Sampler for dof
+	D3D11_SAMPLER_DESC samplerDesc2 = {}; // Zero out the struct memory
+	samplerDesc2.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc2.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc2.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc2.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc2.MaxLOD = D3D11_FLOAT32_MAX;
+
+	dxDevice->CreateSamplerState(&samplerDesc2, &dofSampler);
+	//Depth of Field RTV & SRV
+	ID3D11Texture2D* depthTexture;
+	//textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	dxDevice->CreateTexture2D(&textureDesc, 0, &depthTexture);
+	// Create the Render Target View
+	dxDevice->CreateRenderTargetView(depthTexture, &rtvDesc, &depthRTV);
+
+	// Create the Shader Resource View
+	dxDevice->CreateShaderResourceView(depthTexture, &srvDesc, &depthSRV);
+
+	// We don't need the texture reference itself no mo'
+	depthTexture->Release();
+
+	ID3D11Texture2D* dofTex;
+	dxDevice->CreateTexture2D(&textureDesc, 0, &dofTex);
+	// Create the Render Target View
+	dxDevice->CreateRenderTargetView(dofTex, &rtvDesc, &dofRTV);
+	// Create the Shader Resource View
+	dxDevice->CreateShaderResourceView(dofTex, &srvDesc, &dofSRV);
+
+	dofTex->Release();
+
+	ID3D11Texture2D* dofBlurTex;
+	//textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	dxDevice->CreateTexture2D(&textureDesc, 0, &dofBlurTex);
+	// Create the Render Target View
+	dxDevice->CreateRenderTargetView(dofBlurTex, &rtvDesc, &dofBlurRTV);
+
+	// Create the Shader Resource View
+	dxDevice->CreateShaderResourceView(dofBlurTex, &srvDesc, &dofBlurSRV);
+
+	// We don't need the texture reference itself no mo'
+	dofBlurTex->Release();
+
 	
 	//Load Post Process shaders
 	ppVS = new SimpleVertexShader(dxDevice, dxContext);
@@ -170,6 +240,12 @@ void Game::Init() {
 
 	ppBlur = new SimplePixelShader(dxDevice, dxContext);
 	ppBlur->LoadShaderFile(L"GaussianBlur.cso");
+
+	dofPS = new SimplePixelShader(dxDevice, dxContext);
+	dofPS->LoadShaderFile(L"dofPS.cso");
+
+	addBlend = new SimplePixelShader(dxDevice, dxContext);
+	addBlend->LoadShaderFile(L"AdditiveBlend.cso");
 
 	// Tell the input assembler stage of the pipeline what kind of
 	// geometric primitives (points, lines or triangles) we want to draw.  
@@ -218,6 +294,8 @@ void Game::Update(float deltaTime, float totalTime) {
 // Clear the screen, redraw everything, present to the user
 // --------------------------------------------------------
 void Game::Draw(float deltaTime, float totalTime) {
+	RTarray[0] = ppRTV;
+	RTarray[1] = depthRTV;
 	// Background color (Black in this case) for clearing
 	const float color[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
@@ -227,6 +305,10 @@ void Game::Draw(float deltaTime, float totalTime) {
 	dxContext->ClearRenderTargetView(backBufferRTV, color);
 	dxContext->ClearRenderTargetView(ppRTV, color);
 	dxContext->ClearRenderTargetView(extractRTV, color);
+	dxContext->ClearRenderTargetView(blurRTV, color);
+	dxContext->ClearRenderTargetView(depthRTV, color);
+	dxContext->ClearRenderTargetView(dofRTV, color);
+	dxContext->ClearRenderTargetView(dofBlurRTV, color);
 
 	dxContext->ClearDepthStencilView(
 		depthStencilView,
@@ -234,7 +316,7 @@ void Game::Draw(float deltaTime, float totalTime) {
 		1.0f,
 		0);
 
-	dxContext->OMSetRenderTargets(1, &ppRTV, depthStencilView);
+	dxContext->OMSetRenderTargets(2, &RTarray[0], depthStencilView);
 	//Call render on the renderManager
 	renderManager->Render();
 
@@ -263,9 +345,9 @@ void Game::Draw(float deltaTime, float totalTime) {
 	// Unbind this particular register
 	ppExtract->SetShaderResourceView("Pixels", 0);
 
-
-	//Blur-----------------
+	//Blur Bright Pixels -----------------
 	dxContext->OMSetRenderTargets(1, &backBufferRTV, 0);
+	dxContext->OMSetRenderTargets(1, &blurRTV, 0);
 	ppVS->SetShader();
 	ppBlur->SetShader();
 	ppBlur->SetShaderResourceView("Pixels", extractSRV);
@@ -285,6 +367,72 @@ void Game::Draw(float deltaTime, float totalTime) {
 	// Unbind this particular register
 	ppBlur->SetShaderResourceView("Pixels", 0);
 	ppBlur->SetShaderResourceView("Pixels2", 0);
+
+	//Additive Blend-------------------------
+	dxContext->OMSetRenderTargets(1, &backBufferRTV, 0);
+	dxContext->OMSetRenderTargets(1, &dofRTV, 0);
+	ppVS->SetShader();
+	addBlend->SetShader();
+	addBlend->SetShaderResourceView("Original", ppSRV);
+	addBlend->SetShaderResourceView("Blurred", blurSRV);
+	addBlend->SetSamplerState("Sampler", bloomSampler);
+	addBlend->CopyAllBufferData();
+	//unbind vert/index buffer
+	dxContext->IASetVertexBuffers(0, 1, &nothing, &stride, &offset);
+	dxContext->IASetIndexBuffer(0, DXGI_FORMAT_R32_UINT, 0);
+
+	// Draw a triangle that will hopefully fill the screen
+	dxContext->Draw(3, 0);
+
+	// Unbind this particular register
+	addBlend->SetShaderResourceView("Original", 0);
+	addBlend->SetShaderResourceView("Blurred", 0);
+
+	//DOF-----------------------------------------
+	//Blur-----------------
+	dxContext->OMSetRenderTargets(1, &backBufferRTV, 0);
+	dxContext->OMSetRenderTargets(1, &dofBlurRTV, 0);
+	ppVS->SetShader();
+	ppBlur->SetShader();
+	ppBlur->SetShaderResourceView("Pixels", dofSRV);
+	ppBlur->SetShaderResourceView("Pixels2", ppSRV);
+	ppBlur->SetSamplerState("Sampler", bloomSampler);
+	ppBlur->SetInt("blurAmount", 15);
+	ppBlur->SetFloat("pixelWidth", 1.0f / width);
+	ppBlur->SetFloat("pixelHeight", 1.0f / height);
+	ppBlur->CopyAllBufferData();
+	//unbind vert/index buffer
+	dxContext->IASetVertexBuffers(0, 1, &nothing, &stride, &offset);
+	dxContext->IASetIndexBuffer(0, DXGI_FORMAT_R32_UINT, 0);
+
+	// Draw a triangle that will hopefully fill the screen
+	dxContext->Draw(3, 0);
+
+	// Unbind this particular register
+	ppBlur->SetShaderResourceView("Pixels", 0);
+	ppBlur->SetShaderResourceView("Pixels2", 0);
+
+	//Blur using depth buffer
+	dxContext->OMSetRenderTargets(1, &backBufferRTV, 0);
+	ppVS->SetShader();
+	dofPS->SetShader();
+	dofPS->SetFloat("pixelSize", 1.0f / (width*height));
+	dofPS->SetShaderResourceView("Pixels", dofSRV);
+	dofPS->SetShaderResourceView("Pixels2", dofBlurSRV);
+	dofPS->SetShaderResourceView("Pixels3", depthSRV);
+	dofPS->SetSamplerState("dofSampler", dofSampler);
+	dofPS->CopyAllBufferData();
+	//unbind vert/index buffer
+	dxContext->IASetVertexBuffers(0, 1, &nothing, &stride, &offset);
+	dxContext->IASetIndexBuffer(0, DXGI_FORMAT_R32_UINT, 0);
+
+	// Draw a triangle that will hopefully fill the screen
+	dxContext->Draw(3, 0);
+
+	// Unbind this particular register
+	dofPS->SetShaderResourceView("Pixels", 0);
+	dofPS->SetShaderResourceView("Pixels2", 0);
+	dofPS->SetShaderResourceView("Pixels3", 0);
 
 
 	#if defined(ENABLE_UI)
