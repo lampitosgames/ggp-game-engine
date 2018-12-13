@@ -1,6 +1,7 @@
 
 cbuffer externalData : register( b0 )
 {
+	matrix world;
     matrix view;
     matrix projection;
 };
@@ -18,6 +19,7 @@ struct VertexToPixel
 {
     float4 position		: SV_POSITION;
     float3 sampleDir	: TEXCOORD;
+	float depth         : DEPTH;
 };
 
 
@@ -35,6 +37,8 @@ VertexToPixel main( VertexShaderInput input )
     // Calculate output position
     matrix viewProj = mul( viewNoTranslation, projection );
     output.position = mul( float4( input.position, 1.0f ), viewProj );
+
+	output.depth = mul(float4(input.position, 1.0f), mul(world, view)).z;
 
     // Push the vertex out to the far clip plane (Z of 1)
     output.position.z = output.position.w; // Z gets divided by W automatically

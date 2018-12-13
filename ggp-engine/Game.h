@@ -67,11 +67,29 @@ private:
 	ID3D11RenderTargetView* extractRTV; //RRT for extracting bright pixels
 	ID3D11ShaderResourceView* extractSRV; //texture with extracted pixels ready to blur
 
+	ID3D11RenderTargetView* blurRTV; // RRT for Gaussian blur
+	ID3D11ShaderResourceView* blurSRV;
+
 	SimpleVertexShader* ppVS;
 	SimplePixelShader* ppExtract;
 	SimplePixelShader* ppBlur; //does 2 passes
+	SimplePixelShader* addBlend; 
 
 	ID3D11SamplerState* bloomSampler;
+
+	//Post Proces - DoF
+	ID3D11SamplerState* dofSampler;
+	ID3D11RenderTargetView* RTarray[2];										
+	ID3D11RenderTargetView* depthRTV;
+	ID3D11ShaderResourceView* depthSRV;
+
+	ID3D11RenderTargetView* dofBlurRTV;
+	ID3D11ShaderResourceView* dofBlurSRV;
+
+	ID3D11RenderTargetView* dofRTV;
+	ID3D11ShaderResourceView* dofSRV;
+
+	SimplePixelShader* dofPS; //post process
 };
 
 #endif //GGP_GAME_H

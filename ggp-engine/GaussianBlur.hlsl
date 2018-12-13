@@ -39,6 +39,6 @@ float4 main(VertexToPixel input) : SV_TARGET
 	//additive blend <--- save a render target and shader? 
 	//If dof uses smart blur, then need a smartblur shader
 	//But if dof uses Gaussian blur, the additive need to be separate to a different shader
-	totalColor += Pixels2.Sample(Sampler, input.uv);
+	//totalColor += Pixels2.Sample(Sampler, input.uv);
 	return totalColor;
 }

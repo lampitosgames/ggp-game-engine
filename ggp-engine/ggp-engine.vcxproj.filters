@@ -372,6 +372,12 @@
     <FxCompile Include="GaussianBlur.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="dofPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="AdditiveBlend.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="InputOutputStructs.hlsli">

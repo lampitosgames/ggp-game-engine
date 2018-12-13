@@ -96,6 +96,7 @@ void RenderManager::SetSkyboxPS(SimplePixelShader * aSkyPS) {
 	assert(aSkyPS != nullptr);
 
 	skyboxPS = aSkyPS;
+	skyboxPS->SetFloat4("dofPara", dofPara);
 }
 
 void RenderManager::Render() {
@@ -140,6 +141,7 @@ void RenderManager::Render() {
 		matTemp->UploadPSData(activeCamera->transform.position, samplerState, psTemp);
 		//Upload gamma correction
 		psTemp->SetFloat("gammaModifier", gammaCorrection);
+		psTemp->SetFloat4("dofPara", dofPara);
 		//Copy all buffer data
 		psTemp->CopyAllBufferData();
 
