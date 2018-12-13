@@ -393,19 +393,8 @@ void Game::Draw(float deltaTime, float totalTime) {
 	ImGui::NewFrame();
 
 	// Draw the UI options here -----------------------------------
-
-	// Create a window named test
-	//ImGui::Begin( "Light Options" );
-
-	//ImGui::Checkbox( "Use Dir Lights", &UseDirLights );
-	//ImGui::Checkbox( "Draw Light Gizmos", &DrawLightGizmos );
-	//ImGui::Checkbox( "Move Point Lights", &MovePointLights );
-	//ImGui::Checkbox( "Use SkyBox", &DrawSkyBox );
-
-	//ImGui::End();   // If you want more than one window, then use ImGui::Beigin
-
-
-    {   // Stats and Info ---------------------------
+    // Stats and Info ---------------------------
+    {   
         ImGui::Begin( "Info" );
         ImGui::Text( "%.3f ms/frame", 1000.0f / ImGui::GetIO().Framerate );
 
@@ -421,6 +410,7 @@ void Game::Draw(float deltaTime, float totalTime) {
         ImGui::End();
     }
 
+    // Demo options ---------------------------
     {
         ImGui::Begin( "Demo Options" );
 
@@ -432,6 +422,79 @@ void Game::Draw(float deltaTime, float totalTime) {
         ImGui::End();
     }
 
+    // Draw the hierarchy of objects --------------------------
+    {   
+        ImGui::Begin( "Hierarchy" );
+
+        for ( auto itr : GameObject::goUIDMap )
+        {
+            GameObject* obj = itr.second;
+
+            if ( ImGui::Button( obj->GetUniqueID().c_str(), ImVec2( ImGui::GetWindowWidth(), 0.f ) ) )
+            {
+                SelectedObj = obj;
+            }
+            ImGui::Separator();
+        }
+
+        ImGui::End();
+    }
+
+    {   // Inspector --------------------------
+        if ( SelectedObj != nullptr )
+        {
+            ImGui::Begin( "Inspector" );
+
+            bool isActive = SelectedObj->IsActive();
+            ImGui::Checkbox( "Active", &isActive ); ImGui::SameLine();
+            
+
+            ImGui::LabelText( "Name", SelectedObj->GetUniqueID().c_str() );
+
+            ImGui::Separator();
+
+            if ( ImGui::CollapsingHeader( "Transform" ) )
+            {
+                XMFLOAT3 newPos = SelectedObj->transform.position;
+                ImGui::InputFloat3( "Position", ( float* ) &newPos );
+
+                XMFLOAT3 newScale = SelectedObj->transform.scale;
+                ImGui::InputFloat3( "Scale", ( float* ) &newScale );
+
+                XMFLOAT3 newRotation = SelectedObj->transform.rotation;
+                ImGui::InputFloat4( "Rotation", ( float* ) &newRotation );
+
+                // The position of the current object
+                SelectedObj->transform.position = newPos;
+                SelectedObj->transform.scale =  newScale;
+                SelectedObj->transform.rotation = newRotation;
+            }
+
+            ImGui::Separator();
+
+
+            // Loop through each of this entity's components
+            /*auto compMap = SelectedEntity->GetAllComponents();
+            if ( compMap != nullptr )
+            {
+                for ( auto compItr = compMap->begin(); compItr != compMap->end(); ++compItr )
+                {
+                    ImGui::Separator();
+
+                    ECS::IComponent* theComp = ( compItr->second );
+                    if ( theComp != nullptr )
+                    {
+                        if ( ImGui::CollapsingHeader( theComp->ComponentName() ) )
+                        {
+                            theComp->DrawEditorGUI();
+                        }
+                    }
+                }
+            }*/
+
+            ImGui::End();
+        }
+    }
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

@@ -25,10 +25,12 @@ class ParticleManager;
 typedef unsigned int UINT;
 
 class GameObject {
+public:
+    //Static, engine-wide map of all gameobjects.
+    static std::map<std::string, GameObject*> goUIDMap;
 protected:
 
-	//Static, engine-wide map of all gameobjects.
-	static std::map<std::string, GameObject*> goUIDMap;
+
 
 	//Unique identifier of this object. Can be anything, must be unique.
 	std::string uniqueID;

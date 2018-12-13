@@ -62,6 +62,7 @@ private:
 
 	//Active scene
 	Scene* activeScene;
+    GameObject* SelectedObj = nullptr;
 
 	//Post Process - Bloom
 	ID3D11RenderTargetView* ppRTV; //render to a texture <--- before pp
