@@ -191,7 +191,6 @@ void RenderManager::Render() {
 
 
 	// Render particles -------------------------
-	ParticleManager::GetInstance()->Render();
 }
 
 float RenderManager::GetGammaCorrection() {

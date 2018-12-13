@@ -264,6 +264,11 @@ void Game::Draw(float deltaTime, float totalTime) {
 	ppExtract->SetShaderResourceView("Pixels", 0);
 
 
+	//Particles
+	dxContext->OMSetRenderTargets(1, &ppRTV, 0);
+	particleManager->Render();
+
+
 	//Blur-----------------
 	dxContext->OMSetRenderTargets(1, &backBufferRTV, 0);
 	ppVS->SetShader();

@@ -85,7 +85,7 @@ EmitterOptions::EmitterOptions() {
 	hasTexture = 1;
 	textureFilepath = L"assets/textures/particles/particle.jpg";
 	useDepthSettings = true;
-	shape = emitterShape::SPHERE;
+	shape = emitterShape::CUBE;
 	radius = 0.1f;
 	angle = 25.0f;
 	height = 0.5f;
