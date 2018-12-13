@@ -520,13 +520,13 @@ void Game::HandleMouseMove() {
 void Game::OnMouseDown(WPARAM buttonState, int x, int y) {
 	//Pass event to the input manager
 	inputManager->_OnMouseDown(buttonState, x, y);
-
+    scriptManager->OnClick();
 	// Caputure the mouse so we keep getting mouse move
 	// events even if the mouse leaves the window.  we'll be
 	// releasing the capture once a mouse button is released
 	SetCapture(hWnd);
 }
-
+        
 // --------------------------------------------------------
 // Helper method for mouse release
 // --------------------------------------------------------

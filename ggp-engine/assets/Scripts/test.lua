@@ -1,5 +1,5 @@
 stoneEntity = {}
-
+spawnedBall = {}
 posY = 0;
 
 -----------------------------------------------
@@ -126,6 +126,13 @@ function start()
   wall3:SetPos(0, 4.5, -7.5)
   wall3:SetScale(15, 15, 0.5)
 
+
+  -- Create an entity that will move when the user clicks
+  spawnedBall = Entity.new("Spawn Ball Boi", "assets/meshes/sphere.obj", scene, woodFloorMat);
+
+  spawnedBall:SetPos(1000,0,0)  -- spawn the ball out in the world somewhere
+  spawnedBall:SetScale(0.3, 0.3, 0.3)
+
 end
 
 
@@ -135,3 +142,13 @@ end
 ---function update( dt )
 ---
 ---end
+
+-----------------------------------
+--------- Called on click ---------
+-----------------------------------
+function onClick()
+
+    posY = posY + 1
+    spawnedBall:SetPos(0, posY, 0)
+
+end

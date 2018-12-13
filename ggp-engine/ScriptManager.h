@@ -40,6 +40,11 @@ namespace Scripting
         void Update( float deltaTime );
 
         /// <summary>
+        /// Call any lua scripts that have an OnClick funtion
+        /// </summary>
+        void OnClick();
+
+        /// <summary>
         /// Load all scripts in the Assets/Scripts directory
         /// </summary>
         void LoadScripts( Scene* aScene );
@@ -61,6 +66,9 @@ namespace Scripting
 
         /** Lua update function callbacks */
         std::vector<sol::function> UpdateTicks;
+
+        /** Lua update function callbacks */
+        std::vector<sol::function> OnClickFuncs;
 
         /** Lua states that should be persistent */
         std::vector<sol::state> LuaStates;
