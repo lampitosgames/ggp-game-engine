@@ -225,6 +225,7 @@ RenderManager::RenderManager() {
 	//Get an instance of the resource manager
 	resourceManager = ResourceManager::GetInstance();
 	lightManager = LightManager::GetInstance();
+	dofPara = DirectX::XMFLOAT4(2.0f, 10.0f, 80.0f, 15.0f);
 }
 
 RenderManager::~RenderManager() {
