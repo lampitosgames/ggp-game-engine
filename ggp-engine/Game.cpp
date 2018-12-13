@@ -404,20 +404,33 @@ void Game::Draw(float deltaTime, float totalTime) {
 
 	//ImGui::End();   // If you want more than one window, then use ImGui::Beigin
 
-	ImGui::Begin("Controls");
 
-	ImGui::Text("Mouse   - Rotate");
-	ImGui::Text("WASD    - Move");
-	ImGui::Text("E       - Go Up");
-	ImGui::Text("Q       - Go Down");
-	ImGui::Text("X       - Release Mouse");
+    {   // Stats and Info ---------------------------
+        ImGui::Begin( "Info" );
+        ImGui::Text( "%.3f ms/frame", 1000.0f / ImGui::GetIO().Framerate );
 
-    if ( ImGui::CollapsingHeader( "Blur" ) )
-    {
-        ImGui::DragInt( "Blur Amount", &blurAmount, 1.0f, 0, 50 );
+        ImGui::Text( "%.1f FPS", ImGui::GetIO().Framerate );
+        ImGui::Separator();
+
+        ImGui::Text( "Mouse   - Rotate" );
+        ImGui::Text( "WASD    - Move" );
+        ImGui::Text( "E       - Go Up" );
+        ImGui::Text( "Q       - Go Down" );
+        ImGui::Text( "X       - Release Mouse" );
+
+        ImGui::End();
     }
 
-	ImGui::End();
+    {
+        ImGui::Begin( "Demo Options" );
+
+        if ( ImGui::CollapsingHeader( "Blur" ) )
+        {
+            ImGui::DragInt( "Blur Amount", &blurAmount, 1.0f, 0, 50 );
+        }
+
+        ImGui::End();
+    }
 
 
 	ImGui::Render();
