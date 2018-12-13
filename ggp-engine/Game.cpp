@@ -4,6 +4,8 @@
 #include "Vertex.h"
 #include "PBRDemoScene.h"
 #include "DebugScene.h"
+#include "ShipScene.h"
+
 // For the DirectX Math library
 using namespace DirectX;
 
@@ -116,7 +118,9 @@ void Game::Init() {
 	particleManager->Init();
 
 	//Create and init the active scene
-	activeScene = new PBRDemoScene("PBR_Demo");
+	//activeScene = new PBRDemoScene("PBR_Demo");
+    activeScene = new ShipScene( "ShipScene" );
+
 	//activeScene = new DebugScene( "Debug Scene" );
 	activeScene->Init();
 
@@ -367,6 +371,10 @@ void Game::Draw(float deltaTime, float totalTime) {
 	// Unbind this particular register
 	ppBlur->SetShaderResourceView("Pixels", 0);
 	ppBlur->SetShaderResourceView("Pixels2", 0);
+
+	//Particles
+	dxContext->OMSetRenderTargets(1, &ppRTV, 0);
+	particleManager->Render();
 
 	//Additive Blend-------------------------
 	dxContext->OMSetRenderTargets(1, &backBufferRTV, 0);

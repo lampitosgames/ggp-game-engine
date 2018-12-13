@@ -6,6 +6,7 @@
 #include <string>
 #include <d3d11.h>
 #include <DirectXMath.h>
+
 #include "MeshGen.h"
 #include "WICTextureLoader.h"
 #include "DDSTextureLoader.h"
@@ -119,6 +120,9 @@ private:
 
 	//Private function to load a mesh from a file
 	Mesh* LoadMesh(std::string _filepath);
+    Mesh* LoadMeshOBJ( std::string _filepath );
+    Mesh* LoadMeshFBX( std::string _filepath );
+
 	void CalculateTangents(int numVerts, int numIndices);
 };
 

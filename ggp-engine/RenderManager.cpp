@@ -53,7 +53,7 @@ void RenderManager::Start() {
 	skyboxMesh = resourceManager->GetMesh("assets/meshes/cube.obj");
 	skyboxVS = resourceManager->GetVertexShader(L"SkyVS.cso");
 	skyboxPS = resourceManager->GetPixelShader(L"SkyPS.cso");
-	skyboxSrv = resourceManager->LoadSRV_DDS(L"assets/textures/SunnyCubeMap.dds");
+	skyboxSrv = resourceManager->LoadSRV_DDS(L"assets/textures/nightSkybox.dds");
 
 	D3D11_RASTERIZER_DESC rs = {};
 	rs.FillMode = D3D11_FILL_SOLID;
@@ -151,9 +151,6 @@ void RenderManager::Render() {
 		mrTemp->Draw(_dxContext);
 	}
 
-	// Render particles -------------------------
-	ParticleManager::GetInstance()->Render();
-
 	// Render the skybox ------------------------
 	// Set up sky render states
 	_dxContext->RSSetState(skyRastState);
@@ -193,6 +190,9 @@ void RenderManager::Render() {
 	// Reset any states we've changed for the next frame!
 	_dxContext->RSSetState(0);
 	_dxContext->OMSetDepthStencilState(0, 0);
+
+
+	// Render particles -------------------------
 }
 
 float RenderManager::GetGammaCorrection() {

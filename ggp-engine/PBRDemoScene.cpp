@@ -67,8 +67,9 @@ void PBRDemoScene::Init() {
 	pointLight1->transform.position.y += 4.0f;
 
 	//Debug particle emitter
-	//EmitterOptions emitterOpts = { 32 };
-	//pointLight1->AddComponent<ParticleEmitter>(pointLight1, emitterOpts);
+	EmitterOptions emitterOpts = EmitterOptions();
+	pointLight1->AddComponent<ParticleEmitter>(pointLight1, emitterOpts);
+	pointLight1->transform.rotation.x = -3.14159f/2.0f;
 
 	GameObject* pointLight2 = new GameObject("pointLight2");
 	AddChild(pointLight2);

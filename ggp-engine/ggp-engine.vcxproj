@@ -218,6 +218,7 @@ xcopy /e /d /y "$(SolutionDir)additional\lua\lib\lua52.dll" "$(OutDir)"</Command
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ScriptManager.cpp" />
+    <ClCompile Include="ShipScene.cpp" />
     <ClCompile Include="SimpleShader.cpp" />
     <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -274,6 +275,7 @@ xcopy /e /d /y "$(SolutionDir)additional\lua\lib\lua52.dll" "$(OutDir)"</Command
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ScriptManager.h" />
+    <ClInclude Include="ShipScene.h" />
     <ClInclude Include="SimpleShader.h" />
     <ClInclude Include="SpotLight.h" />
     <ClInclude Include="stdafx.h" />
