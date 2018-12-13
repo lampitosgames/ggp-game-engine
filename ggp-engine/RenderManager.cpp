@@ -53,7 +53,7 @@ void RenderManager::Start() {
 	skyboxMesh = resourceManager->GetMesh("assets/meshes/cube.obj");
 	skyboxVS = resourceManager->GetVertexShader(L"SkyVS.cso");
 	skyboxPS = resourceManager->GetPixelShader(L"SkyPS.cso");
-	skyboxSrv = resourceManager->LoadSRV_DDS(L"assets/textures/SunnyCubeMap.dds");
+	skyboxSrv = resourceManager->LoadSRV_DDS(L"assets/textures/nightSkybox.dds");
 
 	D3D11_RASTERIZER_DESC rs = {};
 	rs.FillMode = D3D11_FILL_SOLID;
