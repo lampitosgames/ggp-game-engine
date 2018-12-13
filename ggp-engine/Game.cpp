@@ -287,10 +287,27 @@ void Game::Update(float deltaTime, float totalTime) {
 	//Handle mouse movement
 	HandleMouseMove();
 
+	//Handle scene switching.  Has to be done at the top-level
+	if (inputManager->ActionPressed("pbr_demo_scene")) {
+		delete activeScene;
+		activeScene = new PBRDemoScene("PBR_Demo_Scene");
+		activeScene->Init();
+		activeScene->Start();
+	}
+	if (inputManager->ActionPressed("ship_scene")) {
+		delete activeScene;
+		activeScene = new ShipScene("ShipScene");
+		activeScene->Init();
+		activeScene->Start();
+		scriptManager->LoadScripts(activeScene);
+	}
+
 	inputManager->Update();
 	particleManager->Update(deltaTime);
 	physicsManager->UpdatePhysics(deltaTime);
-	activeScene->Update(deltaTime);
+	if (activeScene != nullptr) {
+		activeScene->Update(deltaTime);
+	}
     scriptManager->Update( deltaTime );
 }
 
