@@ -34,6 +34,19 @@ Game::Game(HINSTANCE hInstance)
 	mouseLocked = true;
 	ShowCursor(false);
 
+	ppRTV = nullptr;
+	extractRTV = nullptr;
+	blurRTV = nullptr;
+	depthRTV = nullptr;
+	dofRTV = nullptr;
+	dofBlurRTV = nullptr;
+	ppSRV = nullptr;
+	extractSRV = nullptr;
+	blurSRV = nullptr;
+	depthSRV = nullptr;
+	dofSRV = nullptr;
+	dofBlurSRV = nullptr;
+
 	//Get Singleton Instances
 	resourceManager = ResourceManager::GetInstance();
 	renderManager = RenderManager::GetInstance();
@@ -42,13 +55,13 @@ Game::Game(HINSTANCE hInstance)
 	particleManager = ParticleManager::GetInstance();
 	physicsManager = Physics::PhysicsManager::GetInstance();
 	componentManager = ECS::ComponentManager::GetInstance();
-    scriptManager = new Scripting::ScriptManager( dxDevice, dxContext );
+	scriptManager = new Scripting::ScriptManager(dxDevice, dxContext);
 
-	#if defined(DEBUG) || defined(_DEBUG)
-		// Do we want a console window?  Probably only in debug mode
+#if defined(DEBUG) || defined(_DEBUG)
+	// Do we want a console window?  Probably only in debug mode
 	CreateConsoleWindow(500, 120, 32, 120);
 	printf("Console window created successfully.  Feel free to printf() here.");
-	#endif
+#endif
 
 }
 
@@ -66,11 +79,10 @@ Game::~Game() {
 	delete activeScene;
 
 	//Release all singletons
-    if ( scriptManager != nullptr )
-    {
-        delete scriptManager;
-        scriptManager = nullptr;
-    }
+	if (scriptManager != nullptr) {
+		delete scriptManager;
+		scriptManager = nullptr;
+	}
 	resourceManager->ReleaseInstance();
 	renderManager->ReleaseInstance();
 	inputManager->ReleaseInstance();
@@ -119,7 +131,7 @@ void Game::Init() {
 
 	//Create and init the active scene
 	//activeScene = new PBRDemoScene("PBR_Demo");
-    activeScene = new ShipScene( "ShipScene" );
+	activeScene = new ShipScene("ShipScene");
 
 	//activeScene = new DebugScene( "Debug Scene" );
 	activeScene->Init();
@@ -132,63 +144,7 @@ void Game::Init() {
 	samplerDesc1.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
 	samplerDesc1.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc1.MaxLOD = D3D11_FLOAT32_MAX;
-
 	dxDevice->CreateSamplerState(&samplerDesc1, &bloomSampler);
-	
-	//Create Render Target and Shader Resource Views
-	D3D11_TEXTURE2D_DESC textureDesc = {};
-	textureDesc.Width = width;
-	textureDesc.Height = height;
-	textureDesc.ArraySize = 1;
-	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	textureDesc.CPUAccessFlags = 0;
-	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	textureDesc.MipLevels = 1;
-	textureDesc.MiscFlags = 0;
-	textureDesc.SampleDesc.Count = 1;
-	textureDesc.SampleDesc.Quality = 0;
-	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-
-	ID3D11Texture2D* ppTexture;
-	dxDevice->CreateTexture2D(&textureDesc, 0, &ppTexture);
-	// Create the Render Target View
-	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-	rtvDesc.Format = textureDesc.Format;
-	rtvDesc.Texture2D.MipSlice = 0;
-	rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-
-	dxDevice->CreateRenderTargetView(ppTexture, &rtvDesc, &ppRTV);
-
-	// Create the Shader Resource View
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Format = textureDesc.Format;
-	srvDesc.Texture2D.MipLevels = 1;
-	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-
-	dxDevice->CreateShaderResourceView(ppTexture, &srvDesc, &ppSRV);
-	//Done using it
-	ppTexture->Release();
-
-	ID3D11Texture2D* extractTexture;
-	dxDevice->CreateTexture2D(&textureDesc, 0, &extractTexture);
-	dxDevice->CreateRenderTargetView(extractTexture, &rtvDesc, &extractRTV);
-
-	// Create the Shader Resource View
-	dxDevice->CreateShaderResourceView(extractTexture, &srvDesc, &extractSRV);
-	//Done using it
-	extractTexture->Release();
-
-	ID3D11Texture2D* blurTexture;
-	dxDevice->CreateTexture2D(&textureDesc, 0, &blurTexture);
-	// Create the Render Target View
-	dxDevice->CreateRenderTargetView(blurTexture, &rtvDesc, &blurRTV);
-
-	// Create the Shader Resource View
-	dxDevice->CreateShaderResourceView(blurTexture, &srvDesc, &blurSRV);
-
-	// We don't need the texture reference itself no mo'
-	blurTexture->Release();
 
 	//Post Process - DoF
 	// Sampler for dof
@@ -198,43 +154,10 @@ void Game::Init() {
 	samplerDesc2.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 	samplerDesc2.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc2.MaxLOD = D3D11_FLOAT32_MAX;
-
 	dxDevice->CreateSamplerState(&samplerDesc2, &dofSampler);
-	//Depth of Field RTV & SRV
-	ID3D11Texture2D* depthTexture;
-	//textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	dxDevice->CreateTexture2D(&textureDesc, 0, &depthTexture);
-	// Create the Render Target View
-	dxDevice->CreateRenderTargetView(depthTexture, &rtvDesc, &depthRTV);
 
-	// Create the Shader Resource View
-	dxDevice->CreateShaderResourceView(depthTexture, &srvDesc, &depthSRV);
+	RegenRenderTargets();
 
-	// We don't need the texture reference itself no mo'
-	depthTexture->Release();
-
-	ID3D11Texture2D* dofTex;
-	dxDevice->CreateTexture2D(&textureDesc, 0, &dofTex);
-	// Create the Render Target View
-	dxDevice->CreateRenderTargetView(dofTex, &rtvDesc, &dofRTV);
-	// Create the Shader Resource View
-	dxDevice->CreateShaderResourceView(dofTex, &srvDesc, &dofSRV);
-
-	dofTex->Release();
-
-	ID3D11Texture2D* dofBlurTex;
-	//textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	dxDevice->CreateTexture2D(&textureDesc, 0, &dofBlurTex);
-	// Create the Render Target View
-	dxDevice->CreateRenderTargetView(dofBlurTex, &rtvDesc, &dofBlurRTV);
-
-	// Create the Shader Resource View
-	dxDevice->CreateShaderResourceView(dofBlurTex, &srvDesc, &dofBlurSRV);
-
-	// We don't need the texture reference itself no mo'
-	dofBlurTex->Release();
-
-	
 	//Load Post Process shaders
 	ppVS = new SimpleVertexShader(dxDevice, dxContext);
 	ppVS->LoadShaderFile(L"PostProcessVS.cso");
@@ -261,8 +184,8 @@ void Game::Init() {
 	//Call start on the active scene
 	activeScene->Start();
 
-    // Load active Lua scripts
-    scriptManager->LoadScripts(activeScene);
+	// Load active Lua scripts
+	scriptManager->LoadScripts(activeScene);
 }
 
 // --------------------------------------------------------
@@ -272,6 +195,7 @@ void Game::Init() {
 void Game::OnResize() {
 	// Handle base-level DX resize stuff
 	DXCore::OnResize();
+	RegenRenderTargets();
 	//Pass resize event to scene
 	activeScene->OnResize((float)width, (float)height);
 }
@@ -308,7 +232,7 @@ void Game::Update(float deltaTime, float totalTime) {
 	if (activeScene != nullptr) {
 		activeScene->Update(deltaTime);
 	}
-    scriptManager->Update( deltaTime );
+	scriptManager->Update(deltaTime);
 }
 
 // --------------------------------------------------------
@@ -318,7 +242,7 @@ void Game::Draw(float deltaTime, float totalTime) {
 	RTarray[0] = ppRTV;
 	RTarray[1] = depthRTV;
 	// Background color (Black in this case) for clearing
-	const float color[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	const float color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 	// Clear the render target and depth buffer (erases what's on the screen)
 	//  - Do this ONCE PER FRAME
@@ -460,8 +384,8 @@ void Game::Draw(float deltaTime, float totalTime) {
 	dofPS->SetShaderResourceView("Pixels3", 0);
 
 
-	#if defined(ENABLE_UI)
-		// Create a new IMGui frame
+#if defined(ENABLE_UI)
+	// Create a new IMGui frame
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
@@ -491,12 +415,12 @@ void Game::Draw(float deltaTime, float totalTime) {
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-	#endif
+#endif
 
 
-		// Present the back buffer to the user
-		//  - Puts the final frame we're drawing into the window so the user can see it
-		//  - Do this exactly ONCE PER FRAME (always at the very end of the frame)
+	// Present the back buffer to the user
+	//  - Puts the final frame we're drawing into the window so the user can see it
+	//  - Do this exactly ONCE PER FRAME (always at the very end of the frame)
 	swapChain->Present(0, 0);
 }
 
@@ -573,5 +497,83 @@ void Game::OnMouseMove(WPARAM buttonState, int x, int y) {
 void Game::OnMouseWheel(float wheelDelta, int x, int y) {
 	//Pass event to the input manager
 	inputManager->_OnMouseWheel(wheelDelta);
+}
+void Game::RegenRenderTargets() {
+	//Release existing RTVs
+	if (ppRTV) { ppRTV->Release(); ppRTV = nullptr; }
+	if (extractRTV) { extractRTV->Release(); extractRTV = nullptr; }
+	if (blurRTV) { blurRTV->Release(); blurRTV = nullptr; }
+	if (depthRTV) { depthRTV->Release(); depthRTV = nullptr; }
+	if (dofRTV) { dofRTV->Release(); dofRTV = nullptr; }
+	if (dofBlurRTV) { dofBlurRTV->Release(); dofBlurRTV = nullptr; }
+	//Release existing SRVs
+	if (ppSRV) { ppSRV->Release(); ppSRV = nullptr; }
+	if (extractSRV) { extractSRV->Release(); extractSRV = nullptr; }
+	if (blurSRV) { blurSRV->Release(); blurSRV = nullptr; }
+	if (depthSRV) { depthSRV->Release(); depthSRV = nullptr; }
+	if (dofSRV) { dofSRV->Release(); dofSRV = nullptr; }
+	if (dofBlurSRV) { dofBlurSRV->Release(); dofBlurSRV = nullptr; }
+
+	//Create Render Target and Shader Resource Views
+	D3D11_TEXTURE2D_DESC textureDesc = {};
+	textureDesc.Width = width;
+	textureDesc.Height = height;
+	textureDesc.ArraySize = 1;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureDesc.MipLevels = 1;
+	textureDesc.MiscFlags = 0;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.SampleDesc.Quality = 0;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+
+	//Create a texture to base all of the resource views off of
+	ID3D11Texture2D* ppTex;
+	dxDevice->CreateTexture2D(&textureDesc, 0, &ppTex);
+	ID3D11Texture2D* extractTex;
+	dxDevice->CreateTexture2D(&textureDesc, 0, &extractTex);
+	ID3D11Texture2D* blurTex;
+	dxDevice->CreateTexture2D(&textureDesc, 0, &blurTex);
+	ID3D11Texture2D* depthTex;
+	dxDevice->CreateTexture2D(&textureDesc, 0, &depthTex);
+	ID3D11Texture2D* dofTex;
+	dxDevice->CreateTexture2D(&textureDesc, 0, &dofTex);
+	ID3D11Texture2D* dofBlurTex;
+	dxDevice->CreateTexture2D(&textureDesc, 0, &dofBlurTex);
+
+	// Create the Render Target View
+	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+	rtvDesc.Format = textureDesc.Format;
+	rtvDesc.Texture2D.MipSlice = 0;
+	rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	//Create all of the render targets
+	dxDevice->CreateRenderTargetView(ppTex, &rtvDesc, &ppRTV);
+	dxDevice->CreateRenderTargetView(extractTex, &rtvDesc, &extractRTV);
+	dxDevice->CreateRenderTargetView(blurTex, &rtvDesc, &blurRTV);
+	dxDevice->CreateRenderTargetView(depthTex, &rtvDesc, &depthRTV);
+	dxDevice->CreateRenderTargetView(dofTex, &rtvDesc, &dofRTV);
+	dxDevice->CreateRenderTargetView(dofBlurTex, &rtvDesc, &dofBlurRTV);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = textureDesc.Format;
+	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	//Create all of the shader resource views
+	dxDevice->CreateShaderResourceView(ppTex, &srvDesc, &ppSRV);
+	dxDevice->CreateShaderResourceView(extractTex, &srvDesc, &extractSRV);
+	dxDevice->CreateShaderResourceView(blurTex, &srvDesc, &blurSRV);
+	dxDevice->CreateShaderResourceView(depthTex, &srvDesc, &depthSRV);
+	dxDevice->CreateShaderResourceView(dofTex, &srvDesc, &dofSRV);
+	dxDevice->CreateShaderResourceView(dofBlurTex, &srvDesc, &dofBlurSRV);
+
+	// We don't need the texture reference itself no mo'
+	ppTex->Release();
+	extractTex->Release();
+	blurTex->Release();
+	depthTex->Release();
+	dofTex->Release();
+	dofBlurTex->Release();
 }
 #pragma endregion
