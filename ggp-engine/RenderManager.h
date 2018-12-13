@@ -50,7 +50,7 @@ class RenderManager {
 	//Map of all mesh renderers
 	std::map<MeshRendererID, MeshRenderer*> meshRendererUIDMap;
 
-	DirectX::XMFLOAT4 dofPara = DirectX::XMFLOAT4(2.0f, 8.0f, 25.0f, 15.0f);
+	DirectX::XMFLOAT4 dofPara = DirectX::XMFLOAT4(2.0f, 15.0f, 85.0f, 15.0f);
 	//x <-- near blur depth   
 	//y <-- focal plane depth
 	//z <-- far blur depth

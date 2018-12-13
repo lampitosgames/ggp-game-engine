@@ -48,6 +48,7 @@ public:
 	HRESULT Run();
 	void Quit();
 	virtual void OnResize();
+	virtual void OnResize(ID3D11RenderTargetView* rtv);
 
 	// Pure virtual methods for setup and game functionality
 	virtual void Init() = 0;
