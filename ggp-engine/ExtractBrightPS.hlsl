@@ -28,17 +28,21 @@ float4 main(VertexToPixel input) : SV_TARGET
 	{
 		if (brightness <= 0.65f)
 		{
-			finalColor.rgb /= 10.0f;
+			finalColor.rgb /= 15.0f;
 		}
 		else if (brightness <= 0.70f)
 		{
-			finalColor.rgb /= 8.0f;
+			finalColor.rgb /= 12.0f;
 		}
 		else if (brightness <= 0.75f)
 		{
-			finalColor.rgb /= 6.0f;
+			finalColor.rgb /= 8.0f;
 		}
 		else if (brightness <= 0.85f)
+		{
+			finalColor.rgb /= 6.0f;
+		}
+		else if (brightness <= 0.92f)
 		{
 			finalColor.rgb /= 3.0f;
 		}
@@ -52,7 +56,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 		}
 		else
 		{
-			finalColor.rgb /= 15.0f;
+			finalColor.rgb /= 25.0f;
 		}
 	}
 	
