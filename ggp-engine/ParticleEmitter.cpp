@@ -197,7 +197,7 @@ void ParticleEmitter::Render(ID3D11BlendState* _blend, ID3D11DepthStencilState* 
 	dxContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	dxContext->DrawIndexedInstanced(6, particles.aliveCount, 0, 0, 0);
-	
+
 	if (settings.useDepthSettings) {
 		dxContext->OMSetBlendState(0, blend, 0xffffffff);
 		dxContext->OMSetDepthStencilState(0, 0);
@@ -307,7 +307,7 @@ void ParticleEmitter::WakeNext() {
 		particles.iPos[i] = float3(ix, iy, iz);
 		particles.iVel[i] = particles.iPos[i];
 		XMStoreFloat3(&particles.iVel[i], XMVectorScale(
-			XMVector3Normalize(XMLoadFloat3(&particles.iVel[i])), 
+			XMVector3Normalize(XMLoadFloat3(&particles.iVel[i])),
 			settings.partInitialSpeed
 		));
 		break;

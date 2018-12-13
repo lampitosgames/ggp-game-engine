@@ -1,6 +1,8 @@
 #ifndef GGP_PARTICLE_EMITTER_H
 #define GGP_PARTICLE_EMITTER_H
 
+#include "stdafx.h"
+
 #include <DirectXMath.h>
 #include "Math.h"
 #include <d3d11.h>

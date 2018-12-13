@@ -1,6 +1,7 @@
 #ifndef GGP_PARTICLE_MANAGER_H
 #define GGP_PARTICLE_MANAGER_H
 
+
 #include <map>
 #include "SimpleShader.h"
 #include "ParticleEmitter.h"
