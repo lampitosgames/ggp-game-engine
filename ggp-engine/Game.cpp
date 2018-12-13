@@ -195,7 +195,9 @@ void Game::Init() {
 void Game::OnResize() {
 	// Handle base-level DX resize stuff
 	DXCore::OnResize();
+
 	RegenRenderTargets();
+
 	//Pass resize event to scene
 	activeScene->OnResize((float)width, (float)height);
 }
