@@ -64,8 +64,8 @@ void ShipScene::CreateLights()
     AddChild( pointLight1 );
     pointLight1->AddComponent<PointLight>( pointLight1, XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) );
     pointLight1->GetComponentType<PointLight>()->SetRange( 10.0f );
-    pointLight1->transform.position.x += 2.0f;
-    pointLight1->transform.position.y += 4.0f;
+    pointLight1->transform.position.x = -4.f;
+    pointLight1->transform.position.y -0.75f;
 
     //Debug particle emitter
     EmitterOptions emitterOpts = EmitterOptions();

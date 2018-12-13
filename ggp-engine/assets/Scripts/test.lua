@@ -35,7 +35,15 @@ function start()
     scene,						-- active scene
     barrelMat					-- material
   );
-  barrel:SetPos(1,-1,0)
+  barrel:SetPos(2,-0.75,0)
+
+  barrel2 = Entity.new(
+    "barrel2 Lua Entity",             -- Name
+    "assets/meshes/barrell.obj", -- Mesh file
+    scene,						-- active scene
+    barrelMat					-- material
+  );
+  barrel2:SetPos(2,-0.75,1)
 
   ------- Lamp --------------------------------------------------------------
   lampMat = Material.new(
@@ -68,23 +76,44 @@ function start()
 
   -- Create an entity
   table = Entity.new(
-    "Lua table",                     -- Name
-    "assets/meshes/trn_TableLong.obj",   -- Mesh file
-    scene,						    -- active scene
-    lampMat					    -- material
+    "Lua table",
+    "assets/meshes/trn_TableLong.obj",
+    scene,
+    tableMat
   );
 
-  table:SetPos(-1, 0, 0)
+  table:SetPos(0, -0.75, 0)
+
+  ------- cauldron --------------------------------------------------------------
+  cauldronMat = Material.new(
+    "cauldronMat",
+    "VertexShader.cso",
+    "PBRPShader.cso",
+    "assets/textures/PBR/cauldron/trn_Cauldron_AlbedoTransparency.png",
+    "assets/textures/PBR/cauldron/trn_Cauldron_Normal.png",
+    "assets/textures/PBR/cauldron/trn_Cauldron_MetallicSmoothness.png",
+    "assets/textures/PBR/cauldron/trn_Cauldron_MetallicSmoothness.png"
+  );
+
+  -- Create an entity
+  cauldron = Entity.new(
+    "Lua cauldron",                     -- Name
+    "assets/meshes/trn_Cauldron.obj",   -- Mesh file
+    scene,						    -- active scene
+    cauldronMat					    -- material
+  );
+
+  cauldron:SetPos(-4, -0.75, 0)
 
   --- Wood Floor ----------------------------------------------------------------
   woodFloorMat = Material.new(
     "woodFloorMat",
     "VertexShader.cso",
     "PBRPShader.cso",
-    "assets/textures/PBR/wood_albedo.png",
-    "assets/textures/PBR/wood_normals.png",
-    "assets/textures/PBR/wood_roughness.png",
-    "assets/textures/PBR/wood_metal.png"
+    "assets/textures/PBR/WoodSiding02_col.jpg",
+    "assets/textures/PBR/WoodSiding02_nrm.jpg",
+    "assets/textures/PBR/WoodSiding02_rgh.jpg",
+    "assets/textures/PBR/WoodSiding02_met.jpg"
   );
 
   -- Create an entity

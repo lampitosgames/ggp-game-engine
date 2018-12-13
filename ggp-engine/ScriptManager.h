@@ -20,7 +20,6 @@ namespace Scripting
     class ScriptManager
     {
 
-
     public:
 
         /// <summary>

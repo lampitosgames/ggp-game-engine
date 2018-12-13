@@ -8,7 +8,6 @@ ScriptManager::ScriptManager( ID3D11Device* aDevice, ID3D11DeviceContext* aConte
 {
 }
 
-
 ScriptManager::~ScriptManager()
 {
     // Clear lua states
@@ -84,7 +83,6 @@ void ScriptManager::LoadScript( const char * aFile, Scene* aScene )
 
     LuaStates.push_back( std::move( lua ) );
 }
-
 
 void ScriptManager::DefinedLuaTypes( sol::state & aLua, Scene* aScene )
 {
