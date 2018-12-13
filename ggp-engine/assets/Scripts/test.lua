@@ -6,18 +6,6 @@ posY = 0;
 --- Called from C++ when we are initialized ---
 -----------------------------------------------
 function start()
-
-  -- Create a new material
-  stoneMat = Material.new(
-	"LuaMaterial",
-    "VertexShader.cso",                     --FileName vertexShader
-    "PBRPShader.cso",							          --FileName pixelShader
-    "assets/textures/PBR/bronze_a.png",			--FileName albedoTexture
-    "assets/textures/PBR/bronze_n.png",			--FileName normalTexture
-    "assets/textures/PBR/bronze_r.png",			--FileName RoughnessTexture
-    "assets/textures/PBR/bronze_m.png"		  --FileName MetalTexture
-  );
-
   ------- Barrel -------------------------------------------------------------
   barrelMat = Material.new(
     "barrelMat",
@@ -128,7 +116,7 @@ function start()
 
   ------- candleCup --------------------------------------------------------------
   candleCupMat = Material.new(
-    "Lua ceramCupMat",
+    "Lua candleCupMat 2",
     "VertexShader.cso",
     "PBRPShader.cso",
     "assets/textures/PBR/candle_cup/trn_CandleCup_AlbedoTransparency.png",
@@ -193,9 +181,9 @@ function start()
   wall3:SetPos(0, 4.5, 7.5)
   wall3:SetScale(15, 15, 0.5)
 
-  wall3 = Entity.new( "Wood Floor wall3", "assets/meshes/cube.obj", scene, woodFloorMat);
-  wall3:SetPos(0, 4.5, -7.5)
-  wall3:SetScale(15, 15, 0.5)
+  wall4 = Entity.new( "Wood Floor wall4", "assets/meshes/cube.obj", scene, woodFloorMat);
+  wall4:SetPos(0, 4.5, -7.5)
+  wall4:SetScale(15, 15, 0.5)
 
 
   -- Create an entity that will move when the user clicks
