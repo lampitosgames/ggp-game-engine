@@ -8,11 +8,11 @@ ScriptManager::ScriptManager( ID3D11Device* aDevice, ID3D11DeviceContext* aConte
 {
 }
 
-
 ScriptManager::~ScriptManager()
 {
     // Clear lua states
     UpdateTicks.clear();
+    OnClickFuncs.clear();
     LuaStates.clear();
 
     // Remove any dangling pointers
@@ -25,6 +25,15 @@ void ScriptManager::Update( float deltaTime )
     for ( auto it : UpdateTicks )
     {
         it( deltaTime );
+    }
+}
+
+void ScriptManager::OnClick()
+{
+    for ( auto it : OnClickFuncs )
+    {
+        DEBUG_PRINT( "OnClick!" );
+        it();
     }
 }
 
@@ -63,9 +72,17 @@ void ScriptManager::LoadScript( const char * aFile, Scene* aScene )
         UpdateTicks.emplace_back( update_func );
     }
 
+    // Store the update function for later if there is one
+    sol::optional <sol::function> unsafe_onclick_func = lua [ "onClick" ];
+    if ( unsafe_onclick_func != sol::nullopt )
+    {
+        sol::function& onclick_func = unsafe_onclick_func.value();
+
+        OnClickFuncs.emplace_back( onclick_func );
+    }
+
     LuaStates.push_back( std::move( lua ) );
 }
-
 
 void ScriptManager::DefinedLuaTypes( sol::state & aLua, Scene* aScene )
 {
