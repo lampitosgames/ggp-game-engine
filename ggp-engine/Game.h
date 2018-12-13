@@ -37,6 +37,9 @@ public:
 	void OnMouseMove(WPARAM buttonState, int x, int y);
 	void OnMouseWheel(float wheelDelta, int x, int y);
 private:
+	//Regen all render targets
+	void RegenRenderTargets();
+
 	//MOUSE VARIABLES
 	//TODO: Move things like this to a system singleton
 	//Is mouse cursor locked to the window?
@@ -82,10 +85,8 @@ private:
 	ID3D11RenderTargetView* RTarray[2];										
 	ID3D11RenderTargetView* depthRTV;
 	ID3D11ShaderResourceView* depthSRV;
-
 	ID3D11RenderTargetView* dofBlurRTV;
 	ID3D11ShaderResourceView* dofBlurSRV;
-
 	ID3D11RenderTargetView* dofRTV;
 	ID3D11ShaderResourceView* dofSRV;
 

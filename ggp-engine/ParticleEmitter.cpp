@@ -76,7 +76,7 @@ void ParticleData::release() {
 
 #pragma region Emitter Options
 EmitterOptions::EmitterOptions() {
-	maxParticleCount = 8192;
+	maxParticleCount = 2048;
 	startDelay = 0.0f;
 	duration = 5.0f;
 	emissionRate = 0.0001f;
