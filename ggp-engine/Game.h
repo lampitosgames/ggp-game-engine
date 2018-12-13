@@ -91,6 +91,8 @@ private:
 	ID3D11ShaderResourceView* dofSRV;
 
 	SimplePixelShader* dofPS; //post process
+
+    int blurAmount = 15;
 };
 
 #endif //GGP_GAME_H

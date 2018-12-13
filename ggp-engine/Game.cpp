@@ -32,7 +32,7 @@ Game::Game(HINSTANCE hInstance)
 	//Is the cursor locked (Default yes)
 	//TODO: Make this toggle-able and have more functionality in the System singleton
 	mouseLocked = true;
-	ShowCursor(false);
+	ShowCursor(true);
 
 	ppRTV = nullptr;
 	extractRTV = nullptr;
@@ -300,7 +300,7 @@ void Game::Draw(float deltaTime, float totalTime) {
 	ppBlur->SetShaderResourceView("Pixels", extractSRV);
 	ppBlur->SetShaderResourceView("Pixels2", ppSRV);
 	ppBlur->SetSamplerState("Sampler", bloomSampler);
-	ppBlur->SetInt("blurAmount", 15);
+	ppBlur->SetInt("blurAmount", blurAmount );
 	ppBlur->SetFloat("pixelWidth", 1.0f / width);
 	ppBlur->SetFloat("pixelHeight", 1.0f / height);
 	ppBlur->CopyAllBufferData();
@@ -348,7 +348,7 @@ void Game::Draw(float deltaTime, float totalTime) {
 	ppBlur->SetShaderResourceView("Pixels", dofSRV);
 	ppBlur->SetShaderResourceView("Pixels2", ppSRV);
 	ppBlur->SetSamplerState("Sampler", bloomSampler);
-	ppBlur->SetInt("blurAmount", 15);
+	ppBlur->SetInt("blurAmount", blurAmount );
 	ppBlur->SetFloat("pixelWidth", 1.0f / width);
 	ppBlur->SetFloat("pixelHeight", 1.0f / height);
 	ppBlur->CopyAllBufferData();
@@ -411,6 +411,11 @@ void Game::Draw(float deltaTime, float totalTime) {
 	ImGui::Text("E       - Go Up");
 	ImGui::Text("Q       - Go Down");
 	ImGui::Text("X       - Release Mouse");
+
+    if ( ImGui::CollapsingHeader( "Blur" ) )
+    {
+        ImGui::DragInt( "Blur Amount", &blurAmount, 1.0f, 0, 50 );
+    }
 
 	ImGui::End();
 
