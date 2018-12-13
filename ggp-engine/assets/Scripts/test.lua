@@ -105,6 +105,48 @@ function start()
 
   cauldron:SetPos(-4, -0.75, 0)
 
+  ------- ceramCup --------------------------------------------------------------
+  ceramCupMat = Material.new(
+    "ceramCupMat",
+    "VertexShader.cso",
+    "PBRPShader.cso",
+    "assets/textures/PBR/cup_ceramic/trn_CupCeramic_AlbedoTransparency.png",
+    "assets/textures/PBR/cup_ceramic/trn_CupCeramic_Normal.png",
+    "assets/textures/PBR/cup_ceramic/trn_CupCeramic_MetallicSmoothness.png",
+    "assets/textures/PBR/cup_ceramic/trn_CupCeramic_MetallicSmoothness.png"
+  );
+
+  -- Create an entity
+  ceramCup = Entity.new(
+    "Lua ceramCup",                     -- Name
+    "assets/meshes/trn_CupCeramic.obj",   -- Mesh file
+    scene,						    -- active scene
+    ceramCupMat					    -- material
+  );
+
+  ceramCup:SetPos(0, 0.1, 0)
+
+  ------- candleCup --------------------------------------------------------------
+  candleCupMat = Material.new(
+    "Lua ceramCupMat",
+    "VertexShader.cso",
+    "PBRPShader.cso",
+    "assets/textures/PBR/candle_cup/trn_CandleCup_AlbedoTransparency.png",
+    "assets/textures/PBR/candle_cup/trn_CandleCup_Normal.png",
+    "assets/textures/PBR/candle_cup/trn_CandleCup_MetallicSmoothness.png",
+    "assets/textures/PBR/candle_cup/trn_CandleCup_MetallicSmoothness.png"
+  );
+
+  -- Create an entity
+  candleCup = Entity.new(
+    "Lua candleCup boi",                     -- Name
+    "assets/meshes/trn_CandleCup.obj",   -- Mesh file
+    scene,						    -- active scene
+    candleCupMat					    -- material
+  );
+
+  candleCup:SetPos(-0.5, 0.1, 0)
+
   --- Wood Floor ----------------------------------------------------------------
   woodFloorMat = Material.new(
     "woodFloorMat",
