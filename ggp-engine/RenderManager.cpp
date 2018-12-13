@@ -101,6 +101,48 @@ void RenderManager::SetSkyboxPS(SimplePixelShader * aSkyPS) {
 
 void RenderManager::Render() {
 	ID3D11DeviceContext* _dxContext = ResourceManager::GetContextPointer();
+	// Render the skybox ------------------------
+	// Set up sky render states
+	_dxContext->RSSetState(skyRastState);
+	_dxContext->OMSetDepthStencilState(skyDepthState, 0);
+
+	// After drawing all of our regular (solid) objects, draw the sky!
+	ID3D11Buffer* skyVB = skyboxMesh->GetVertexBuffer();
+	ID3D11Buffer* skyIB = skyboxMesh->GetIndexBuffer();
+
+	// Set the buffers
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	_dxContext->IASetVertexBuffers(0, 1, &skyVB, &stride, &offset);
+	_dxContext->IASetIndexBuffer(skyIB, DXGI_FORMAT_R32_UINT, 0);
+
+	// Send the camera's view and proj matrices 
+	skyboxVS->SetMatrix4x4("view", activeCamera->GetViewMatrix());
+	skyboxVS->SetMatrix4x4("projection", activeCamera->GetProjectionMatrix());
+
+	skyboxVS->CopyAllBufferData();
+	skyboxVS->SetShader();
+
+	// Send texture-related stuff
+	skyboxPS->SetShaderResourceView("SkyTexture", skyboxSrv);
+	skyboxPS->SetSamplerState("BasicSampler", samplerState);
+
+	skyboxPS->CopyAllBufferData(); // Remember to copy to the GPU!!!!
+	skyboxPS->SetShader();
+
+	// Reset any changed render states!
+	_dxContext->RSSetState(skyRastState);
+	_dxContext->OMSetDepthStencilState(skyDepthState, 0);
+
+	// Draw the skybox "mesh" ( a cube )
+	_dxContext->DrawIndexed(skyboxMesh->GetIndexCount(), 0, 0);
+
+	// Reset any states we've changed for the next frame!
+	_dxContext->RSSetState(0);
+	_dxContext->OMSetDepthStencilState(0, 0);
+
+
+	//Render Objects ---------------------------------
 	//Loop through and render every object
 	std::map<UINT, MeshRenderer*>::iterator mrIterator;
 	for (mrIterator = meshRendererUIDMap.begin(); mrIterator != meshRendererUIDMap.end();) {
@@ -150,49 +192,8 @@ void RenderManager::Render() {
 		psTemp->SetShader();
 		mrTemp->Draw(_dxContext);
 	}
-
-	// Render the skybox ------------------------
-	// Set up sky render states
-	_dxContext->RSSetState(skyRastState);
-	_dxContext->OMSetDepthStencilState(skyDepthState, 0);
-
-	// After drawing all of our regular (solid) objects, draw the sky!
-	ID3D11Buffer* skyVB = skyboxMesh->GetVertexBuffer();
-	ID3D11Buffer* skyIB = skyboxMesh->GetIndexBuffer();
-
-	// Set the buffers
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-	_dxContext->IASetVertexBuffers(0, 1, &skyVB, &stride, &offset);
-	_dxContext->IASetIndexBuffer(skyIB, DXGI_FORMAT_R32_UINT, 0);
-
-	// Send the camera's view and proj matrices 
-	skyboxVS->SetMatrix4x4("view", activeCamera->GetViewMatrix());
-	skyboxVS->SetMatrix4x4("projection", activeCamera->GetProjectionMatrix());
-
-	skyboxVS->CopyAllBufferData();
-	skyboxVS->SetShader();
-
-	// Send texture-related stuff
-	skyboxPS->SetShaderResourceView("SkyTexture", skyboxSrv);
-	skyboxPS->SetSamplerState("BasicSampler", samplerState);
-
-	skyboxPS->CopyAllBufferData(); // Remember to copy to the GPU!!!!
-	skyboxPS->SetShader();
-
-	// Reset any changed render states!
-	_dxContext->RSSetState(skyRastState);
-	_dxContext->OMSetDepthStencilState(skyDepthState, 0);
-
-	// Draw the skybox "mesh" ( a cube )
-	_dxContext->DrawIndexed(skyboxMesh->GetIndexCount(), 0, 0);
-
-	// Reset any states we've changed for the next frame!
-	_dxContext->RSSetState(0);
-	_dxContext->OMSetDepthStencilState(0, 0);
-
-
-	// Render particles -------------------------
+	//Render Particles -------------------------------
+	ParticleManager::GetInstance()->Render();
 }
 
 float RenderManager::GetGammaCorrection() {

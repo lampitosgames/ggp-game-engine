@@ -76,28 +76,28 @@ void ParticleData::release() {
 
 #pragma region Emitter Options
 EmitterOptions::EmitterOptions() {
-	maxParticleCount = 1024;
+	maxParticleCount = 8192;
 	startDelay = 0.0f;
 	duration = 5.0f;
-	emissionRate = 0.01f;
+	emissionRate = 0.0001f;
 	looping = true;
 	playing = true;
 	hasTexture = 1;
 	textureFilepath = L"assets/textures/particles/particle.jpg";
 	useDepthSettings = true;
 	shape = emitterShape::CUBE;
-	radius = 0.1f;
+	radius = 0.2f;
 	angle = 25.0f;
 	height = 0.5f;
-	partLifetime = 4.0f;
-	partInitialSpeed = 1.0f;
+	partLifetime = 5.0f;
+	partInitialSpeed = 0.5f;
 	partAccel = float3(0.0f, 0.0f, 0.0f);
 	partAccelLSpace = true;
 	partInitialRot = 0.0f;
 	partAngularVel = 0.0f;
 	partRandomRotDir = true;
 	partStartSize = 0.1f;
-	partEndSize = 0.3f;
+	partEndSize = 0.5f;
 	partStartColor = float4(1.0f, 0.1f, 0.1f, 0.3f);
 	partEndColor = float4(1.0f, 0.6f, 0.1f, 0.0f);
 }

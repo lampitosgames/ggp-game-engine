@@ -373,8 +373,8 @@ void Game::Draw(float deltaTime, float totalTime) {
 	ppBlur->SetShaderResourceView("Pixels2", 0);
 
 	//Particles
-	dxContext->OMSetRenderTargets(1, &ppRTV, 0);
-	particleManager->Render();
+	//dxContext->OMSetRenderTargets(1, &ppRTV, 0);
+	//particleManager->Render();
 
 	//Additive Blend-------------------------
 	dxContext->OMSetRenderTargets(1, &backBufferRTV, 0);
