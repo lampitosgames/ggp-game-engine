@@ -151,9 +151,6 @@ void RenderManager::Render() {
 		mrTemp->Draw(_dxContext);
 	}
 
-	// Render particles -------------------------
-	ParticleManager::GetInstance()->Render();
-
 	// Render the skybox ------------------------
 	// Set up sky render states
 	_dxContext->RSSetState(skyRastState);
@@ -193,6 +190,9 @@ void RenderManager::Render() {
 	// Reset any states we've changed for the next frame!
 	_dxContext->RSSetState(0);
 	_dxContext->OMSetDepthStencilState(0, 0);
+
+
+	// Render particles -------------------------
 }
 
 float RenderManager::GetGammaCorrection() {

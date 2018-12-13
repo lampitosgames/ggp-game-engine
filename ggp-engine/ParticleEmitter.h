@@ -6,11 +6,12 @@
 #include <DirectXMath.h>
 #include "Math.h"
 #include <d3d11.h>
-#include <memory>
+#include <random>
 #include "BaseComponent.h"
 class SimpleVertexShader;
 class SimplePixelShader;
 class GameObject;
+class Texture;
 
 
 struct ParticleData {
@@ -24,20 +25,19 @@ public:
 		- update code in UpdateParticleBuffers()
 		- update the shader input layout
 	*/
-	std::unique_ptr<float3[]> iPos;	        //Initial position. Final pos calculated on GPU with kinematics
-	std::unique_ptr<float3[]> iVel;	        //Initial velocity. Final vel ...
-	std::unique_ptr<float3[]> accel;	    //Const Accel. This can't change per-particle, but it can be different per-particle
-	std::unique_ptr<float[]> iRot;          //Initial rotation (in radians) of the particle's quad
-	std::unique_ptr<float[]> angularVel;	//Angular velocity (in radians)
-	std::unique_ptr<float[]> startSize;     //Initial scale of particle
-	std::unique_ptr<float[]> endSize;       //Final scale of particle
-	std::unique_ptr<float4[]> startColor;   //Initial color of particle
-	std::unique_ptr<float4[]> endColor;     //Final color of particle
-	std::unique_ptr<float[]> startLife;     //Length of particle's life (seconds)
-	std::unique_ptr<float[]> remainLife;    //Currently remaining time in this particle's life (seconds)
-
+	float3* iPos = nullptr;	        //Initial position. Final pos calculated on GPU with kinematics
+	float3* iVel = nullptr;	        //Initial velocity. Final vel ...
+	float3* accel = nullptr;	    //Const Accel. This can't change per-particle, but it can be different per-particle
+	float* iRot = nullptr;          //Initial rotation (in radians) of the particle's quad
+	float* angularVel = nullptr;   	//Angular velocity (in radians)
+	float* startSize = nullptr;     //Initial scale of particle
+	float* endSize = nullptr;       //Final scale of particle
+	float4* startColor = nullptr;   //Initial color of particle
+	float4* endColor = nullptr;     //Final color of particle
+	float* startLife = nullptr;     //Length of particle's life (seconds)
+	float* remainLife = nullptr;    //Currently remaining time in this particle's life (seconds)
 	//Alive is the only one without a buffer
-	std::unique_ptr<bool[]> alive;          //Is the particle active?
+	bool* alive = nullptr;          //Is the particle active?
 
 	//Tracking data
 	UINT particleCount;
@@ -46,12 +46,14 @@ public:
 public:
 	ParticleData() {}
 	ParticleData(UINT _maxCount);
-	~ParticleData() {}
+	~ParticleData() { release(); }
 
 	void generate(UINT _maxCount);
 	void kill(UINT _id);
 	void wakeNext();
 	void swap(UINT _id1, UINT _id2);
+private:
+	void release();
 };
 
 
@@ -71,7 +73,48 @@ enum vbSlots {
 };
 
 struct EmitterOptions {
+public:
 	UINT maxParticleCount; //Maximum number of particles the emitter can generate at once
+	float startDelay;      //How long does this emitter have to be alive before it begins emitting particles
+	float duration;        //Length of time the system runs
+	float emissionRate;    //Seconds between emission of each particle
+	bool looping;          //If true, emitter's duration is reset once it hits 0
+	bool playing;          //If true, the particle emitter is currently emitting
+	UINT hasTexture;       //Using a texture?
+	LPCWSTR textureFilepath; //Filepath to particle texture
+	bool useDepthSettings; //Use additive blending with depth turned off
+
+	//Emission shape props
+	enum emitterShape {
+		//Emit particles from a random position inside of a sphere, moving out from the sphere's center. The sphere is centered on 0,0,0
+		SPHERE = 0,
+		//Emit particles from the base of a cone, with randomized initial velocities pointing towards the cone's base. The cone's tip is at 0,0,0 and it is aligned along the local Z axis 
+		CONE = 1,
+		//Emit particles from a random position inside a cube volume with side length radius*2. Particles move in the gameObject's +z direction
+		CUBE = 2,
+		//Emit particles from a random position inside a cylinder volume. Particles move in the gameObject's +z direction
+		CYLINDER = 3
+	};
+	emitterShape shape; //Shape of emission
+	float radius; //Used for all 3 current emission types
+	float angle; //Angle at the tip of the cone
+	float height; //Height of cylinder
+
+	//Particle properties
+	float partLifetime;     //Lifetime of individual particles
+	float partInitialSpeed; //Initial particle speed. Actual velocity is determined by emission shape props
+	float3 partAccel;       //Acceleration vector
+	bool partAccelLSpace;   //Is the acceleration in local space?
+	float partInitialRot;   //Initial rotation of each particle
+	float partAngularVel;   //Angular velocity for rotation
+	bool partRandomRotDir;  //Randomize the +/- sign of the angular velocity on a per-particle basis
+	float partStartSize;    //Initial particle size
+	float partEndSize;      //Final particle size
+	float4 partStartColor;  //Initial particle color (Should be (1,1,1) if using texture)
+	float4 partEndColor;    //Final particle color
+public:
+	EmitterOptions();
+	~EmitterOptions() {};
 };
 
 class ParticleEmitter : public ECS::BaseComponent<ParticleEmitter> {
@@ -79,11 +122,15 @@ private:
 	//Struct holding all of the particle data in a bunch of arrays
 	ParticleData particles;
 	EmitterOptions settings;
+	DirectX::XMFLOAT4X4 worldMatRaw;
+	float totalPlayTime;
+	UINT totalSpawned;
 
 	//DirectX Resources
 	SimpleVertexShader* particleVS;
 	SimplePixelShader* particlePS;
 	ID3D11SamplerState* samplerState;
+	Texture* particleTexture;
 
 	static const UINT bufferCount = 12;
 	//Array containing the vertex buffer at [0], and all the particle instance buffers
@@ -103,7 +150,7 @@ public:
 	~ParticleEmitter();
 
 	void Update(float _dt);
-	void Render();
+	void Render(ID3D11BlendState* _blend, ID3D11DepthStencilState* _depth);
 
 	/*
 		GET/SET

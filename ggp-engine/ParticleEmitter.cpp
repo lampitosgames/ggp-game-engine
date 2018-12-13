@@ -7,7 +7,9 @@
 #include "RenderManager.h"
 #include "ResourceManager.h"
 #include "Camera.h"
-#include <iostream>
+#include "Texture.h"
+
+using namespace DirectX;
 
 #pragma region Particle Data Struct
 ParticleData::ParticleData(UINT _maxCount) { generate(_maxCount); }
@@ -15,18 +17,19 @@ ParticleData::ParticleData(UINT _maxCount) { generate(_maxCount); }
 void ParticleData::generate(UINT _maxCount) {
 	particleCount = _maxCount;
 	aliveCount = 0;
-	iPos.reset(new float3[_maxCount]);
-	iVel.reset(new float3[_maxCount]);
-	accel.reset(new float3[_maxCount]);
-	iRot.reset(new float[_maxCount]);
-	angularVel.reset(new float[_maxCount]);
-	startSize.reset(new float[_maxCount]);
-	endSize.reset(new float[_maxCount]);
-	startColor.reset(new float4[_maxCount]);
-	endColor.reset(new float4[_maxCount]);
-	startLife.reset(new float[_maxCount]);
-	remainLife.reset(new float[_maxCount]);
-	alive.reset(new bool[_maxCount]);
+	release();
+	iPos = new float3[_maxCount];
+	iVel = new float3[_maxCount];
+	accel = new float3[_maxCount];
+	iRot = new float[_maxCount];
+	angularVel = new float[_maxCount];
+	startSize = new float[_maxCount];
+	endSize = new float[_maxCount];
+	startColor = new float4[_maxCount];
+	endColor = new float4[_maxCount];
+	startLife = new float[_maxCount];
+	remainLife = new float[_maxCount];
+	alive = new bool[_maxCount];
 }
 
 void ParticleData::kill(UINT _id) {
@@ -53,6 +56,51 @@ void ParticleData::swap(UINT _id1, UINT _id2) {
 	std::swap(remainLife[_id1], remainLife[_id2]);
 	std::swap(alive[_id1], alive[_id2]);
 }
+
+void ParticleData::release() {
+	if (iPos != nullptr) { delete[] iPos; iPos = nullptr; }
+	if (iVel != nullptr) { delete[] iVel; iVel = nullptr; }
+	if (accel != nullptr) { delete[] accel; accel = nullptr; }
+	if (iRot != nullptr) { delete[] iRot; iRot = nullptr; }
+	if (angularVel != nullptr) { delete[] angularVel; angularVel = nullptr; }
+	if (startSize != nullptr) { delete[] startSize; startSize = nullptr; }
+	if (endSize != nullptr) { delete[] endSize; endSize = nullptr; }
+	if (startColor != nullptr) { delete[] startColor; startColor = nullptr; }
+	if (endColor != nullptr) { delete[] endColor; endColor = nullptr; }
+	if (startLife != nullptr) { delete[] startLife; startLife = nullptr; }
+	if (remainLife != nullptr) { delete[] remainLife; remainLife = nullptr; }
+	if (alive != nullptr) { delete[] alive; alive = nullptr; }
+}
+#pragma endregion
+
+
+#pragma region Emitter Options
+EmitterOptions::EmitterOptions() {
+	maxParticleCount = 1024;
+	startDelay = 0.0f;
+	duration = 5.0f;
+	emissionRate = 0.01f;
+	looping = true;
+	playing = true;
+	hasTexture = 1;
+	textureFilepath = L"assets/textures/particles/particle.jpg";
+	useDepthSettings = true;
+	shape = emitterShape::CUBE;
+	radius = 0.1f;
+	angle = 25.0f;
+	height = 0.5f;
+	partLifetime = 4.0f;
+	partInitialSpeed = 1.0f;
+	partAccel = float3(0.0f, 0.0f, 0.0f);
+	partAccelLSpace = true;
+	partInitialRot = 0.0f;
+	partAngularVel = 0.0f;
+	partRandomRotDir = true;
+	partStartSize = 0.1f;
+	partEndSize = 0.3f;
+	partStartColor = float4(1.0f, 0.1f, 0.1f, 0.3f);
+	partEndColor = float4(1.0f, 0.6f, 0.1f, 0.0f);
+}
 #pragma endregion
 
 
@@ -66,9 +114,16 @@ ParticleEmitter::ParticleEmitter(GameObject* _gameObject, EmitterOptions _settin
 	particles.generate(settings.maxParticleCount);
 	forceBufferUpdate = false;
 	GenerateParticleBuffers(ResourceManager::GetDevicePointer());
-
-	while (particles.aliveCount < particles.particleCount) {
-		WakeNext();
+	//Update world matrix
+	worldMatRaw = gameObject->transform.GetWorldMatrix(false);
+	//Init variables
+	totalPlayTime = 0.0f;
+	totalSpawned = 0;
+	if (settings.hasTexture) {
+		particleTexture = ResourceManager::GetInstance()->GetTexture(settings.textureFilepath);
+	}
+	else {
+		particleTexture = nullptr;
 	}
 }
 
@@ -80,7 +135,21 @@ ParticleEmitter::~ParticleEmitter() {
 }
 
 void ParticleEmitter::Update(float _dt) {
-	//Don't update all buffers unless we need to
+	//Only update if playing
+	if (!settings.playing) { return; }
+
+	//Reduce remaining duration by the time delta
+	totalPlayTime += _dt;
+	//If the duration has expired
+	if (totalPlayTime >= settings.duration && !settings.looping) {
+			totalPlayTime = 0;
+			settings.playing = false;
+			return;
+	}
+
+	//Update world matrix
+	worldMatRaw = gameObject->transform.GetWorldMatrix(false);
+
 	for (UINT i = 0; i < particles.aliveCount; i++) {
 		particles.remainLife[i] -= _dt;
 		if (particles.remainLife[i] <= 0.0f) {
@@ -89,17 +158,37 @@ void ParticleEmitter::Update(float _dt) {
 		}
 	}
 
+	//If we can spawn more particles
+	if (particles.aliveCount < particles.particleCount) {
+		if (settings.emissionRate * totalSpawned + settings.startDelay < totalPlayTime) {
+			WakeNext();
+		}
+	}
+
 	//Last thing we do
 	UploadParticleBuffers(ResourceManager::GetContextPointer());
 	forceBufferUpdate = false;
 }
 
-void ParticleEmitter::Render() {
+void ParticleEmitter::Render(ID3D11BlendState* _blend, ID3D11DepthStencilState* _depth) {
 	ID3D11DeviceContext* dxContext = ResourceManager::GetContextPointer();
+
+	float blend[4] = { 1,1,1,1 };
+	if (settings.useDepthSettings) {
+		dxContext->OMSetBlendState(_blend, blend, 0xffffffff);
+		dxContext->OMSetDepthStencilState(_depth, 0);
+	}
 
 	particleVS->SetMatrix4x4("view", RenderManager::GetInstance()->GetActiveCamera()->GetViewMatrix());
 	particleVS->SetMatrix4x4("projection", RenderManager::GetInstance()->GetActiveCamera()->GetProjectionMatrix());
 	particleVS->CopyAllBufferData();
+
+	particlePS->SetData("hasTexture", &settings.hasTexture, sizeof(int));
+	if (settings.hasTexture) {
+		particlePS->SetSamplerState("trilinear", samplerState);
+		particlePS->SetShaderResourceView("partTexture", particleTexture->GetShaderResourceView());
+	}
+	particlePS->CopyAllBufferData();
 
 	particleVS->SetShader();
 	particlePS->SetShader();
@@ -108,6 +197,11 @@ void ParticleEmitter::Render() {
 	dxContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	dxContext->DrawIndexedInstanced(6, particles.aliveCount, 0, 0, 0);
+
+	if (settings.useDepthSettings) {
+		dxContext->OMSetBlendState(0, blend, 0xffffffff);
+		dxContext->OMSetDepthStencilState(0, 0);
+	}
 }
 
 #pragma region Get/Set
@@ -130,34 +224,34 @@ void ParticleEmitter::GenerateParticleBuffers(ID3D11Device * _dxDevice) {
 	strides[vbSlots::BVERTEX_DATA] = sizeof(float2);
 
 	//Create a buffer for every particle property
-	MakeDynamicBuffer(sizeof(float3), vbSlots::BPOS, particles.iPos.get(), _dxDevice);
-	MakeDynamicBuffer(sizeof(float3), vbSlots::BVEL, particles.iVel.get(), _dxDevice);
-	MakeDynamicBuffer(sizeof(float3), vbSlots::BACCEL, particles.accel.get(), _dxDevice);
-	MakeDynamicBuffer(sizeof(float), vbSlots::BROT, particles.iRot.get(), _dxDevice);
-	MakeDynamicBuffer(sizeof(float), vbSlots::BANGULAR_VEL, particles.angularVel.get(), _dxDevice);
-	MakeDynamicBuffer(sizeof(float), vbSlots::BSTART_SIZE, particles.startSize.get(), _dxDevice);
-	MakeDynamicBuffer(sizeof(float), vbSlots::BEND_SIZE, particles.endSize.get(),_dxDevice);
-	MakeDynamicBuffer(sizeof(float4), vbSlots::BSTART_COLOR, particles.startColor.get(), _dxDevice);
-	MakeDynamicBuffer(sizeof(float4), vbSlots::BEND_COLOR, particles.endColor.get(), _dxDevice);
-	MakeDynamicBuffer(sizeof(float), vbSlots::BSTART_LIFE, particles.startLife.get(), _dxDevice);
-	MakeDynamicBuffer(sizeof(float), vbSlots::BREMAIN_LIFE, particles.remainLife.get(), _dxDevice);
+	MakeDynamicBuffer(sizeof(float3), vbSlots::BPOS, particles.iPos, _dxDevice);
+	MakeDynamicBuffer(sizeof(float3), vbSlots::BVEL, particles.iVel, _dxDevice);
+	MakeDynamicBuffer(sizeof(float3), vbSlots::BACCEL, particles.accel, _dxDevice);
+	MakeDynamicBuffer(sizeof(float), vbSlots::BROT, particles.iRot, _dxDevice);
+	MakeDynamicBuffer(sizeof(float), vbSlots::BANGULAR_VEL, particles.angularVel, _dxDevice);
+	MakeDynamicBuffer(sizeof(float), vbSlots::BSTART_SIZE, particles.startSize, _dxDevice);
+	MakeDynamicBuffer(sizeof(float), vbSlots::BEND_SIZE, particles.endSize,_dxDevice);
+	MakeDynamicBuffer(sizeof(float4), vbSlots::BSTART_COLOR, particles.startColor, _dxDevice);
+	MakeDynamicBuffer(sizeof(float4), vbSlots::BEND_COLOR, particles.endColor, _dxDevice);
+	MakeDynamicBuffer(sizeof(float), vbSlots::BSTART_LIFE, particles.startLife, _dxDevice);
+	MakeDynamicBuffer(sizeof(float), vbSlots::BREMAIN_LIFE, particles.remainLife, _dxDevice);
 }
 
 void ParticleEmitter::UploadParticleBuffers(ID3D11DeviceContext * _dxContext) {
 	//Only update the remainLife buffer by default
-	UpdateDynamicBuffer(sizeof(float), vbSlots::BREMAIN_LIFE, particles.remainLife.get(), _dxContext);
+	UpdateDynamicBuffer(sizeof(float), vbSlots::BREMAIN_LIFE, particles.remainLife, _dxContext);
 
 	if (forceBufferUpdate) {
-		UpdateDynamicBuffer(sizeof(float3), vbSlots::BPOS, particles.iPos.get(), _dxContext);
-		UpdateDynamicBuffer(sizeof(float3), vbSlots::BVEL, particles.iVel.get(), _dxContext);
-		UpdateDynamicBuffer(sizeof(float3), vbSlots::BACCEL, particles.accel.get(), _dxContext);
-		UpdateDynamicBuffer(sizeof(float), vbSlots::BROT, particles.iRot.get(), _dxContext);
-		UpdateDynamicBuffer(sizeof(float), vbSlots::BANGULAR_VEL, particles.angularVel.get(), _dxContext);
-		UpdateDynamicBuffer(sizeof(float), vbSlots::BSTART_SIZE, particles.startSize.get(), _dxContext);
-		UpdateDynamicBuffer(sizeof(float), vbSlots::BEND_SIZE, particles.endSize.get(), _dxContext);
-		UpdateDynamicBuffer(sizeof(float4), vbSlots::BSTART_COLOR, particles.startColor.get(), _dxContext);
-		UpdateDynamicBuffer(sizeof(float4), vbSlots::BEND_COLOR, particles.endColor.get(), _dxContext);
-		UpdateDynamicBuffer(sizeof(float), vbSlots::BSTART_LIFE, particles.startLife.get(), _dxContext);
+		UpdateDynamicBuffer(sizeof(float3), vbSlots::BPOS, particles.iPos, _dxContext);
+		UpdateDynamicBuffer(sizeof(float3), vbSlots::BVEL, particles.iVel, _dxContext);
+		UpdateDynamicBuffer(sizeof(float3), vbSlots::BACCEL, particles.accel, _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BROT, particles.iRot, _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BANGULAR_VEL, particles.angularVel, _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BSTART_SIZE, particles.startSize, _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BEND_SIZE, particles.endSize, _dxContext);
+		UpdateDynamicBuffer(sizeof(float4), vbSlots::BSTART_COLOR, particles.startColor, _dxContext);
+		UpdateDynamicBuffer(sizeof(float4), vbSlots::BEND_COLOR, particles.endColor, _dxContext);
+		UpdateDynamicBuffer(sizeof(float), vbSlots::BSTART_LIFE, particles.startLife, _dxContext);
 	}
 }
 
@@ -182,7 +276,7 @@ void ParticleEmitter::UpdateDynamicBuffer(UINT _itemSize, vbSlots _type, void * 
 	D3D11_MAPPED_SUBRESOURCE mapped;
 	ZeroMemory(&mapped, sizeof(D3D11_MAPPED_SUBRESOURCE));
 	_dxContext->Map(buffers[_type], 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-	memcpy(mapped.pData, _newData, sizeof(_itemSize) * particles.aliveCount);
+	memcpy(mapped.pData, _newData, _itemSize * particles.aliveCount);
 	_dxContext->Unmap(buffers[_type], 0);
 }
 
@@ -193,20 +287,78 @@ void ParticleEmitter::Kill(UINT _id) {
 
 void ParticleEmitter::WakeNext() {
 	particles.wakeNext();
+	totalSpawned += 1;
 	forceBufferUpdate = true;
-	//TODO: Set the new particle's properties according to the emitter's settings
-	//Currently this is just test data.
+
+	//Get new particle index
 	UINT i = particles.aliveCount - 1;
-	particles.iPos[i] = float3(-1.0f * i, 0.0f, 0.0f);
-	particles.iVel[i] = float3(0.0f, 0.0f, 0.0f);
-	particles.accel[i] = float3(0.0f, 0.0f, 0.0f);
-	particles.iRot[i] = 0.0f;
-	particles.angularVel[i] = 0.0f;
-	particles.startSize[i] = 0.5f;
-	particles.endSize[i] = 0.01f;
-	particles.startColor[i] = float4(1.0f, 0.0f, 0.0f, 1.0f);
-	particles.endColor[i] = float4(0.0f, 0.0f, 1.0f, 1.0f);
-	particles.startLife[i] = 10.0f;
+
+
+	//Create position based on emission type
+	float ix; float iy; float iz;
+	switch (settings.shape) {
+	case EmitterOptions::emitterShape::SPHERE:
+		//Random position in a sphere
+		do {
+			ix = ((float)(rand() % (UINT)(settings.radius * 2 * 1000)) / 1000.0f) - settings.radius;
+			iy = ((float)(rand() % (UINT)(settings.radius * 2 * 1000)) / 1000.0f) - settings.radius;
+			iz = ((float)(rand() % (UINT)(settings.radius * 2 * 1000)) / 1000.0f) - settings.radius;
+		} while (ix*ix + iy*iy + iz*iz > settings.radius * settings.radius);
+		particles.iPos[i] = float3(ix, iy, iz);
+		particles.iVel[i] = particles.iPos[i];
+		XMStoreFloat3(&particles.iVel[i], XMVectorScale(
+			XMVector3Normalize(XMLoadFloat3(&particles.iVel[i])),
+			settings.partInitialSpeed
+		));
+		break;
+	case EmitterOptions::emitterShape::CUBE:
+		ix = ((float)(rand() % (UINT)(settings.radius * 2 * 1000)) / 1000.0f) - settings.radius;
+		iy = ((float)(rand() % (UINT)(settings.radius * 2 * 1000)) / 1000.0f) - settings.radius;
+		iz = ((float)(rand() % (UINT)(settings.radius * 2 * 1000)) / 1000.0f) - settings.radius;
+		particles.iPos[i] = float3(ix, iy, iz);
+		particles.iVel[i] = float3(0.0f, 0.0f, settings.partInitialSpeed);
+		break;
+	case EmitterOptions::emitterShape::CYLINDER:
+	case EmitterOptions::emitterShape::CONE:
+	default:
+		//Default to spawning every particle from the center with a velocity of +speed on the z axis
+		particles.iPos[i] = float3(0.0f, 0.0f, 0.0f);
+		particles.iVel[i] = float3(0.0f, 0.0f, settings.partInitialSpeed);
+		break;
+	}
+	//Load world matrix
+	XMMATRIX worldMat = XMLoadFloat4x4(&worldMatRaw);
+	//Transform position into world space
+	XMVECTOR localPos = XMLoadFloat3(&particles.iPos[i]);
+	XMStoreFloat3(&particles.iPos[i], XMVector3Transform(localPos, worldMat));
+	//Transform velocity into world space
+	XMMATRIX rotMat = XMLoadFloat4x4(&gameObject->transform.GetRotationMatrix());
+	XMVECTOR localVel = XMLoadFloat3(&particles.iVel[i]);
+	XMStoreFloat3(&particles.iVel[i], XMVector3Transform(localVel, rotMat));
+	//Set constant acceleration
+	particles.accel[i] = settings.partAccel;
+	//If acceleration is in local space
+	if (settings.partAccelLSpace && (particles.accel[i].x != 0 || particles.accel[i].y != 0 || particles.accel[i].z != 0)) {
+		//Transform by the world matrix
+		XMVECTOR localAccel = XMLoadFloat3(&particles.accel[i]);
+		XMStoreFloat3(&particles.accel[i], XMVector3Transform(localAccel, worldMat));
+	}
+
+	//Set initial rotation amount
+	particles.iRot[i] = settings.partInitialRot;
+	//Set angular velocity
+	particles.angularVel[i] = settings.partAngularVel;
+	//Randomize rotation direction?
+	if (settings.partRandomRotDir) {
+		particles.angularVel[i] *= rand() % 2 == 0 ? 1 : -1;
+	}
+
+	//Grab remaining props directly from the EmitterOptions struct
+	particles.startSize[i] = settings.partStartSize;
+	particles.endSize[i] = settings.partEndSize;
+	particles.startColor[i] = settings.partStartColor;
+	particles.endColor[i] = settings.partEndColor;
+	particles.startLife[i] = settings.partLifetime;
 	particles.remainLife[i] = particles.startLife[i];
 }
 void ParticleEmitter::ThrowIfFail(HRESULT _result) {
