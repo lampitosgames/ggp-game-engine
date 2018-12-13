@@ -29,6 +29,17 @@ function start()
     "assets/textures/PBR/barrel/trn_Barrel_MetallicSmoothness.png"
   );
 
+  -- Create a new material
+  lampMat = Material.new(
+    "lampMat",
+    "VertexShader.cso",
+    "PBRPShader.cso",
+    "assets/textures/PBR/lamp/trn_Lamp_AlbedoTransparency.png",
+    "assets/textures/PBR/lamp/trn_Lamp_Normal.png",
+    "assets/textures/PBR/lamp/trn_Lamp_MetallicSmoothness.png",
+    "assets/textures/PBR/lamp/trn_Lamp_MetallicSmoothness.png"
+  );
+
   -- Create an entity
   barrel = Entity.new(
     "barrel Lua Entity",             -- Name
@@ -43,6 +54,14 @@ function start()
     "assets/meshes/sphere.obj", -- Mesh file
     scene,						-- active scene
     stoneMat					-- material
+  );
+
+  -- Create an entity
+  lamp = Entity.new(
+    "Lua Lamp",                     -- Name
+    "assets/meshes/trn_Lamp.fbx",   -- Mesh file
+    scene,						    -- active scene
+    lampMat					    -- material
   );
 
   stoneEntity:SetPos(0, 2, 0)

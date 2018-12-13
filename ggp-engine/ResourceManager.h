@@ -7,10 +7,6 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
-#include "assimp/Importer.hpp"
-#include "assimp/scene.h"
-#include "assimp/postprocess.h"
-
 #include "MeshGen.h"
 #include "WICTextureLoader.h"
 #include "DDSTextureLoader.h"
