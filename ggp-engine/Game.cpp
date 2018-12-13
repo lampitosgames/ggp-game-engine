@@ -195,16 +195,16 @@ void Game::Init() {
 void Game::OnResize() {
 	// Handle base-level DX resize stuff
 	DXCore::OnResize();
-<<<<<<< HEAD
+
 	DXCore::OnResize(ppRTV);
 	DXCore::OnResize(extractRTV);
 	DXCore::OnResize(blurRTV);
 	DXCore::OnResize(depthRTV);
 	DXCore::OnResize(dofBlurRTV);
 	DXCore::OnResize(dofRTV);
-=======
+
 	RegenRenderTargets();
->>>>>>> refs/remotes/origin/master
+
 	//Pass resize event to scene
 	activeScene->OnResize((float)width, (float)height);
 }
