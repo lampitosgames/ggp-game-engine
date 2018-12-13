@@ -84,6 +84,7 @@ EmitterOptions::EmitterOptions() {
 	playing = true;
 	hasTexture = 1;
 	textureFilepath = L"assets/textures/particles/particle.jpg";
+	useDepthSettings = true;
 	shape = emitterShape::SPHERE;
 	radius = 0.1f;
 	angle = 25.0f;
@@ -169,8 +170,14 @@ void ParticleEmitter::Update(float _dt) {
 	forceBufferUpdate = false;
 }
 
-void ParticleEmitter::Render() {
+void ParticleEmitter::Render(ID3D11BlendState* _blend, ID3D11DepthStencilState* _depth) {
 	ID3D11DeviceContext* dxContext = ResourceManager::GetContextPointer();
+
+	float blend[4] = { 1,1,1,1 };
+	if (settings.useDepthSettings) {
+		dxContext->OMSetBlendState(_blend, blend, 0xffffffff);
+		dxContext->OMSetDepthStencilState(_depth, 0);
+	}
 
 	particleVS->SetMatrix4x4("view", RenderManager::GetInstance()->GetActiveCamera()->GetViewMatrix());
 	particleVS->SetMatrix4x4("projection", RenderManager::GetInstance()->GetActiveCamera()->GetProjectionMatrix());
@@ -190,6 +197,11 @@ void ParticleEmitter::Render() {
 	dxContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	dxContext->DrawIndexedInstanced(6, particles.aliveCount, 0, 0, 0);
+	
+	if (settings.useDepthSettings) {
+		dxContext->OMSetBlendState(0, blend, 0xffffffff);
+		dxContext->OMSetDepthStencilState(0, 0);
+	}
 }
 
 #pragma region Get/Set

@@ -140,9 +140,6 @@ void ParticleManager::Update(float _dt) {
 void ParticleManager::Render() {
 	//Loop through every particle emitter
 	std::map<ParticleEmitterID, ParticleEmitter*>::iterator peIterator;
-	float blend[4] = { 1,1,1,1 };
-	ResourceManager::GetContextPointer()->OMSetBlendState(particleBS, blend, 0xffffffff);
-	ResourceManager::GetContextPointer()->OMSetDepthStencilState(particleDS, 0);
 	for (peIterator = particleEmitterUIDMap.begin(); peIterator != particleEmitterUIDMap.end();) {
 		ParticleEmitter* peTemp = peIterator->second;
 		//Make sure it hasn't been cleaned up by the component system
@@ -153,10 +150,8 @@ void ParticleManager::Render() {
 		else {
 			peIterator++;
 		}
-		peTemp->Render();
+		peTemp->Render(particleBS, particleDS);
 	}
-	ResourceManager::GetContextPointer()->OMSetBlendState(0, blend, 0xffffffff);
-	ResourceManager::GetContextPointer()->OMSetDepthStencilState(0, 0);
 }
 
 ID3D11SamplerState * ParticleManager::GetParticleSamplerState() { return particleSS; }
@@ -205,6 +200,8 @@ void ParticleManager::Release() {
 	peCount = 0;
 	particleEmitterUIDMap.clear();
 	particleSS->Release();
+	particleBS->Release();
+	particleDS->Release();
 	partVBuffer->Release();
 	partIBuffer->Release();
 }

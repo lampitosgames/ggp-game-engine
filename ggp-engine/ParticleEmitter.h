@@ -80,6 +80,7 @@ public:
 	bool playing;          //If true, the particle emitter is currently emitting
 	UINT hasTexture;       //Using a texture?
 	LPCWSTR textureFilepath; //Filepath to particle texture
+	bool useDepthSettings; //Use additive blending with depth turned off
 
 	//Emission shape props
 	enum emitterShape {
@@ -147,7 +148,7 @@ public:
 	~ParticleEmitter();
 
 	void Update(float _dt);
-	void Render();
+	void Render(ID3D11BlendState* _blend, ID3D11DepthStencilState* _depth);
 
 	/*
 		GET/SET
