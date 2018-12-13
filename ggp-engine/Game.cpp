@@ -4,6 +4,8 @@
 #include "Vertex.h"
 #include "PBRDemoScene.h"
 #include "DebugScene.h"
+#include "ShipScene.h"
+
 // For the DirectX Math library
 using namespace DirectX;
 
@@ -102,7 +104,9 @@ void Game::Init() {
 	particleManager->Init();
 
 	//Create and init the active scene
-	activeScene = new PBRDemoScene("PBR_Demo");
+	//activeScene = new PBRDemoScene("PBR_Demo");
+    activeScene = new ShipScene( "ShipScene" );
+
 	//activeScene = new DebugScene( "Debug Scene" );
 	activeScene->Init();
 

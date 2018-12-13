@@ -307,151 +307,186 @@ Mesh* ResourceManager::GenerateSphere(float _radius, int _subdivs, float _uvScal
 }
 
 Mesh* ResourceManager::LoadMesh(string _filepath) {// File input object
-	std::ifstream obj(_filepath);
+	
+    // Check the file type of this object
+    std::string extension = _filepath.substr( _filepath.find_last_of( "." ) + 1 );
+    if ( extension == "obj" || extension  == "OBJ" )
+    {
+        return LoadMeshOBJ( _filepath );
+    }
+    else if ( extension == "fbx" || extension == "FBX" )
+    {
+        return LoadMeshFBX( _filepath );
+    }
+    else
+    {
+        return nullptr;
+    }
+}
 
-	// Check for successful open
-	if (!obj.is_open()) {
-		return nullptr;
-	}
+Mesh * ResourceManager::LoadMeshOBJ( std::string _filepath )
+{
+    std::ifstream obj( _filepath );
 
-	// Variables used while reading the file
-	unsigned int vertCounter = 0;        // Count of vertices/indices
-	char chars[100];
+    // Check for successful open
+    if ( !obj.is_open() )
+    {
+        return nullptr;
+    }
 
-	// Still have data left?
-	while (obj.good()) {
-		// Get the line (100 characters should be more than enough)
-		obj.getline(chars, 100);
+    // Variables used while reading the file
+    unsigned int vertCounter = 0;        // Count of vertices/indices
+    char chars [ 100 ];
 
-		// Check the type of line
-		if (chars[0] == 'v' && chars[1] == 'n') {
-			// Read the 3 numbers directly into an XMFLOAT3
-			XMFLOAT3 norm;
-			sscanf_s(chars, "vn %f %f %f", &norm.x, &norm.y, &norm.z);
+    // Still have data left?
+    while ( obj.good() )
+    {
+        // Get the line (100 characters should be more than enough)
+        obj.getline( chars, 100 );
 
-			// Add to the list of normals
-			mNormals.push_back(norm);
-		} else if (chars[0] == 'v' && chars[1] == 't') {
-			// Read the 2 numbers directly into an XMFLOAT2
-			XMFLOAT2 uv;
-			sscanf_s(chars, "vt %f %f", &uv.x, &uv.y);
+        // Check the type of line
+        if ( chars [ 0 ] == 'v' && chars [ 1 ] == 'n' )
+        {
+            // Read the 3 numbers directly into an XMFLOAT3
+            XMFLOAT3 norm;
+            sscanf_s( chars, "vn %f %f %f", &norm.x, &norm.y, &norm.z );
 
-			// Add to the list of uv's
-			mUVs.push_back(uv);
-		} else if (chars[0] == 'v') {
-			// Read the 3 numbers directly into an XMFLOAT3
-			XMFLOAT3 pos;
-			sscanf_s(chars, "v %f %f %f", &pos.x, &pos.y, &pos.z);
+            // Add to the list of normals
+            mNormals.push_back( norm );
+        }
+        else if ( chars [ 0 ] == 'v' && chars [ 1 ] == 't' )
+        {
+            // Read the 2 numbers directly into an XMFLOAT2
+            XMFLOAT2 uv;
+            sscanf_s( chars, "vt %f %f", &uv.x, &uv.y );
 
-			// Add to the positions
-			mPositions.push_back(pos);
-		} else if (chars[0] == 'f') {
-			// Read the face indices into an array
-			unsigned int i[12];
-			int facesRead = sscanf_s(
-				chars,
-				"f %d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d",
-				&i[0], &i[1], &i[2],
-				&i[3], &i[4], &i[5],
-				&i[6], &i[7], &i[8],
-				&i[9], &i[10], &i[11]);
+            // Add to the list of uv's
+            mUVs.push_back( uv );
+        }
+        else if ( chars [ 0 ] == 'v' )
+        {
+            // Read the 3 numbers directly into an XMFLOAT3
+            XMFLOAT3 pos;
+            sscanf_s( chars, "v %f %f %f", &pos.x, &pos.y, &pos.z );
 
-			// - Create the verts by looking up
-			//    corresponding data from vectors
-			// - OBJ File indices are 1-based, so
-			//    they need to be adusted
-			Vertex v1;
-			v1.position = mPositions[i[0] - 1];
-			v1.uv = mUVs[i[1] - 1];
-			v1.normal = mNormals[i[2] - 1];
+            // Add to the positions
+            mPositions.push_back( pos );
+        }
+        else if ( chars [ 0 ] == 'f' )
+        {
+            // Read the face indices into an array
+            unsigned int i [ 12 ];
+            int facesRead = sscanf_s(
+                chars,
+                "f %d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d",
+                &i [ 0 ], &i [ 1 ], &i [ 2 ],
+                &i [ 3 ], &i [ 4 ], &i [ 5 ],
+                &i [ 6 ], &i [ 7 ], &i [ 8 ],
+                &i [ 9 ], &i [ 10 ], &i [ 11 ] );
 
-			Vertex v2;
-			v2.position = mPositions[i[3] - 1];
-			v2.uv = mUVs[i[4] - 1];
-			v2.normal = mNormals[i[5] - 1];
+            // - Create the verts by looking up
+            //    corresponding data from vectors
+            // - OBJ File indices are 1-based, so
+            //    they need to be adusted
+            Vertex v1;
+            v1.position = mPositions [ i [ 0 ] - 1 ];
+            v1.uv = mUVs [ i [ 1 ] - 1 ];
+            v1.normal = mNormals [ i [ 2 ] - 1 ];
 
-			Vertex v3;
-			v3.position = mPositions[i[6] - 1];
-			v3.uv = mUVs[i[7] - 1];
-			v3.normal = mNormals[i[8] - 1];
+            Vertex v2;
+            v2.position = mPositions [ i [ 3 ] - 1 ];
+            v2.uv = mUVs [ i [ 4 ] - 1 ];
+            v2.normal = mNormals [ i [ 5 ] - 1 ];
 
-			// The model is most likely in a right-handed space,
-			// especially if it came from Maya.  We want to convert
-			// to a left-handed space for DirectX.  This means we 
-			// need to:
-			//  - Invert the Z position
-			//  - Invert the normal's Z
-			//  - Flip the winding order
-			// We also need to flip the UV coordinate since DirectX
-			// defines (0,0) as the top left of the texture, and many
-			// 3D modeling packages use the bottom left as (0,0)
+            Vertex v3;
+            v3.position = mPositions [ i [ 6 ] - 1 ];
+            v3.uv = mUVs [ i [ 7 ] - 1 ];
+            v3.normal = mNormals [ i [ 8 ] - 1 ];
 
-			// Flip the UV's since they're probably "upside down"
-			v1.uv.y = 1.0f - v1.uv.y;
-			v2.uv.y = 1.0f - v2.uv.y;
-			v3.uv.y = 1.0f - v3.uv.y;
+            // The model is most likely in a right-handed space,
+            // especially if it came from Maya.  We want to convert
+            // to a left-handed space for DirectX.  This means we 
+            // need to:
+            //  - Invert the Z position
+            //  - Invert the normal's Z
+            //  - Flip the winding order
+            // We also need to flip the UV coordinate since DirectX
+            // defines (0,0) as the top left of the texture, and many
+            // 3D modeling packages use the bottom left as (0,0)
 
-			// Flip Z (LH vs. RH)
-			v1.position.z *= -1.0f;
-			v2.position.z *= -1.0f;
-			v3.position.z *= -1.0f;
+            // Flip the UV's since they're probably "upside down"
+            v1.uv.y = 1.0f - v1.uv.y;
+            v2.uv.y = 1.0f - v2.uv.y;
+            v3.uv.y = 1.0f - v3.uv.y;
 
-			// Flip normal Z
-			v1.normal.z *= -1.0f;
-			v2.normal.z *= -1.0f;
-			v3.normal.z *= -1.0f;
+            // Flip Z (LH vs. RH)
+            v1.position.z *= -1.0f;
+            v2.position.z *= -1.0f;
+            v3.position.z *= -1.0f;
 
-			// Add the verts to the vector (flipping the winding order)
-			mVerts.push_back(v1);
-			mVerts.push_back(v3);
-			mVerts.push_back(v2);
+            // Flip normal Z
+            v1.normal.z *= -1.0f;
+            v2.normal.z *= -1.0f;
+            v3.normal.z *= -1.0f;
 
-			// Add three more indices
-			mIndices.push_back(vertCounter); vertCounter += 1;
-			mIndices.push_back(vertCounter); vertCounter += 1;
-			mIndices.push_back(vertCounter); vertCounter += 1;
+            // Add the verts to the vector (flipping the winding order)
+            mVerts.push_back( v1 );
+            mVerts.push_back( v3 );
+            mVerts.push_back( v2 );
 
-			// Was there a 4th face?
-			if (facesRead == 12) {
-				// Make the last vertex
-				Vertex v4;
-				v4.position = mPositions[i[9] - 1];
-				v4.uv = mUVs[i[10] - 1];
-				v4.normal = mNormals[i[11] - 1];
+            // Add three more indices
+            mIndices.push_back( vertCounter ); vertCounter += 1;
+            mIndices.push_back( vertCounter ); vertCounter += 1;
+            mIndices.push_back( vertCounter ); vertCounter += 1;
 
-				// Flip the UV, Z pos and normal
-				v4.uv.y = 1.0f - v4.uv.y;
-				v4.position.z *= -1.0f;
-				v4.normal.z *= -1.0f;
+            // Was there a 4th face?
+            if ( facesRead == 12 )
+            {
+                // Make the last vertex
+                Vertex v4;
+                v4.position = mPositions [ i [ 9 ] - 1 ];
+                v4.uv = mUVs [ i [ 10 ] - 1 ];
+                v4.normal = mNormals [ i [ 11 ] - 1 ];
 
-				// Add a whole triangle (flipping the winding order)
-				mVerts.push_back(v1);
-				mVerts.push_back(v4);
-				mVerts.push_back(v3);
+                // Flip the UV, Z pos and normal
+                v4.uv.y = 1.0f - v4.uv.y;
+                v4.position.z *= -1.0f;
+                v4.normal.z *= -1.0f;
 
-				// Add three more indices
-				mIndices.push_back(vertCounter); vertCounter += 1;
-				mIndices.push_back(vertCounter); vertCounter += 1;
-				mIndices.push_back(vertCounter); vertCounter += 1;
-			}
-		}
-	}
+                // Add a whole triangle (flipping the winding order)
+                mVerts.push_back( v1 );
+                mVerts.push_back( v4 );
+                mVerts.push_back( v3 );
 
-	// Close the file and create the actual buffers
-	obj.close();
+                // Add three more indices
+                mIndices.push_back( vertCounter ); vertCounter += 1;
+                mIndices.push_back( vertCounter ); vertCounter += 1;
+                mIndices.push_back( vertCounter ); vertCounter += 1;
+            }
+        }
+    }
 
-	//Calculate vertex tangents
-	CalculateTangents(vertCounter, vertCounter);
+    // Close the file and create the actual buffers
+    obj.close();
 
-	Mesh* newMesh = new Mesh(&mVerts[0], vertCounter, &mIndices[0], vertCounter, dxDevice);
-	//Clean up structs
-	mPositions.clear();
-	mNormals.clear();
-	mUVs.clear();
-	mVerts.clear();
-	mIndices.clear();
-	//Return the newly created mesh
-	return newMesh;
+    //Calculate vertex tangents
+    CalculateTangents( vertCounter, vertCounter );
+
+    Mesh* newMesh = new Mesh( &mVerts [ 0 ], vertCounter, &mIndices [ 0 ], vertCounter, dxDevice );
+    //Clean up structs
+    mPositions.clear();
+    mNormals.clear();
+    mUVs.clear();
+    mVerts.clear();
+    mIndices.clear();
+    //Return the newly created mesh
+    return newMesh;
+}
+
+Mesh * ResourceManager::LoadMeshFBX( std::string _filepath )
+{
+    
+    return nullptr;
 }
 
 // Calculates the tangents of the vertices in a mesh
