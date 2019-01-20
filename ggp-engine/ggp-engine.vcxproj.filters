@@ -351,21 +351,6 @@
     <FxCompile Include="ParticlePixelShader.hlsl">
       <Filter>Shaders\Particles</Filter>
     </FxCompile>
-    <FxCompile Include="PostProcessVS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="ExtractBrightPS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="GaussianBlur.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="dofPS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="AdditiveBlend.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="InputOutputStructs.hlsli">

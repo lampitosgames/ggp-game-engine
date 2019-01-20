@@ -47,12 +47,3 @@ using FileName = std::string;
 // Typedefs -----------------------------
 
 typedef unsigned int UINT;
-
-
-std::string ws2s( const std::wstring& wstr )
-{
-    using convert_typeX = std::codecvt_utf8<wchar_t>;
-    std::wstring_convert<convert_typeX, wchar_t> converterX;
-
-    return converterX.to_bytes( wstr );
-}
