@@ -1,5 +1,8 @@
+#include "stdafx.h"
+
 #include "DXCore.h"
 
+#include <dxgidebug.h>
 #include <WindowsX.h>
 #include <sstream>
 
@@ -66,7 +69,15 @@ DXCore::DXCore(
 // Destructor - Clean up (release) all DirectX references
 // --------------------------------------------------------
 DXCore::~DXCore() {
-	// Release all DirectX resources
+
+	#ifdef ENABLE_UI
+
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+
+	#endif
+		// Release all DirectX resources
 	if (depthStencilView) { depthStencilView->Release(); }
 	if (backBufferRTV) { backBufferRTV->Release(); }
 
@@ -258,7 +269,19 @@ HRESULT DXCore::InitDirectX() {
 	viewport.MaxDepth = 1.0f;
 	dxContext->RSSetViewports(1, &viewport);
 
-	// Return the "everything is ok" HRESULT value
+	// Enable IMGUI ----------------------------------------
+	#if defined(ENABLE_UI)
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO & io = ImGui::GetIO();
+	ImGui_ImplWin32_Init(hWnd);
+	ImGui_ImplDX11_Init(dxDevice, dxContext);
+	ImGui::StyleColorsDark();
+
+	#endif
+
+		// Return the "everything is ok" HRESULT value
 	return S_OK;
 }
 
@@ -327,6 +350,63 @@ void DXCore::OnResize() {
 	dxContext->RSSetViewports(1, &viewport);
 }
 
+void DXCore::OnResize(ID3D11RenderTargetView* rtv)
+{
+	// Release existing DirectX views and buffers
+	if (depthStencilView) { depthStencilView->Release(); }
+	if (rtv) { rtv->Release(); }
+
+	// Resize the underlying swap chain buffers
+	swapChain->ResizeBuffers(
+		1,
+		width,
+		height,
+		DXGI_FORMAT_R8G8B8A8_UNORM,
+		0);
+
+	// Recreate the render target view for the back buffer
+	// texture, then release our local texture reference
+	ID3D11Texture2D* backBufferTexture;
+	swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBufferTexture));
+	dxDevice->CreateRenderTargetView(backBufferTexture, 0, &rtv);
+	backBufferTexture->Release();
+
+	// Set up the description of the texture to use for the depth buffer
+	D3D11_TEXTURE2D_DESC depthStencilDesc;
+	depthStencilDesc.Width = width;
+	depthStencilDesc.Height = height;
+	depthStencilDesc.MipLevels = 1;
+	depthStencilDesc.ArraySize = 1;
+	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthStencilDesc.CPUAccessFlags = 0;
+	depthStencilDesc.MiscFlags = 0;
+	depthStencilDesc.SampleDesc.Count = 1;
+	depthStencilDesc.SampleDesc.Quality = 0;
+
+	// Create the depth buffer and its view, then 
+	// release our reference to the texture
+	ID3D11Texture2D* depthBufferTexture;
+	dxDevice->CreateTexture2D(&depthStencilDesc, 0, &depthBufferTexture);
+	dxDevice->CreateDepthStencilView(depthBufferTexture, 0, &depthStencilView);
+	depthBufferTexture->Release();
+
+	// Bind the views to the pipeline, so rendering properly 
+	// uses their underlying textures
+	dxContext->OMSetRenderTargets(1, &rtv, depthStencilView);
+
+	// Lastly, set up a viewport so we render into
+	// to correct portion of the window
+	D3D11_VIEWPORT viewport = {};
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = (float)width;
+	viewport.Height = (float)height;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	dxContext->RSSetViewports(1, &viewport);
+}
 
 // --------------------------------------------------------
 // This is the main game loop, handling the following:
@@ -489,7 +569,9 @@ void DXCore::CreateConsoleWindow(int bufferLines, int bufferColumns, int windowL
 
 
 
-
+#if defined(ENABLE_UI)
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#endif
 // --------------------------------------------------------
 // Handles messages that are sent to our window by the
 // operating system.  Ignoring these messages would cause
@@ -497,7 +579,14 @@ void DXCore::CreateConsoleWindow(int bufferLines, int bufferColumns, int windowL
 // unresponsive.
 // --------------------------------------------------------
 LRESULT DXCore::ProcessMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	// Check the incoming message and handle any we care about
+
+	#if defined(ENABLE_UI)
+
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+		return true;
+	#endif
+
+		// Check the incoming message and handle any we care about
 	switch (uMsg) {
 	// This is the message that signifies the window closing
 		case WM_DESTROY:

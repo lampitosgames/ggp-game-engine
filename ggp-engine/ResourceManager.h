@@ -6,8 +6,11 @@
 #include <string>
 #include <d3d11.h>
 #include <DirectXMath.h>
+
+#include "MeshGen.h"
 //Forward declaration
 class Material;
+class PBRMaterial;
 class Mesh;
 class Texture;
 struct Vertex;
@@ -18,6 +21,8 @@ class ResourceManager {
 	static ResourceManager* instance;
 	static ID3D11Device* dxDevice;
 	static ID3D11DeviceContext* dxContext;
+	//Helper object for generating meshes
+	static MeshGen meshGen;
 
 	//Map of unique material resources
 	std::map<std::string, Material*> materialUIDMap;
@@ -33,9 +38,9 @@ public:
 	static ResourceManager* GetInstance();
 	static void ReleaseInstance();
 
-    // We don't want anything making copies of this class so delete these operators
-    ResourceManager( ResourceManager const& ) = delete;
-    void operator=( ResourceManager const& ) = delete;
+	// We don't want anything making copies of this class so delete these operators
+	ResourceManager(ResourceManager const&) = delete;
+	void operator=(ResourceManager const&) = delete;
 
 	//Sets the device and context needed to actually interact with the window
 	static void SetDevicePointer(ID3D11Device* _dxDevice);
@@ -62,6 +67,18 @@ public:
 	//Create and return a new basic texture material without shaders
 	Material* AddMaterial(std::string _uniqueID, LPCWSTR _textureFilestring);
 
+	/// <summary>
+	/// Load in a DDS texture
+	/// </summary>
+	/// <param name="_textureFileString"></param>
+	/// <returns></returns>
+	ID3D11ShaderResourceView* LoadSRV_DDS(LPCWSTR _textureFileString);
+	/*
+		PBR MATERIAL MANAGEMENT
+	*/
+	PBRMaterial* GetPBRMaterial(std::string _uniqueID, LPCWSTR _vertexShaderFilestring, LPCWSTR _pixelShaderFilestring, DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float _roughness = 0.0f, float _metalness = 0.0f);
+	PBRMaterial* GetPBRMaterial(std::string _uniqueID, LPCWSTR _vertexShaderFilestring, LPCWSTR _pixelShaderFilestring, LPCWSTR _albedoFilestring, LPCWSTR _normalFilestring, LPCWSTR _roughnessFilestring, LPCWSTR _metalnessFilestring);
+
 	/*
 		SHADER MANAGEMENT
 	*/
@@ -71,11 +88,13 @@ public:
 
 	/*
 		MESH RESOURCE MANAGEMENT
-		TODO: Loading mesh resources
 	*/
 	Mesh* CreateMeshFromData(Vertex* _vertexArray, UINT _vertexCount, UINT* _indexArray, UINT _indexCount, std::string _uniqueID = "NA");
 	Mesh* GetMesh(std::string _uniqueID);
+	Mesh* GetTerrain(std::string _uniqueID, int _resolution, float _heightScale = 50.0f, float _uvScale = 30.0f);
 	//void DeleteMesh(std::string _uniqueID);
+	Mesh* GenerateCube(float _sideLength, float _uvScale = 1.0f);
+	Mesh* GenerateSphere(float _radius, int _subdivs = 4, float _uvScale = 1.0f);
 
 	/*
 		TEXTURE RESOURCE MANAGEMENT
@@ -99,10 +118,10 @@ private:
 
 	//Private function to load a mesh from a file
 	Mesh* LoadMesh(std::string _filepath);
-	void CalculateTangents(int numVerts, int numIndices);
+    Mesh* LoadMeshOBJ( std::string _filepath );
+    Mesh* LoadMeshFBX( std::string _filepath );
 
-	//Mesh* GenerateCube(float _size);
-	//Mesh* GenerateSphere(float _radius, int _subdivisions);
+	void CalculateTangents(int numVerts, int numIndices);
 };
 
 //Enum of mesh primitive types

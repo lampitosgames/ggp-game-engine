@@ -1,16 +1,18 @@
 #ifndef GGP_INPUT_LISTENER_H
 #define GGP_INPUT_LISTENER_H
 
-#include "Component.h"
+#include "BaseComponent.h"
 #include "InputEvent.h"
 class GameObject;
 
-class InputListener : public Component {
+class InputListener : public ECS::BaseComponent<InputListener> {
 public:
-	InputListener(UINT _uniqueID, GameObject* _gameObject);
+	InputListener(GameObject* _gameObject);
 	~InputListener();
 
 	void Input(InputEvent _event);
+
+	GameObject* gameObject;
 };
 
 #endif //GGP_INPUT_LISTENER_H

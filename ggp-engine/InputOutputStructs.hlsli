@@ -21,4 +21,36 @@ struct VertexToPixel {
 	float2 uv           : TEXCOORD;     // UV Coordinates
 	float3 tangent      : TANGENT;      // Tangent vector
 	float3 worldPos     : POSITION;     // World-space position of the vertex
+	float depth         : DEPTH;        // Depth in view space
+};
+
+
+// Struct representing the particle shader input
+struct ParticleVertexShaderInput {
+	//Per-vertex
+	float2 uv           : TEXCOORD;
+	//Per-instance
+	float3 iPos         : INITIAL_POSITION;
+	float3 iVel         : INITIAL_VELOCITY;
+	float3 accel        : ACCELERATION;
+	float iRot          : INITIAL_ROTATION;
+	float angularVel    : ANGULAR_VELOCITY;
+	float startSize     : START_SIZE;
+	float endSize       : END_SIZE;
+	float4 startColor   : START_COLOR;
+	float4 endColor     : END_COLOR;
+	float startLife     : START_LIFE;
+	float remainLife    : REMAIN_LIFE;
+};
+
+struct ParticleVertexToPixel {
+	float4 position		: SV_POSITION;
+	float2 uv           : TEXCOORD;
+	float4 color		: COLOR;
+};
+
+//Struct for Pixel shader so it can render to 2 render target at the same time
+struct PixelOut {
+	float4 color        : SV_TARGET0; // Render normally
+	float4 distance     : SV_TARGET1; // Depth render target
 };

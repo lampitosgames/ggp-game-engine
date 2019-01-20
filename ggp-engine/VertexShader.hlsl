@@ -14,6 +14,9 @@ VertexToPixel main(VertexShaderInput input) {
 	//Transform vertex position into world space (used for calculations further down the pipeline)
 	output.worldPos = mul(float4(input.position, 1.0f), world).xyz;
 
+	//Depth in view space
+	output.depth = mul(float4(input.position, 1.0f), mul(world, view)).z;
+
 	//Store output normal and tangent vectors. Transform them using the inverse transpose of the world matrix
 	output.normal = mul(input.normal, (float3x3)worldInvTrans);
 	output.tangent = mul(input.tangent, (float3x3)worldInvTrans);

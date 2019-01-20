@@ -51,6 +51,12 @@
     <Filter Include="Shaders\Shader Helpers">
       <UniqueIdentifier>{5e0fa5a3-c74e-4bb8-a303-e1f7b197a02e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{6669d4fb-147e-4476-b217-7c181d969dd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Particles">
+      <UniqueIdentifier>{64edb68c-ce48-4aea-8e76-4a180606588d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXCore.cpp">
@@ -73,9 +79,6 @@
     </ClCompile>
     <ClCompile Include="MeshRenderer.cpp">
       <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Spatial.cpp">
-      <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files\GameObjects</Filter>
@@ -104,9 +107,6 @@
     <ClCompile Include="RenderManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>Source Files\GameObjects</Filter>
-    </ClCompile>
     <ClCompile Include="LightManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
@@ -125,6 +125,60 @@
     <ClCompile Include="DebugScene.cpp">
       <Filter>Source Files\Game Code</Filter>
     </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Collisions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PBRDemoScene.cpp">
+      <Filter>Source Files\Game Code</Filter>
+    </ClCompile>
+    <ClCompile Include="PBRMaterial.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshGen.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="FamilyTypeID.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SpotLight.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\additional\imgui\imgui\imgui.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\additional\imgui\imgui\imgui_demo.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\additional\imgui\imgui\imgui_draw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\additional\imgui\imgui\imgui_impl_dx11.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\additional\imgui\imgui\imgui_impl_win32.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\additional\imgui\imgui\imgui_widgets.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleEmitter.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DXCore.h">
@@ -141,15 +195,6 @@
     </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>Header Files\GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Spatial.h">
-      <Filter>Header Files\GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentTypes.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Component.h">
-      <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="MeshRenderer.h">
       <Filter>Header Files\Components</Filter>
@@ -214,15 +259,111 @@
     <ClInclude Include="DebugScene.h">
       <Filter>Header Files\Game Code</Filter>
     </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Collisions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PBRDemoScene.h">
+      <Filter>Header Files\Game Code</Filter>
+    </ClInclude>
+    <ClInclude Include="PBRMaterial.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshGen.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="IComponent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseComponent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="FamilyTypeID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotLight.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\additional\imgui\imgui\imconfig.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\additional\imgui\imgui\imgui.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\additional\imgui\imgui\imgui_impl_dx11.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\additional\imgui\imgui\imgui_impl_win32.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\additional\imgui\imgui\imgui_internal.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\additional\imgui\imgui\imstb_rectpack.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\additional\imgui\imgui\imstb_textedit.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\additional\imgui\imgui\imstb_truetype.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleEmitter.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="LambertPShader.hlsl">
+    <FxCompile Include="PhongPShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="PhongPShader.hlsl">
+    <FxCompile Include="PBRPShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="SkyPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="SkyVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="ParticleVertexShader.hlsl">
+      <Filter>Shaders\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="ParticlePixelShader.hlsl">
+      <Filter>Shaders\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="PostProcessVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="ExtractBrightPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="GaussianBlur.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="dofPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="AdditiveBlend.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
@@ -230,18 +371,19 @@
     <None Include="InputOutputStructs.hlsli">
       <Filter>Shaders\Shader Helpers</Filter>
     </None>
-    <None Include="packages.config" />
     <None Include="LightGlobals.hlsli">
-      <Filter>Shaders\Shader Helpers</Filter>
-    </None>
-    <None Include="TextureGlobals.hlsli">
-      <Filter>Shaders\Shader Helpers</Filter>
-    </None>
-    <None Include="PixelShaderGlobals.hlsli">
       <Filter>Shaders\Shader Helpers</Filter>
     </None>
     <None Include="VertexShaderGlobals.hlsli">
       <Filter>Shaders\Shader Helpers</Filter>
     </None>
+    <None Include="PShaderGlobals.hlsli">
+      <Filter>Shaders\Shader Helpers</Filter>
+    </None>
+    <None Include="PBRShaderGlobals.hlsli">
+      <Filter>Shaders\Shader Helpers</Filter>
+    </None>
+    <None Include="ClassDiagram.cd" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

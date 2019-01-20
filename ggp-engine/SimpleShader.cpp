@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "SimpleShader.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -569,6 +571,12 @@ SimpleVertexShader::SimpleVertexShader(ID3D11Device * device, ID3D11DeviceContex
 // --------------------------------------------------------
 SimpleVertexShader::~SimpleVertexShader() {
 	CleanUp();
+}
+
+void SimpleVertexShader::SetInputLayout(ID3D11InputLayout * newLayout, bool perInstanceCompatible) {
+	if (inputLayout) { inputLayout->Release(); inputLayout = 0; }
+	this->inputLayout = newLayout;
+	this->perInstanceCompatible = perInstanceCompatible;
 }
 
 // --------------------------------------------------------

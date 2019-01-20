@@ -1,6 +1,17 @@
 #ifndef GGP_DXCORE_H
 #define GGP_DXCORE_H
 
+
+#define  ENABLE_UI
+
+#if defined(ENABLE_UI)
+
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_win32.h"
+#include "imgui/imgui_impl_dx11.h"
+
+#endif
+
 #include <Windows.h>
 #include <d3d11.h>
 #include <string>
@@ -37,6 +48,7 @@ public:
 	HRESULT Run();
 	void Quit();
 	virtual void OnResize();
+	virtual void OnResize(ID3D11RenderTargetView* rtv);
 
 	// Pure virtual methods for setup and game functionality
 	virtual void Init() = 0;

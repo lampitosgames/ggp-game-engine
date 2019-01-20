@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -78,12 +78,32 @@
     <OutDir>$(SolutionDir)build\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)build\</OutDir>
+    <IntDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)build\</OutDir>
+    <IntDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(SolutionDir)additional\imgui;$(SolutionDir)additional\sol2;$(SolutionDir)additional\lua\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>lua52.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)additional\lua\lib;</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent>
+      <Command>rmdir /Q /S "$(OutDir)assets"
+Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"
+xcopy /e /d /y "$(SolutionDir)additional\lua\lib\lua52.dll" "$(OutDir)"</Command>
+      <Message>Copying binary...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -91,10 +111,13 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(SolutionDir)additional\imgui;$(SolutionDir)additional\sol2;$(SolutionDir)additional\lua\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <PostBuildEvent>
       <Command>rmdir /Q /S "$(OutDir)assets"
-Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
+
+xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copying binary...</Message>
@@ -102,6 +125,11 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <FxCompile>
       <ShaderModel>5.0</ShaderModel>
     </FxCompile>
+    <Link>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -110,11 +138,21 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(SolutionDir)additional\imgui;$(SolutionDir)additional\sol2;$(SolutionDir)additional\lua\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>lua52.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)additional\lua\lib;</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>rmdir /Q /S "$(OutDir)assets"
+Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"
+xcopy /e /d /y "$(SolutionDir)additional\lua\lib\lua52.dll" "$(OutDir)"</Command>
+      <Message>Copying binary...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -123,14 +161,20 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(SolutionDir)additional\imgui;$(SolutionDir)additional\sol2;$(SolutionDir)additional\lua\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>rmdir /Q /S "$(OutDir)assets"
-Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
+
+xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copying binary...</Message>
@@ -140,43 +184,75 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\additional\imgui\imgui\imgui.cpp" />
+    <ClCompile Include="..\additional\imgui\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\additional\imgui\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\additional\imgui\imgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\additional\imgui\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\additional\imgui\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Basis.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Collisions.cpp" />
+    <ClCompile Include="ComponentManager.cpp" />
     <ClCompile Include="DebugScene.cpp" />
     <ClCompile Include="DirLight.cpp" />
     <ClCompile Include="DXCore.cpp" />
+    <ClCompile Include="FamilyTypeID.cpp" />
     <ClCompile Include="FlyingCamera.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InputListener.cpp" />
     <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="Light.cpp" />
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshGen.cpp" />
+    <ClCompile Include="ParticleEmitter.cpp" />
+    <ClCompile Include="ParticleManager.cpp" />
+    <ClCompile Include="PhysicsManager.cpp" />
+    <ClCompile Include="PBRDemoScene.cpp" />
+    <ClCompile Include="PBRMaterial.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SimpleShader.cpp" />
-    <ClCompile Include="Spatial.cpp" />
+    <ClCompile Include="SpotLight.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\additional\imgui\imgui\imconfig.h" />
+    <ClInclude Include="..\additional\imgui\imgui\imgui.h" />
+    <ClInclude Include="..\additional\imgui\imgui\imgui_impl_dx11.h" />
+    <ClInclude Include="..\additional\imgui\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="..\additional\imgui\imgui\imgui_internal.h" />
+    <ClInclude Include="..\additional\imgui\imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\additional\imgui\imgui\imstb_textedit.h" />
+    <ClInclude Include="..\additional\imgui\imgui\imstb_truetype.h" />
+    <ClInclude Include="BaseComponent.h" />
     <ClInclude Include="Basis.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="Component.h" />
-    <ClInclude Include="ComponentTypes.h" />
+    <ClInclude Include="Collisions.h" />
+    <ClInclude Include="ComponentManager.h" />
     <ClInclude Include="DebugScene.h" />
     <ClInclude Include="DirLight.h" />
     <ClInclude Include="DXCore.h" />
+    <ClInclude Include="FamilyTypeID.h" />
     <ClInclude Include="FlyingCamera.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectTypes.h" />
+    <ClInclude Include="IComponent.h" />
     <ClInclude Include="InputEvent.h" />
     <ClInclude Include="InputListener.h" />
     <ClInclude Include="InputManager.h" />
@@ -184,20 +260,65 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClInclude Include="LightStructs.h" />
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="Math.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshGen.h" />
+    <ClInclude Include="ParticleEmitter.h" />
+    <ClInclude Include="ParticleManager.h" />
+    <ClInclude Include="PhysicsManager.h" />
+    <ClInclude Include="PBRDemoScene.h" />
+    <ClInclude Include="PBRMaterial.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SimpleShader.h" />
-    <ClInclude Include="Spatial.h" />
+    <ClInclude Include="SpotLight.h" />
+    <ClInclude Include="stdafx.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="LambertPShader.hlsl">
+    <FxCompile Include="AdditiveBlend.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="dofPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="ExtractBrightPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="GaussianBlur.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="ParticlePixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="ParticleVertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="PBRPShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -208,6 +329,24 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="PostProcessVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SkyPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SkyVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="VertexShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -221,21 +360,22 @@ Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="InputOutputStructs.hlsli" />
     <None Include="LightGlobals.hlsli" />
     <None Include="packages.config" />
-    <None Include="PixelShaderGlobals.hlsli" />
-    <None Include="TextureGlobals.hlsli" />
+    <None Include="PBRShaderGlobals.hlsli" />
+    <None Include="PShaderGlobals.hlsli" />
     <None Include="VertexShaderGlobals.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\directxtk_desktop_2015.2018.8.18.2\build\native\directxtk_desktop_2015.targets" Condition="Exists('..\packages\directxtk_desktop_2015.2018.8.18.2\build\native\directxtk_desktop_2015.targets')" />
+    <Import Project="..\packages\directxtk_desktop_2015.2018.11.20.1\build\native\directxtk_desktop_2015.targets" Condition="Exists('..\packages\directxtk_desktop_2015.2018.11.20.1\build\native\directxtk_desktop_2015.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\directxtk_desktop_2015.2018.8.18.2\build\native\directxtk_desktop_2015.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtk_desktop_2015.2018.8.18.2\build\native\directxtk_desktop_2015.targets'))" />
+    <Error Condition="!Exists('..\packages\directxtk_desktop_2015.2018.11.20.1\build\native\directxtk_desktop_2015.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtk_desktop_2015.2018.11.20.1\build\native\directxtk_desktop_2015.targets'))" />
   </Target>
 </Project>

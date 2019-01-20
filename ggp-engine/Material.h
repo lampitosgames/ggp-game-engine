@@ -7,6 +7,7 @@
 class Texture;
 
 class Material {
+protected:
 	std::string uniqueID;
 	SimpleVertexShader* vertexShader;
 	SimplePixelShader* pixelShader;
@@ -15,14 +16,17 @@ class Material {
 	Texture* diffuse;
 	Texture* normal;
 	Texture* specular;
+
+	//Protected constructor that simply sets everything to null. Used for the PBRMaterial
+	Material();
 public:
 	//Constructors
 	//Blank material constructor
 	Material(std::string _uniqueID);
 	//Fully-parameterized constructor
-	Material(std::string _uniqueID, 
-			 SimpleVertexShader* _vertexShader, 
-			 SimplePixelShader* _pixelShader, 
+	Material(std::string _uniqueID,
+			 SimpleVertexShader* _vertexShader,
+			 SimplePixelShader* _pixelShader,
 			 DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
 			 float _specular = 0.0f);
 	//Texture-only constructor
@@ -46,6 +50,10 @@ public:
 	//Shader getters
 	SimpleVertexShader* GetVertexShader();
 	SimplePixelShader* GetPixelShader();
+
+	//Upload material to shaders
+	//If _pixelShader isn't passed in, the material will use its pixel shader
+	virtual void UploadPSData(DirectX::XMFLOAT3 _cameraPos, ID3D11SamplerState* _samplerState, SimplePixelShader* _pixelShader = nullptr);
 
 	//Color get/set
 	DirectX::XMFLOAT4 GetColor();

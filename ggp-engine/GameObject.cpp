@@ -1,18 +1,30 @@
+#include "stdafx.h"
+
 #include "GameObject.h"
 #include "ResourceManager.h"
 #include "RenderManager.h"
 #include "InputManager.h"
 #include "LightManager.h"
+#include "ParticleManager.h"
+#include "ComponentManager.h"
+
 using namespace std;
+using namespace DirectX;
 
 map<std::string, GameObject*> GameObject::goUIDMap = map<std::string, GameObject*>();
 
-GameObject::GameObject(string _uniqueID) {
+
+GameObject::GameObject(string _uniqueID, XMFLOAT3 _position, XMFLOAT3 _rotation, XMFLOAT3 _scale) {
 	Init();
 	//Ensure the provided ID is unique
 	GenerateUID(_uniqueID);
 	//Store unique ID
 	uniqueID = _uniqueID;
+
+	transform = Transform(_position, _rotation, _scale);
+
+	componentManager = ECS::ComponentManager::GetInstance();
+
 	//Base constructor, this is a game object
 	type = GOType::GAME_OBJECT;
 	//Set this object as active
@@ -25,6 +37,7 @@ GameObject::GameObject(string _uniqueID) {
 	parent = nullptr;
 	parentHasTransform = false;
 }
+
 
 GameObject::~GameObject() { Release(); }
 
@@ -40,17 +53,17 @@ void GameObject::Update(float _deltaTime) {
 	if (!isActive) { return; }
 	//Update all children
 	for (UINT i = 0; i < childCount; i++) {
+		if (children[i] == nullptr) { RemoveChild(i); }
 		children[i]->Update(_deltaTime);
 	}
 }
 
 void GameObject::Input(InputEvent _event) {}
 
-void GameObject::SetParent(GameObject* _newParent) { 
+void GameObject::SetParent(GameObject* _newParent) {
 	//Store pointer to new parent
 	parent = _newParent;
-	//Store whether or not the parent has a transform. This ensures we don't have to make the check every update, only when parent changes
-	parentHasTransform = parent->HasTransform();
+	transform.parent = &_newParent->transform;
 }
 
 GameObject* GameObject::GetParent() {
@@ -59,25 +72,38 @@ GameObject* GameObject::GetParent() {
 
 void GameObject::AddChild(GameObject* _newChild) {
 	_newChild->SetParent(this);
+	_newChild->transform.parent = &transform;
 	children.push_back(_newChild);
-	childCount++;
+	++childCount;
 }
 
-void GameObject::RemoveChild(std::string _uniqueID) {
+void GameObject::RemoveChild(std::string _uniqueID, bool _decrimentChildCount) {
 	for (UINT i = 0; i < childCount; i++) {
+		if (children[i] == nullptr) { continue; }
 		if (children[i]->uniqueID == _uniqueID) {
-			//Swap this child with the last child
-			children[i] = children[--childCount];
-			children[childCount] = nullptr;
-			break;
+			if (_decrimentChildCount) {
+				//Swap this child with the last child
+				children[i] = children[--childCount];
+				children[childCount] = nullptr;
+				break;
+			}
+			else {
+				children[i] = nullptr;
+				break;
+			}
 		}
 	}
 }
 
-void GameObject::RemoveChild(UINT _index) {
+void GameObject::RemoveChild(UINT _index, bool _decrimentChildCount) {
 	if (_index < childCount) {
-		children[_index] = children[--childCount];
-		children[childCount] = nullptr;
+		if (_decrimentChildCount) {
+			children[_index] = children[--childCount];
+			children[childCount] = nullptr;
+		}
+		else {
+			children[_index] = nullptr;
+		}
 	}
 }
 
@@ -128,18 +154,6 @@ GameObject* GameObject::GetChild(UINT _index) {
 	return nullptr;
 }
 
-bool GameObject::HasTransform() {
-	return false;
-}
-
-void GameObject::AddInputListener() {
-	components[CompType::INPUT_LISTENER] = inputManager->AddInputListener(this);
-}
-
-void GameObject::AddDirLight(DirectX::XMFLOAT4 _ambientColor, DirectX::XMFLOAT4 _diffuseColor, DirectX::XMFLOAT3 _direction) {
-	components[CompType::DIRECTIONAL_LIGHT] = lightManager->AddDirLight(this, _ambientColor, _diffuseColor, _direction);
-}
-
 string GameObject::GetUniqueID() { return uniqueID; }
 
 GOType GameObject::GetType() { return type; }
@@ -176,13 +190,23 @@ void GameObject::Init() {
 	inputManager = InputManager::GetInstance();
 	resourceManager = ResourceManager::GetInstance();
 	lightManager = LightManager::GetInstance();
+	particleManager = ParticleManager::GetInstance();
 }
 
 void GameObject::Release() {
 	//Remove self from the global list of gameObjects
 	goUIDMap.erase(uniqueID);
+	//Delete components
+	componentManager->CleanupComponents(uniqueID);
+
 	//Delete all children
 	for (UINT i = 0; i < childCount; i++) {
-		delete children[i];
+		if (children[i] != nullptr) {
+			delete children[i];
+		}
+	}
+
+	if (parent != nullptr) {
+		parent->RemoveChild(uniqueID, false);
 	}
 }

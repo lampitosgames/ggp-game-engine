@@ -1,23 +1,24 @@
+#include "stdafx.h"
+
 #include "FlyingCamera.h"
 #include "InputEvent.h"
 #include "InputManager.h"
+#include "InputListener.h"
 #include <algorithm>
 
 using namespace std;
 using namespace DirectX;
 
 //Dummy constructor that passes things to the parent camera
-FlyingCamera::FlyingCamera(string _uniqueID, 
-						   float _fov, 
-						   float _aspectRatio, 
-						   float _nearPlane, 
-						   float _farPlane, 
-						   XMFLOAT3 _position, 
-						   XMFLOAT3 _rotation, 
-						   XMFLOAT3 _scale) : Camera(_uniqueID, _fov, _aspectRatio, _nearPlane, _farPlane, _position, _rotation, _scale) {}
-
-void FlyingCamera::Start() {
-	AddInputListener();
+FlyingCamera::FlyingCamera(string _uniqueID,
+						   float _fov,
+						   float _aspectRatio,
+						   float _nearPlane,
+						   float _farPlane,
+						   XMFLOAT3 _position,
+						   XMFLOAT3 _rotation,
+						   XMFLOAT3 _scale) : Camera(_uniqueID, _fov, _aspectRatio, _nearPlane, _farPlane, _position, _rotation, _scale) {
+	this->AddComponent<InputListener>(this);
 }
 
 void FlyingCamera::Update(float _deltaTime) {
@@ -31,7 +32,7 @@ void FlyingCamera::Update(float _deltaTime) {
 
 	//Translation vector that will store the sum of all movement directions
 	XMVECTOR translate = XMVectorZero();
-	
+
 	//Forward
 	if (inputManager->ActionPressed("move_forward")) {
 		//Load transform forward vector into a directx vector
@@ -84,6 +85,10 @@ void FlyingCamera::Input(InputEvent _event) {
 	//Zoom when the event type is scroll
 	if (_event.type == InputType::MOUSE_SCROLL) {
 		SetFOVDegrees(GetFOVDegrees() - _event.mDelta);
+	}
+	if (inputManager->ActionReleased("toggle_mouse_lock", _event)) {
+		inputManager->SetMouseLocked(false);
+		std::cout << "test" << std::endl;
 	}
 	//If this is a mouse move event
 	if (_event.type == InputType::MOUSE_MOVE) {

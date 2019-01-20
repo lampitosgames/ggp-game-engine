@@ -1,14 +1,18 @@
+#include "stdafx.h"
+
 #include "RenderManager.h"
 #include <DirectXMath.h>
 #include <d3d11.h>
 #include <iostream>
-#include "Spatial.h"
+#include "GameObject.h"
 #include "MeshRenderer.h"
 #include "ResourceManager.h"
+#include "ParticleManager.h"
 #include "LightManager.h"
 #include "Texture.h"
 #include "Material.h"
 #include "Camera.h"
+#include "Mesh.h"
 
 using namespace DirectX;
 
@@ -31,7 +35,7 @@ void RenderManager::ReleaseInstance() {
 void RenderManager::Start() {
 	//Load default shaders
 	defaultVertexShader = resourceManager->GetVertexShader(L"VertexShader.cso");
-	defaultPixelShader = resourceManager->GetPixelShader(L"LambertPShader.cso");
+	defaultPixelShader = resourceManager->GetPixelShader(L"PhongPShader.cso");
 	//Build the texture sampler state
 	D3D11_SAMPLER_DESC samplerDesc = {};
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -44,16 +48,33 @@ void RenderManager::Start() {
 	if (samplerSuccessfulLoad != S_OK) {
 		std::cout << "Sampler load error!" << std::endl;
 	}
+
+	// Load skybox options ----------------------------------------
+	skyboxMesh = resourceManager->GetMesh("assets/meshes/cube.obj");
+	skyboxVS = resourceManager->GetVertexShader(L"SkyVS.cso");
+	skyboxPS = resourceManager->GetPixelShader(L"SkyPS.cso");
+	skyboxSrv = resourceManager->LoadSRV_DDS(L"assets/textures/nightSkybox.dds");
+
+	D3D11_RASTERIZER_DESC rs = {};
+	rs.FillMode = D3D11_FILL_SOLID;
+	rs.CullMode = D3D11_CULL_FRONT;
+	rs.DepthClipEnable = true;
+	ResourceManager::GetDevicePointer()->CreateRasterizerState(&rs, &skyRastState);
+
+	D3D11_DEPTH_STENCIL_DESC ds = {};
+	ds.DepthEnable = true;
+	ds.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	ds.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	ResourceManager::GetDevicePointer()->CreateDepthStencilState(&ds, &skyDepthState);
 }
 
-UINT RenderManager::AddMeshRenderer(Spatial* _gameObject) {
-	MeshRenderer* tempMR = new MeshRenderer(mrUID, _gameObject);
-	meshRendererUIDMap[mrUID] = tempMR;
-	mrUID++;
-	return mrUID - 1;
+UINT RenderManager::AddMeshRenderer(MeshRenderer * _meshRenderer) {
+	meshRendererUIDMap[mrCount] = _meshRenderer;
+	mrCount++;
+	return mrCount - 1;
 }
 
-MeshRenderer* RenderManager::GetMeshRenderer(UINT _uniqueID) {
+MeshRenderer* RenderManager::GetMeshRenderer(MeshRendererID _uniqueID) {
 	auto thisMR = meshRendererUIDMap.find(_uniqueID);
 	//If found, return it.  Else, return nullptr
 	if (thisMR != meshRendererUIDMap.end()) {
@@ -62,19 +83,78 @@ MeshRenderer* RenderManager::GetMeshRenderer(UINT _uniqueID) {
 	return nullptr;
 }
 
-void RenderManager::DeleteMeshRenderer(UINT _uniqueID) {
-	MeshRenderer* mrTemp = GetMeshRenderer(_uniqueID);
-	if (mrTemp) {
-		delete mrTemp;
-		meshRendererUIDMap.erase(_uniqueID);
+void RenderManager::RemoveMeshRenderer(MeshRenderer * _meshRenderer) {
+	auto mrIt = meshRendererUIDMap.begin();
+	for (; mrIt != meshRendererUIDMap.end(); ++mrIt) {
+		if (mrIt->second == _meshRenderer) {
+			meshRendererUIDMap[mrIt->first] = nullptr;
+		}
 	}
 }
 
-void RenderManager::Render(ID3D11DeviceContext* _dxContext) {
+void RenderManager::SetSkyboxPS(SimplePixelShader * aSkyPS) {
+	assert(aSkyPS != nullptr);
+
+	skyboxPS = aSkyPS;
+	skyboxPS->SetFloat4("dofPara", dofPara);
+}
+
+void RenderManager::Render() {
+	ID3D11DeviceContext* _dxContext = ResourceManager::GetContextPointer();
+	// Render the skybox ------------------------
+	// Set up sky render states
+	_dxContext->RSSetState(skyRastState);
+	_dxContext->OMSetDepthStencilState(skyDepthState, 0);
+
+	// After drawing all of our regular (solid) objects, draw the sky!
+	ID3D11Buffer* skyVB = skyboxMesh->GetVertexBuffer();
+	ID3D11Buffer* skyIB = skyboxMesh->GetIndexBuffer();
+
+	// Set the buffers
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	_dxContext->IASetVertexBuffers(0, 1, &skyVB, &stride, &offset);
+	_dxContext->IASetIndexBuffer(skyIB, DXGI_FORMAT_R32_UINT, 0);
+
+	// Send the camera's view and proj matrices 
+	skyboxVS->SetMatrix4x4("view", activeCamera->GetViewMatrix());
+	skyboxVS->SetMatrix4x4("projection", activeCamera->GetProjectionMatrix());
+
+	skyboxVS->CopyAllBufferData();
+	skyboxVS->SetShader();
+
+	// Send texture-related stuff
+	skyboxPS->SetShaderResourceView("SkyTexture", skyboxSrv);
+	skyboxPS->SetSamplerState("BasicSampler", samplerState);
+
+	skyboxPS->CopyAllBufferData(); // Remember to copy to the GPU!!!!
+	skyboxPS->SetShader();
+
+	// Reset any changed render states!
+	_dxContext->RSSetState(skyRastState);
+	_dxContext->OMSetDepthStencilState(skyDepthState, 0);
+
+	// Draw the skybox "mesh" ( a cube )
+	_dxContext->DrawIndexed(skyboxMesh->GetIndexCount(), 0, 0);
+
+	// Reset any states we've changed for the next frame!
+	_dxContext->RSSetState(0);
+	_dxContext->OMSetDepthStencilState(0, 0);
+
+
+	//Render Objects ---------------------------------
 	//Loop through and render every object
 	std::map<UINT, MeshRenderer*>::iterator mrIterator;
-	for (mrIterator = meshRendererUIDMap.begin(); mrIterator != meshRendererUIDMap.end(); ++mrIterator) {
+	for (mrIterator = meshRendererUIDMap.begin(); mrIterator != meshRendererUIDMap.end();) {
 		MeshRenderer* mrTemp = mrIterator->second;
+		//Make sure the mesh renderer still exists
+		if (mrTemp == nullptr) {
+			meshRendererUIDMap.erase(mrIterator++);
+			continue;
+		}
+		else {
+			mrIterator++;
+		}
 		//If the mesh renderer doesn't have a mesh to render, continue
 		if (mrTemp->GetMesh() == nullptr) { continue; }
 
@@ -83,49 +163,45 @@ void RenderManager::Render(ID3D11DeviceContext* _dxContext) {
 		SimplePixelShader* psTemp = mrTemp->GetPixelShader();
 		Material* matTemp = mrTemp->GetMaterial();
 
-		//Null check on all resources
+		//Null check vertex shader
 		if (vsTemp == nullptr) { vsTemp = defaultVertexShader; }
-		if (psTemp == nullptr) { psTemp = defaultPixelShader; }
 
 		//Upload all data to vertex shader
 		vsTemp->SetMatrix4x4("world", mrTemp->GetWorldMatrix());
 		vsTemp->SetMatrix4x4("view", activeCamera->GetViewMatrix());
 		vsTemp->SetMatrix4x4("projection", activeCamera->GetProjectionMatrix());
 		vsTemp->SetMatrix4x4("worldInvTrans", mrTemp->GetWorldInvTransMatrix());
-		//TODO: Implement a way to upload color-based material data
-		//TODO: Standardize what data all shaders can accept
 		vsTemp->CopyAllBufferData();
+
+		//Null check pixel shader
+		if (psTemp == nullptr) { psTemp = defaultPixelShader; }
 
 		//Upload lighting data from the light manager
 		lightManager->UploadAllLights(psTemp);
 
-		//Build texture channel toggle array
-		XMINT3 channelToggle = XMINT3(matTemp->HasDiffuseTexture(),
-									  matTemp->HasNormalMap(),
-									  matTemp->HasSpecularMap());
-		//Upload to pixel shader
-		psTemp->SetData("texChanToggle", &channelToggle, sizeof(XMINT3));
-
-		//If any textures exist, upload the sampler state
-		if (channelToggle.x || channelToggle.y || channelToggle.z) {
-			psTemp->SetSamplerState("basicSampler", samplerState);
-		}
-		//Only upload texture resources that exist
-		if (channelToggle.x) { psTemp->SetShaderResourceView("diffuseTexture", matTemp->GetTexSRV()); }
-		if (channelToggle.y) { psTemp->SetShaderResourceView("normalMap", matTemp->GetNormalSRV()); }
-		if (channelToggle.z) { psTemp->SetShaderResourceView("specularMap", matTemp->GetSpecularSRV()); }
-
-		//Upload material data
-		psTemp->SetFloat3("cameraPosition", activeCamera->transform.position);
-		psTemp->SetFloat4("baseColor", matTemp->GetColor());
-		psTemp->SetFloat("baseSpec", matTemp->GetBaseSpecular());
+		//Upload data from the material
+		matTemp->UploadPSData(activeCamera->transform.position, samplerState, psTemp);
+		//Upload gamma correction
+		psTemp->SetFloat("gammaModifier", gammaCorrection);
+		psTemp->SetFloat4("dofPara", dofPara);
+		//Copy all buffer data
 		psTemp->CopyAllBufferData();
-		
+
+		//Set the shaders and draw
 		vsTemp->SetShader();
 		psTemp->SetShader();
-
 		mrTemp->Draw(_dxContext);
 	}
+	//Render Particles -------------------------------
+	ParticleManager::GetInstance()->Render();
+}
+
+float RenderManager::GetGammaCorrection() {
+	return gammaCorrection;
+}
+
+void RenderManager::SetGammaCorrection(float _newGamma) {
+	gammaCorrection = _newGamma;
 }
 
 Camera* RenderManager::GetActiveCamera() {
@@ -136,11 +212,20 @@ void RenderManager::SetActiveCamera(Camera* _newCamera) {
 	activeCamera = _newCamera;
 }
 
+void RenderManager::SetSkyboxVS(SimpleVertexShader * aSkyVS) {
+	assert(aSkyVS != nullptr);
+
+	skyboxVS = aSkyVS;
+}
+
 RenderManager::RenderManager() {
-	mrUID = 0;
+	mrCount = 0;
+	//Gamma correction value should default to 2.2
+	gammaCorrection = 2.2f;
 	//Get an instance of the resource manager
 	resourceManager = ResourceManager::GetInstance();
 	lightManager = LightManager::GetInstance();
+	dofPara = DirectX::XMFLOAT4(2.0f, 8.0f, 20.0f, 15.0f);
 }
 
 RenderManager::~RenderManager() {
@@ -149,19 +234,19 @@ RenderManager::~RenderManager() {
 }
 
 void RenderManager::Release() {
-	//Loop through and delete every mesh renderer
-	std::map<UINT, MeshRenderer*>::iterator mrIterator;
-	for (mrIterator = meshRendererUIDMap.begin(); mrIterator != meshRendererUIDMap.end(); ++mrIterator) {
-		MeshRenderer* mrTemp = mrIterator->second;
-		if (mrTemp != nullptr) {
-			delete mrTemp;
-		}
-	}
 	//Reset mesh renderer unique ID values
-	mrUID = 0;
+	mrCount = 0;
 	//Clear the map so the singleton can be reused.
 	meshRendererUIDMap.clear();
 
 	//Release the sampler state
 	samplerState->Release();
+
+	// Cleanup the skybox
+	skyboxVS = nullptr;
+	skyboxPS = nullptr;
+	skyboxMesh = nullptr;
+	skyRastState->Release();
+	skyDepthState->Release();
+	skyboxSrv->Release();
 }

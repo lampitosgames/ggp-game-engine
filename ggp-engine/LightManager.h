@@ -4,38 +4,51 @@
 #include <map>
 #include <DirectXMath.h>
 #include "PointLight.h"
+#include "SpotLight.h"
 #include "DirLight.h"
 #include "LightStructs.h"
 #include "SimpleShader.h"
 class GameObject;
+
+typedef UINT DirLightID;
+typedef UINT PointLightID;
+typedef UINT SpotLightID;
 
 class LightManager {
 	//Singleton pointer
 	static LightManager* instance;
 
 	//Unique ids given to each directional light
-	UINT dlUID = 0;
+	DirLightID dlCount = 0;
 	//Map of all directional lights
-	std::map<UINT, DirLight*> dirLightUIDMap;
+	std::map<DirLightID, DirLight*> dirLightUIDMap;
 	//Directional light struct array of fixed length. Helsp upload to the shader
 	const UINT maxDirLights = 4;
 	DirLightStruct dirLights[4];
 
 	//Unique ids given to each point light
-	UINT plUID = 0;
+	PointLightID plCount = 0;
 	//Map of all point lights
-	std::map<UINT, PointLight*> pointLightUIDMap;
+	std::map<PointLightID, PointLight*> pointLightUIDMap;
 	//Point light struct array of fixed length. Helps upload to the shader
 	const UINT maxPointLights = 128;
 	PointLightStruct pointLights[128];
+
+	//Unique ids given to each spot light
+	SpotLightID slCount = 0;
+	//Map of all spot lights
+	std::map<SpotLightID, SpotLight*> spotLightUIDMap;
+	//Spot light struct array of fixed length. Helps upload to the shader
+	const UINT maxSpotLights = 128;
+	SpotLightStruct spotLights[128];
 public:
 	//Static singleton get/release
 	static LightManager* GetInstance();
 	static void ReleaseInstance();
 
-    // We don't want anything making copies of this class so delete these operators
-    LightManager( LightManager const& ) = delete;
-    void operator=( LightManager const& ) = delete;
+	// We don't want anything making copies of this class so delete these operators
+	LightManager(LightManager const&) = delete;
+	void operator=(LightManager const&) = delete;
 
 	void UploadAllLights(SimplePixelShader* _pixelShader);
 
@@ -43,27 +56,28 @@ public:
 		DIRECTIONAL LIGHT HELPERS
 		Useful for managing directional light components
 	*/
-	UINT AddDirLight(GameObject* _gameObject, 
-							 DirectX::XMFLOAT4 _ambientColor = DirectX::XMFLOAT4(0.05f, 0.05f, 0.05f, 1.0f), 
-							 DirectX::XMFLOAT4 _diffuseColor = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 
-							 DirectX::XMFLOAT3 _direction = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
-	DirLight* GetDirLight(UINT _uniqueID);
-	DirLightStruct GetDirLightStruct(UINT _uniqueID);
-	void DeleteDirLight(UINT _uniqueID);
+	DirLightID AddDirLight(DirLight* _dirLight);
+	DirLight* GetDirLight(DirLightID _uniqueID);
+	void RemoveDirLight(DirLight* _dirLight);
+	DirLightStruct GetDirLightStruct(DirLightID _uniqueID);
 
 	/*
 		POINT LIGHT HELPERS
 		Used for adding, getting, and deleting point light components
 	*/
-	//Create (and return the UID of) a new point light
-	UINT AddPointLight(Spatial* _gameObject);
-	UINT AddPointLight(Spatial* _gameObject, DirectX::XMFLOAT4 _color);
-	//Get a point light given its unique ID
-	PointLight* GetPointLight(UINT _uniqueID);
-	//Get a struct representing the current state of the point light
-	PointLightStruct GetPointLightStruct(UINT _uniqueID);
-	//Delete the point light
-	void DeletePointLight(UINT _uniqueID);
+	PointLightID AddPointLight(PointLight* _pointLight);
+	PointLight* GetPointLight(PointLightID _uniqueID);
+	void RemovePointLight(PointLight* _pointLight);
+	PointLightStruct GetPointLightStruct(PointLightID _uniqueID);
+
+	/*
+	SPOT LIGHT HELPERS
+	Used for adding, getting, and deleting spot light components
+	*/
+	SpotLightID AddSpotLight(SpotLight* _spotLight);
+	SpotLight* GetSpotLight(SpotLightID _uniqueID);
+	void RemoveSpotLight(SpotLight* _spotLight);
+	SpotLightStruct GetSpotLightStruct(SpotLightID _uniqueID);
 private:
 	LightManager();
 	~LightManager();

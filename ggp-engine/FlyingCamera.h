@@ -15,15 +15,13 @@ class FlyingCamera : public Camera {
 public:
 	//Dummy constructor.  Simply passes values to parent
 	FlyingCamera(std::string _uniqueID = "NA",
-		   float _fov = 1.3962634f,
-		   float _aspectRatio = 1.777777777f,
-		   float _nearPlane = 0.01f,
-		   float _farPlane = 1000.0f,
-		   DirectX::XMFLOAT3 _position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-		   DirectX::XMFLOAT3 _rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-		   DirectX::XMFLOAT3 _scale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
-
-	void Start();
+				 float _fov = 1.3962634f,
+				 float _aspectRatio = 1.777777777f,
+				 float _nearPlane = 0.01f,
+				 float _farPlane = 1000.0f,
+				 DirectX::XMFLOAT3 _position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+				 DirectX::XMFLOAT3 _rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+				 DirectX::XMFLOAT3 _scale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 
 	void Update(float _deltaTime);
 
