@@ -116,8 +116,8 @@ xcopy /e /d /y "$(SolutionDir)additional\lua\lib\lua52.dll" "$(OutDir)"</Command
     </ClCompile>
     <PostBuildEvent>
       <Command>rmdir /Q /S "$(OutDir)assets"
-Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"
-xcopy /e /d /y "$(SolutionDir)additional\lua\lib\lua52.dll" "$(OutDir)"</Command>
+
+xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copying binary...</Message>
@@ -126,8 +126,9 @@ xcopy /e /d /y "$(SolutionDir)additional\lua\lib\lua52.dll" "$(OutDir)"</Command
       <ShaderModel>5.0</ShaderModel>
     </FxCompile>
     <Link>
-      <AdditionalDependencies>lua52.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)additional\lua\lib;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -166,13 +167,14 @@ xcopy /e /d /y "$(SolutionDir)additional\lua\lib\lua52.dll" "$(OutDir)"</Command
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>lua52.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)additional\lua\lib;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>rmdir /Q /S "$(OutDir)assets"
-Xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"
-xcopy /e /d /y "$(SolutionDir)additional\lua\lib\lua52.dll" "$(OutDir)"</Command>
+
+xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copying binary...</Message>
@@ -217,8 +219,6 @@ xcopy /e /d /y "$(SolutionDir)additional\lua\lib\lua52.dll" "$(OutDir)"</Command
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="ScriptManager.cpp" />
-    <ClCompile Include="ShipScene.cpp" />
     <ClCompile Include="SimpleShader.cpp" />
     <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -274,8 +274,6 @@ xcopy /e /d /y "$(SolutionDir)additional\lua\lib\lua52.dll" "$(OutDir)"</Command
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="ScriptManager.h" />
-    <ClInclude Include="ShipScene.h" />
     <ClInclude Include="SimpleShader.h" />
     <ClInclude Include="SpotLight.h" />
     <ClInclude Include="stdafx.h" />
@@ -362,7 +360,6 @@ xcopy /e /d /y "$(SolutionDir)additional\lua\lib\lua52.dll" "$(OutDir)"</Command
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\Scripts\test.lua" />
     <None Include="ClassDiagram.cd" />
     <None Include="InputOutputStructs.hlsli" />
     <None Include="LightGlobals.hlsli" />

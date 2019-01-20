@@ -12,7 +12,6 @@
 #include "PhysicsManager.h"
 #include "ComponentManager.h"
 #include "Scene.h"
-#include "ScriptManager.h"
 
 class Game
 	: public DXCore {
@@ -58,7 +57,6 @@ private:
 	ParticleManager* particleManager;
 	Physics::PhysicsManager* physicsManager;
 	ECS::ComponentManager* componentManager;
-    Scripting::ScriptManager* scriptManager;
 
 	//Active scene
 	Scene* activeScene;

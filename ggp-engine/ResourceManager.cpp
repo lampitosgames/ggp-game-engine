@@ -8,6 +8,7 @@
 #include "Texture.h"
 #include <fstream>
 #include <sstream>
+#include <DDSTextureLoader.h>
 
 using namespace DirectX;
 using namespace std;

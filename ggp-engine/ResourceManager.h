@@ -8,8 +8,6 @@
 #include <DirectXMath.h>
 
 #include "MeshGen.h"
-#include "WICTextureLoader.h"
-#include "DDSTextureLoader.h"
 //Forward declaration
 class Material;
 class PBRMaterial;

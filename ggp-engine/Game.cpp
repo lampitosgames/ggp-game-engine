@@ -4,7 +4,6 @@
 #include "Vertex.h"
 #include "PBRDemoScene.h"
 #include "DebugScene.h"
-#include "ShipScene.h"
 
 // For the DirectX Math library
 using namespace DirectX;
@@ -55,7 +54,6 @@ Game::Game(HINSTANCE hInstance)
 	particleManager = ParticleManager::GetInstance();
 	physicsManager = Physics::PhysicsManager::GetInstance();
 	componentManager = ECS::ComponentManager::GetInstance();
-	scriptManager = new Scripting::ScriptManager(dxDevice, dxContext);
 
 #if defined(DEBUG) || defined(_DEBUG)
 	// Do we want a console window?  Probably only in debug mode
@@ -77,12 +75,6 @@ Game::~Game() {
 	if (indexBuffer) { indexBuffer->Release(); }
 
 	delete activeScene;
-
-	//Release all singletons
-	if (scriptManager != nullptr) {
-		delete scriptManager;
-		scriptManager = nullptr;
-	}
 	resourceManager->ReleaseInstance();
 	renderManager->ReleaseInstance();
 	inputManager->ReleaseInstance();
@@ -131,7 +123,7 @@ void Game::Init() {
 
 	//Create and init the active scene
 	//activeScene = new PBRDemoScene("PBR_Demo");
-	activeScene = new ShipScene("ShipScene");
+	activeScene = new PBRDemoScene("PBRDemoScene");
 
 	//activeScene = new DebugScene( "Debug Scene" );
 	activeScene->Init();
@@ -183,9 +175,6 @@ void Game::Init() {
 	renderManager->Start();
 	//Call start on the active scene
 	activeScene->Start();
-
-	// Load active Lua scripts
-	scriptManager->LoadScripts(activeScene);
 }
 
 // --------------------------------------------------------
@@ -220,13 +209,6 @@ void Game::Update(float deltaTime, float totalTime) {
 		activeScene->Init();
 		activeScene->Start();
 	}
-	if (inputManager->ActionPressed("ship_scene")) {
-		delete activeScene;
-		activeScene = new ShipScene("ShipScene");
-		activeScene->Init();
-		activeScene->Start();
-		scriptManager->LoadScripts(activeScene);
-	}
 
 	inputManager->Update();
 	particleManager->Update(deltaTime);
@@ -234,7 +216,6 @@ void Game::Update(float deltaTime, float totalTime) {
 	if (activeScene != nullptr) {
 		activeScene->Update(deltaTime);
 	}
-	scriptManager->Update(deltaTime);
 }
 
 // --------------------------------------------------------
@@ -544,7 +525,6 @@ void Game::HandleMouseMove() {
 void Game::OnMouseDown(WPARAM buttonState, int x, int y) {
 	//Pass event to the input manager
 	inputManager->_OnMouseDown(buttonState, x, y);
-    scriptManager->OnClick();
 	// Caputure the mouse so we keep getting mouse move
 	// events even if the mouse leaves the window.  we'll be
 	// releasing the capture once a mouse button is released
