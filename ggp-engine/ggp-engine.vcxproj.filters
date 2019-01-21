@@ -131,15 +131,6 @@
     <ClCompile Include="DebugScene.cpp">
       <Filter>Source Files\Game Code</Filter>
     </ClCompile>
-    <ClCompile Include="RigidBody.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysicsManager.cpp">
-      <Filter>Source Files\Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="Collisions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PBRDemoScene.cpp">
       <Filter>Source Files\Game Code</Filter>
     </ClCompile>
@@ -205,9 +196,6 @@
     <ClInclude Include="MeshRenderer.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="GameObjectTypes.h">
-      <Filter>Header Files\GameObjects</Filter>
-    </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
@@ -247,9 +235,6 @@
     <ClInclude Include="LightManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="LightStructs.h">
-      <Filter>Header Files\GameObjects</Filter>
-    </ClInclude>
     <ClInclude Include="PointLight.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
@@ -264,15 +249,6 @@
     </ClInclude>
     <ClInclude Include="DebugScene.h">
       <Filter>Header Files\Game Code</Filter>
-    </ClInclude>
-    <ClInclude Include="RigidBody.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsManager.h">
-      <Filter>Header Files\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="Collisions.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PBRDemoScene.h">
       <Filter>Header Files\Game Code</Filter>
@@ -333,6 +309,12 @@
     </ClInclude>
     <ClInclude Include="..\additional\json\json.hpp">
       <Filter>additional\json</Filter>
+    </ClInclude>
+    <ClInclude Include="LightStructs.h">
+      <Filter>Header Files\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectTypes.h">
+      <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

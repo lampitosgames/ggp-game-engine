@@ -23,7 +23,7 @@ GameObject::GameObject(string _uniqueID, XMFLOAT3 _position, XMFLOAT3 _rotation,
 
 	transform = Transform(_position, _rotation, _scale);
 
-	componentManager = ECS::ComponentManager::GetInstance();
+	componentManager = ComponentManager::GetInstance();
 
 	//Base constructor, this is a game object
 	type = GOType::GAME_OBJECT;

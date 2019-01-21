@@ -193,7 +193,6 @@ xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClCompile Include="BaseComponent.cpp" />
     <ClCompile Include="Basis.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Collisions.cpp" />
     <ClCompile Include="ComponentManager.cpp" />
     <ClCompile Include="DebugScene.cpp" />
     <ClCompile Include="DirLight.cpp" />
@@ -210,14 +209,12 @@ xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClCompile Include="MeshGen.cpp" />
     <ClCompile Include="ParticleEmitter.cpp" />
     <ClCompile Include="ParticleManager.cpp" />
-    <ClCompile Include="PhysicsManager.cpp" />
     <ClCompile Include="PBRDemoScene.cpp" />
     <ClCompile Include="PBRMaterial.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
-    <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SimpleShader.cpp" />
     <ClCompile Include="SpotLight.cpp" />
@@ -243,7 +240,6 @@ xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClInclude Include="BaseComponent.h" />
     <ClInclude Include="Basis.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="Collisions.h" />
     <ClInclude Include="ComponentManager.h" />
     <ClInclude Include="DebugScene.h" />
     <ClInclude Include="DirLight.h" />
@@ -265,14 +261,12 @@ xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClInclude Include="MeshGen.h" />
     <ClInclude Include="ParticleEmitter.h" />
     <ClInclude Include="ParticleManager.h" />
-    <ClInclude Include="PhysicsManager.h" />
     <ClInclude Include="PBRDemoScene.h" />
     <ClInclude Include="PBRMaterial.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SimpleShader.h" />
     <ClInclude Include="SpotLight.h" />

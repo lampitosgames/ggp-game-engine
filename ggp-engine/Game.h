@@ -9,7 +9,6 @@
 #include "InputManager.h"
 #include "LightManager.h"
 #include "ParticleManager.h"
-#include "PhysicsManager.h"
 #include "ComponentManager.h"
 #include "Scene.h"
 
@@ -52,8 +51,7 @@ private:
 	InputManager* inputManager;
 	LightManager* lightManager;
 	ParticleManager* particleManager;
-	Physics::PhysicsManager* physicsManager;
-	ECS::ComponentManager* componentManager;
+	ComponentManager* componentManager;
 
 	//Active scene
 	Scene* activeScene;

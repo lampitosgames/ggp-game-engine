@@ -29,9 +29,6 @@ public:
     //Static, engine-wide map of all gameobjects.
     static std::map<std::string, GameObject*> goUIDMap;
 protected:
-
-
-
 	//Unique identifier of this object. Can be anything, must be unique.
 	std::string uniqueID;
 	//Every game object (and dervived type) will have a unique type so casting can be done
@@ -54,7 +51,7 @@ protected:
 	LightManager* lightManager;
 	ParticleManager* particleManager;
 
-	ECS::ComponentManager* componentManager = nullptr;
+	ComponentManager* componentManager = nullptr;
 
 public:
 

@@ -15,7 +15,7 @@ class SimplePixelShader;
 class RenderManager;
 
 class MeshRenderer
-	: public ECS::BaseComponent<MeshRenderer> {
+	: public BaseComponent<MeshRenderer> {
 	Mesh* mesh;
 	Material* material;
 public:

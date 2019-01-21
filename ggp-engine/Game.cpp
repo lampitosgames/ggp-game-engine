@@ -39,8 +39,7 @@ Game::Game(HINSTANCE hInstance)
 	inputManager = InputManager::GetInstance();
 	lightManager = LightManager::GetInstance();
 	particleManager = ParticleManager::GetInstance();
-	physicsManager = Physics::PhysicsManager::GetInstance();
-	componentManager = ECS::ComponentManager::GetInstance();
+	componentManager = ComponentManager::GetInstance();
 
 #if defined(DEBUG) || defined(_DEBUG)
 	// Do we want a console window?  Probably only in debug mode
@@ -67,8 +66,7 @@ Game::~Game() {
 	inputManager->ReleaseInstance();
 	lightManager->ReleaseInstance();
 	particleManager->ReleaseInstance();
-	physicsManager->ReleaseInstance();
-	ECS::ComponentManager::ReleaseInstance();
+	componentManager->ReleaseInstance();
 }
 
 // --------------------------------------------------------
@@ -134,7 +132,6 @@ void Game::Update(float deltaTime, float totalTime) {
 
 	inputManager->Update();
 	particleManager->Update(deltaTime);
-	physicsManager->UpdatePhysics(deltaTime);
 	if (activeScene != nullptr) {
 		activeScene->Update(deltaTime);
 	}
@@ -152,23 +149,16 @@ void Game::Draw(float deltaTime, float totalTime) {
 	//  - At the beginning of Draw (before drawing *anything*)
 	dxContext->ClearRenderTargetView(backBufferRTV, color);
 
-	dxContext->ClearDepthStencilView(
-		depthStencilView,
-		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
-		1.0f,
-		0);
+	dxContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	//Call render on the renderManager
 	renderManager->Render();
-
 
 #if defined(ENABLE_UI)
 	// Create a new IMGui frame
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-
 	// Draw the UI options here -----------------------------------
-    // Stats and Info ---------------------------
     {   
         ImGui::Begin( "Info" );
         ImGui::Text( "%.3f ms/frame", 1000.0f / ImGui::GetIO().Framerate );
@@ -184,81 +174,6 @@ void Game::Draw(float deltaTime, float totalTime) {
 
         ImGui::End();
     }
-
-    // Draw the hierarchy of objects --------------------------
-    {   
-        ImGui::Begin( "Hierarchy" );
-
-        for ( auto itr : GameObject::goUIDMap )
-        {
-            GameObject* obj = itr.second;
-
-            if ( ImGui::Button( obj->GetUniqueID().c_str(), ImVec2( ImGui::GetWindowWidth(), 0.f ) ) )
-            {
-                SelectedObj = obj;
-            }
-            ImGui::Separator();
-        }
-
-        ImGui::End();
-    }
-
-    {   // Inspector --------------------------
-        if ( SelectedObj != nullptr )
-        {
-            ImGui::Begin( "Inspector" );
-
-            bool isActive = SelectedObj->IsActive();
-            ImGui::Checkbox( "Active", &isActive ); ImGui::SameLine();
-            
-
-            ImGui::LabelText( "Name", SelectedObj->GetUniqueID().c_str() );
-
-            ImGui::Separator();
-
-            if ( ImGui::CollapsingHeader( "Transform" ) )
-            {
-                XMFLOAT3 newPos = SelectedObj->transform.position;
-                ImGui::InputFloat3( "Position", ( float* ) &newPos );
-
-                XMFLOAT3 newScale = SelectedObj->transform.scale;
-                ImGui::InputFloat3( "Scale", ( float* ) &newScale );
-
-                XMFLOAT3 newRotation = SelectedObj->transform.rotation;
-                ImGui::InputFloat4( "Rotation", ( float* ) &newRotation );
-
-                // The position of the current object
-                SelectedObj->transform.position = newPos;
-                SelectedObj->transform.scale =  newScale;
-                SelectedObj->transform.rotation = newRotation;
-            }
-
-            ImGui::Separator();
-
-
-            // Loop through each of this entity's components
-            /*auto compMap = SelectedEntity->GetAllComponents();
-            if ( compMap != nullptr )
-            {
-                for ( auto compItr = compMap->begin(); compItr != compMap->end(); ++compItr )
-                {
-                    ImGui::Separator();
-
-                    ECS::IComponent* theComp = ( compItr->second );
-                    if ( theComp != nullptr )
-                    {
-                        if ( ImGui::CollapsingHeader( theComp->ComponentName() ) )
-                        {
-                            theComp->DrawEditorGUI();
-                        }
-                    }
-                }
-            }*/
-
-            ImGui::End();
-        }
-    }
-
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 #endif

@@ -6,7 +6,7 @@
 #include "LightStructs.h"
 class GameObject;
 
-class DirLight : public ECS::BaseComponent<DirLight> {
+class DirLight : public BaseComponent<DirLight> {
 	DirLightStruct lightData;
 public:
 	DirLight(GameObject* _gameObject,

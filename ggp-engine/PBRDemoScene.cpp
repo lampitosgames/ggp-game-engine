@@ -7,7 +7,6 @@
 #include "ResourceManager.h"
 #include "FlyingCamera.h"
 #include "Material.h"
-#include "RigidBody.h"
 #include "PBRMaterial.h"
 #include "Mesh.h"
 #include "MeshRenderer.h"

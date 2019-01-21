@@ -6,7 +6,7 @@
 #include "LightStructs.h"
 class GameObject;
 
-class SpotLight : public ECS::BaseComponent<SpotLight> {
+class SpotLight : public BaseComponent<SpotLight> {
 	SpotLightStruct lightData;
 public:
 	SpotLight(GameObject* _gameObject);

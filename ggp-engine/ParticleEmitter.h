@@ -117,7 +117,7 @@ public:
 	~EmitterOptions() {};
 };
 
-class ParticleEmitter : public ECS::BaseComponent<ParticleEmitter> {
+class ParticleEmitter : public BaseComponent<ParticleEmitter> {
 private:
 	//Struct holding all of the particle data in a bunch of arrays
 	ParticleData particles;

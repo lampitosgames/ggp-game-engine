@@ -5,7 +5,7 @@
 #include "InputEvent.h"
 class GameObject;
 
-class InputListener : public ECS::BaseComponent<InputListener> {
+class InputListener : public BaseComponent<InputListener> {
 public:
 	InputListener(GameObject* _gameObject);
 	~InputListener();

@@ -3,44 +3,41 @@
 #include "GameObject.h"
 
 // Singleton requirement
-ECS::ComponentManager* ECS::ComponentManager::instance = nullptr;
+ComponentManager* ComponentManager::instance = nullptr;
 
-using namespace ECS;
-
-ECS::ComponentManager* ECS::ComponentManager::GetInstance() {
+ComponentManager* ComponentManager::GetInstance() {
 	if (instance == nullptr) {
 		instance = new ComponentManager();
 	}
 	return instance;
 }
 
-void ECS::ComponentManager::ReleaseInstance() {
+void ComponentManager::ReleaseInstance() {
 	if (instance != nullptr) {
 		delete instance;
 		instance = nullptr;
 	}
 }
 
-void ECS::ComponentManager::CleanupComponents(const EntityID aEntityID) {
-	if (activeComponents.find(aEntityID) == activeComponents.end()) { return; }
-	auto vec_itr = activeComponents[aEntityID].begin();
-	for (; vec_itr != activeComponents[aEntityID].end(); ++vec_itr) {
+void ComponentManager::CleanupComponents(const EntityID _entityID) {
+	if (activeComponents.find(_entityID) == activeComponents.end()) { return; }
+	auto vec_itr = activeComponents[_entityID].begin();
+	for (; vec_itr != activeComponents[_entityID].end(); ++vec_itr) {
 		if (vec_itr->second != nullptr) {
 			delete vec_itr->second;
-			activeComponents[aEntityID][vec_itr->first] = nullptr;
+			activeComponents[_entityID][vec_itr->first] = nullptr;
 		}
 	}
 }
 
-ECS::ComponentManager::ComponentManager() {}
+ComponentManager::ComponentManager() {}
 
-ECS::ComponentManager::~ComponentManager() {
+ComponentManager::~ComponentManager() {
 	CleanupAllComponents();
 }
 
-void ECS::ComponentManager::CleanupAllComponents() {
+void ComponentManager::CleanupAllComponents() {
 	auto map_itr = activeComponents.begin();
-
 	for (; map_itr != activeComponents.end(); ++map_itr) {
 		auto vec_itr = map_itr->second.begin();
 		for (; vec_itr != map_itr->second.end(); ++vec_itr) {
@@ -49,6 +46,5 @@ void ECS::ComponentManager::CleanupAllComponents() {
 			}
 		}
 	}
-
 	ComponentCount = 0;
 }
