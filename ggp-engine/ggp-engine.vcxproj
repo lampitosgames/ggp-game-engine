@@ -239,6 +239,7 @@ xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClInclude Include="..\additional\imgui\imgui\imstb_rectpack.h" />
     <ClInclude Include="..\additional\imgui\imgui\imstb_textedit.h" />
     <ClInclude Include="..\additional\imgui\imgui\imstb_truetype.h" />
+    <ClInclude Include="..\additional\json\json.hpp" />
     <ClInclude Include="BaseComponent.h" />
     <ClInclude Include="Basis.h" />
     <ClInclude Include="Camera.h" />

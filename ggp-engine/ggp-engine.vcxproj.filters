@@ -51,11 +51,17 @@
     <Filter Include="Shaders\Shader Helpers">
       <UniqueIdentifier>{5e0fa5a3-c74e-4bb8-a303-e1f7b197a02e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="imgui">
-      <UniqueIdentifier>{6669d4fb-147e-4476-b217-7c181d969dd8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shaders\Particles">
       <UniqueIdentifier>{64edb68c-ce48-4aea-8e76-4a180606588d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="additional">
+      <UniqueIdentifier>{0ccc27c6-9e7d-4241-800c-c65ff8a44622}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="additional\imgui">
+      <UniqueIdentifier>{6669d4fb-147e-4476-b217-7c181d969dd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="additional\json">
+      <UniqueIdentifier>{af9d8470-a077-48e6-b0b1-b7598da66e3b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -146,29 +152,26 @@
     <ClCompile Include="ComponentManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="FamilyTypeID.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SpotLight.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="..\additional\imgui\imgui\imgui.cpp">
-      <Filter>imgui</Filter>
+      <Filter>additional\imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\additional\imgui\imgui\imgui_demo.cpp">
-      <Filter>imgui</Filter>
+      <Filter>additional\imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\additional\imgui\imgui\imgui_draw.cpp">
-      <Filter>imgui</Filter>
+      <Filter>additional\imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\additional\imgui\imgui\imgui_impl_dx11.cpp">
-      <Filter>imgui</Filter>
+      <Filter>additional\imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\additional\imgui\imgui\imgui_impl_win32.cpp">
-      <Filter>imgui</Filter>
+      <Filter>additional\imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\additional\imgui\imgui\imgui_widgets.cpp">
-      <Filter>imgui</Filter>
+      <Filter>additional\imgui</Filter>
     </ClCompile>
     <ClCompile Include="ParticleEmitter.cpp">
       <Filter>Source Files\Components</Filter>
@@ -177,6 +180,9 @@
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FamilyTypeID.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -289,35 +295,32 @@
     <ClInclude Include="ComponentManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="FamilyTypeID.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SpotLight.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\additional\imgui\imgui\imconfig.h">
-      <Filter>imgui</Filter>
+      <Filter>additional\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\additional\imgui\imgui\imgui.h">
-      <Filter>imgui</Filter>
+      <Filter>additional\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\additional\imgui\imgui\imgui_impl_dx11.h">
-      <Filter>imgui</Filter>
+      <Filter>additional\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\additional\imgui\imgui\imgui_impl_win32.h">
-      <Filter>imgui</Filter>
+      <Filter>additional\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\additional\imgui\imgui\imgui_internal.h">
-      <Filter>imgui</Filter>
+      <Filter>additional\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\additional\imgui\imgui\imstb_rectpack.h">
-      <Filter>imgui</Filter>
+      <Filter>additional\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\additional\imgui\imgui\imstb_textedit.h">
-      <Filter>imgui</Filter>
+      <Filter>additional\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\additional\imgui\imgui\imstb_truetype.h">
-      <Filter>imgui</Filter>
+      <Filter>additional\imgui</Filter>
     </ClInclude>
     <ClInclude Include="ParticleEmitter.h">
       <Filter>Header Files\Components</Filter>
@@ -326,6 +329,12 @@
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
     <ClInclude Include="Math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\additional\json\json.hpp">
+      <Filter>additional\json</Filter>
+    </ClInclude>
+    <ClInclude Include="FamilyTypeID.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
