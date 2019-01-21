@@ -182,8 +182,8 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FamilyTypeID.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="BaseComponent.cpp">
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -333,9 +333,6 @@
     </ClInclude>
     <ClInclude Include="..\additional\json\json.hpp">
       <Filter>additional\json</Filter>
-    </ClInclude>
-    <ClInclude Include="FamilyTypeID.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

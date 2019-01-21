@@ -2,9 +2,24 @@
 #define GGP_BASE_COMPONENT
 
 #include "IComponent.h"
-#include "FamilyTypeID.h"
 
 namespace ECS {
+	namespace Util {
+		using TypeID = uint32_t;
+		template<class T>
+		class FamilyTypeID {
+			static TypeID s_count;
+		public:
+			template<class U>
+			static const TypeID Get() {
+				static const TypeID STATIC_TYPE_ID{ s_count++ };
+				return STATIC_TYPE_ID;
+			}
+			static const TypeID Get() {
+				return s_count;
+			}
+		};
+	}
 
 	using ComponentTypeId = size_t;
 	//A base component class for all other component types

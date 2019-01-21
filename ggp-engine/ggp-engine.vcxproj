@@ -190,6 +190,7 @@ xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClCompile Include="..\additional\imgui\imgui\imgui_impl_dx11.cpp" />
     <ClCompile Include="..\additional\imgui\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="..\additional\imgui\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="BaseComponent.cpp" />
     <ClCompile Include="Basis.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collisions.cpp" />
@@ -197,7 +198,6 @@ xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClCompile Include="DebugScene.cpp" />
     <ClCompile Include="DirLight.cpp" />
     <ClCompile Include="DXCore.cpp" />
-    <ClCompile Include="FamilyTypeID.cpp" />
     <ClCompile Include="FlyingCamera.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -248,7 +248,6 @@ xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <ClInclude Include="DebugScene.h" />
     <ClInclude Include="DirLight.h" />
     <ClInclude Include="DXCore.h" />
-    <ClInclude Include="FamilyTypeID.h" />
     <ClInclude Include="FlyingCamera.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />

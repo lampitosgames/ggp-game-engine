@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "FamilyTypeID.h"
+
+#include "BaseComponent.h"
 
 namespace ECS {
 	class IComponent;
