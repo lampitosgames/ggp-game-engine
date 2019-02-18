@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "InputManager.h"
 
+using namespace DirectX::SimpleMath;
 using namespace DirectX;
 
 Camera::Camera(std::string _uniqueID,
@@ -10,9 +11,9 @@ Camera::Camera(std::string _uniqueID,
 			   float _aspectRatio,
 			   float _nearPlane,
 			   float _farPlane,
-			   XMFLOAT3 _position,
-			   XMFLOAT3 _rotation,
-			   XMFLOAT3 _scale) : GameObject(_uniqueID, _position, _rotation, _scale) {
+			   Vector3 _position,
+			   Vector3 _rotation,
+			   Vector3 _scale) : GameObject(_uniqueID, _position, _rotation, _scale) {
 	//This is a camera object
 	type = GOType::CAMERA;
 
@@ -22,17 +23,14 @@ Camera::Camera(std::string _uniqueID,
 }
 
 void Camera::CalculateViewMatrix() {
-	//TODO: Get this from the camera transform
-	XMFLOAT3 forwardV = transform.Forward();
-	XMFLOAT3 upV = transform.Up();
-	XMMATRIX newViewMatrix = XMMatrixLookToLH(XMLoadFloat3(&transform.position), XMLoadFloat3(&forwardV), XMLoadFloat3(&upV));
-	//Don't forget to transpose the matrix!
-	XMStoreFloat4x4(&viewMatrix, XMMatrixTranspose(newViewMatrix));
+	Vector3 forwardV = transform.Forward();
+	Vector3 upV = transform.Up();
+	viewMatrix = Matrix::CreateLookAt(transform.position, transform.position - forwardV, upV).Transpose();
 }
 
 void Camera::CalculateProjectionMatrix() {
-	XMMATRIX newProjectionMatrix = XMMatrixPerspectiveFovLH(fov, aspectRatio, nearPlane, farPlane);
-	XMStoreFloat4x4(&projMatrix, XMMatrixTranspose(newProjectionMatrix));
+	//Using DirectXMath instead of SimpleMath because there is no equivalent perspective left-handed function in SimpleMath
+	projMatrix = XMMatrixTranspose(XMMatrixPerspectiveFovLH(fov, aspectRatio, nearPlane, farPlane));
 }
 
 float Camera::GetFOV() { return fov; }
@@ -70,6 +68,6 @@ void Camera::SetFar(float _far) {
 	CalculateProjectionMatrix();
 }
 
-DirectX::XMFLOAT4X4 Camera::GetViewMatrix() { return viewMatrix; }
+Matrix Camera::GetViewMatrix() { return viewMatrix; }
 
-DirectX::XMFLOAT4X4 Camera::GetProjectionMatrix() { return projMatrix; }
+Matrix Camera::GetProjectionMatrix() { return projMatrix; }

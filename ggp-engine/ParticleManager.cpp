@@ -5,6 +5,8 @@
 #include "Math.h"
 #include "ResourceManager.h"
 
+using namespace DirectX::SimpleMath;
+
 ParticleManager* ParticleManager::instance = nullptr;
 
 ParticleManager * ParticleManager::GetInstance() {
@@ -86,7 +88,7 @@ void ParticleManager::Init() {
 
 	//Create array of 4 UV coordinates. This will serve as the ENTIRE vertex buffer. All other data will come from individual
 	//particles on a per-instance basis [Instanced Rendering]
-	float2 uvCoords[] = { {0.0f,0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f} };
+	Vector2 uvCoords[] = { {0.0f,0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f} };
 	//Vertex indices
 	int indices[] = { 0, 1, 2, 2, 1, 3 };
 
@@ -94,7 +96,7 @@ void ParticleManager::Init() {
 	D3D11_BUFFER_DESC vertexBufferDesc;
 	vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.ByteWidth = sizeof(float2) * 4;
+	vertexBufferDesc.ByteWidth = sizeof(Vector2) * 4;
 	vertexBufferDesc.CPUAccessFlags = 0;
 	vertexBufferDesc.MiscFlags = 0;
 	vertexBufferDesc.StructureByteStride = 0;

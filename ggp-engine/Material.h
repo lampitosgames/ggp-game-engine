@@ -2,7 +2,7 @@
 #define GGP_MATERIAL_H
 
 #include <string>
-#include <DirectXMath.h>
+#include <SimpleMath.h>
 #include "SimpleShader.h"
 class Texture;
 
@@ -11,7 +11,7 @@ protected:
 	std::string uniqueID;
 	SimpleVertexShader* vertexShader;
 	SimplePixelShader* pixelShader;
-	DirectX::XMFLOAT4 baseColor;
+	DirectX::SimpleMath::Color baseColor;
 	float baseSpecular;
 	Texture* diffuse;
 	Texture* normal;
@@ -27,7 +27,7 @@ public:
 	Material(std::string _uniqueID,
 			 SimpleVertexShader* _vertexShader,
 			 SimplePixelShader* _pixelShader,
-			 DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+			 DirectX::SimpleMath::Color _color = DirectX::SimpleMath::Color(1.0f, 1.0f, 1.0f, 1.0f),
 			 float _specular = 0.0f);
 	//Texture-only constructor
 	Material(std::string _uniqueID,
@@ -53,11 +53,11 @@ public:
 
 	//Upload material to shaders
 	//If _pixelShader isn't passed in, the material will use its pixel shader
-	virtual void UploadPSData(DirectX::XMFLOAT3 _cameraPos, ID3D11SamplerState* _samplerState, SimplePixelShader* _pixelShader = nullptr);
+	virtual void UploadPSData(DirectX::SimpleMath::Vector3 _cameraPos, ID3D11SamplerState* _samplerState, SimplePixelShader* _pixelShader = nullptr);
 
 	//Color get/set
-	DirectX::XMFLOAT4 GetColor();
-	void SetColor(DirectX::XMFLOAT4 _newColor);
+	DirectX::SimpleMath::Color GetColor();
+	void SetColor(DirectX::SimpleMath::Color _newColor);
 
 	//Base specular get/set
 	float GetBaseSpecular();

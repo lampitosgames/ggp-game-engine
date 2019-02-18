@@ -1,17 +1,9 @@
 #ifndef GGP_GAME_OBJECT_H
 #define GGP_GAME_OBJECT_H
 
-//Temp Note to people reading this:
-/*
-	So this is a bit of a mess right now because I'm storing lots of things
-	in temporary variables I'll refactor later.  I have the whole high-level
-	engine design on paper but it obviously isn't able to be implemented in
-	a week so for now I'm just going to have to deal with some spaghetti
-*/
-
-#include <DirectXMath.h>
 #include <map>
 #include <vector>
+#include <SimpleMath.h>
 #include "GameObjectTypes.h"
 #include "InputEvent.h"
 #include "Transform.h"
@@ -56,9 +48,9 @@ protected:
 public:
 
 	GameObject(std::string _uniqueID = "NA",
-			   DirectX::XMFLOAT3 _position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-			   DirectX::XMFLOAT3 _rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-			   DirectX::XMFLOAT3 _scale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
+			   DirectX::SimpleMath::Vector3 _position = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f),
+			   DirectX::SimpleMath::Vector3 _rotation = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f),
+			   DirectX::SimpleMath::Vector3 _scale = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
 
 		   //Destructor
 	~GameObject();

@@ -4,7 +4,7 @@
 #include "Texture.h"
 
 using namespace std;
-using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 PBRMaterial::PBRMaterial(string _uniqueID) {
 	uniqueID = _uniqueID;
@@ -18,7 +18,7 @@ PBRMaterial::PBRMaterial(string _uniqueID) {
 PBRMaterial::PBRMaterial(string _uniqueID,
 						 SimpleVertexShader* _vertexShader,
 						 SimplePixelShader* _pixelShader,
-						 XMFLOAT4 _color,
+						 Color _color,
 						 float _roughness,
 						 float _metalness) {
 	uniqueID = _uniqueID;
@@ -49,9 +49,9 @@ PBRMaterial::PBRMaterial(string _uniqueID,
 	baseMetalness = 0.0f;
 }
 
-void PBRMaterial::UploadPSData(XMFLOAT3 _cameraPos, ID3D11SamplerState* _samplerState, SimplePixelShader* _pixelShader) {
+void PBRMaterial::UploadPSData(Vector3 _cameraPos, ID3D11SamplerState* _samplerState, SimplePixelShader* _pixelShader) {
 	//Build texture channel toggle array
-	XMINT4 channelToggle = XMINT4(HasDiffuseTexture(),
+	DirectX::XMINT4 channelToggle = DirectX::XMINT4(HasDiffuseTexture(),
 								  HasNormalMap(),
 								  HasRoughnessMap(),
 								  HasMetalnessMap());

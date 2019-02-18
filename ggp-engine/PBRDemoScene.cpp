@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "PBRDemoScene.h"
-#include <DirectXMath.h>
+#include <SimpleMath.h>
 #include "InputManager.h"
 #include "RenderManager.h"
 #include "ResourceManager.h"
@@ -16,13 +16,13 @@
 #include "SpotLight.h"
 #include "ParticleEmitter.h"
 
-using namespace DirectX;
+using namespace DirectX::SimpleMath;
 using namespace std;
 
 void PBRDemoScene::Init() {
 	Scene::Init();
 
-	Material* blueMatte = resourceManager->AddMaterial("blueMatte", XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), 0.0f);
+	Material* blueMatte = resourceManager->AddMaterial("blueMatte", Color(0.0f, 0.0f, 1.0f, 1.0f), 0.0f);
 	PBRMaterial* pbrMats[7];
 	//Create a PBR material for testing
 	pbrMats[0] = resourceManager->GetPBRMaterial("icePBR", L"VertexShader.cso", L"PBRPShader.cso", L"assets/textures/PBR/ice_a.jpg", L"assets/textures/PBR/ice_n.jpg", L"assets/textures/PBR/ice_r.jpg", nullptr);
@@ -53,14 +53,14 @@ void PBRDemoScene::Init() {
 	AddChild(dirLight);
 	GameObject* dirLight2 = new GameObject("dirLight2");
 	AddChild(dirLight2);
-	dirLight2->AddComponent<DirLight>(dirLight2, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, -0.25f, 0.0f), 0.2f, 0.00f);
+	dirLight2->AddComponent<DirLight>(dirLight2, Color(1.0f, 1.0f, 1.0f, 1.0f), Vector3(-1.0f, -0.25f, 0.0f), 0.2f, 0.00f);
 	GameObject* dirLight3 = new GameObject("dirLight3");
 	AddChild(dirLight3);
-	dirLight3->AddComponent<DirLight>(dirLight3, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 1.0f), 0.2f, 0.00f);
+	dirLight3->AddComponent<DirLight>(dirLight3, Color(1.0f, 1.0f, 1.0f, 1.0f), Vector3(0.0f, -1.0f, 1.0f), 0.2f, 0.00f);
 
 	GameObject* pointLight1 = new GameObject("pointLight1");
 	AddChild(pointLight1);
-	pointLight1->AddComponent<PointLight>(pointLight1, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+	pointLight1->AddComponent<PointLight>(pointLight1, Color(1.0f, 1.0f, 1.0f, 1.0f));
 	pointLight1->GetComponentType<PointLight>()->SetRange(10.0f);
 	pointLight1->transform.position.x += 2.0f;
 	pointLight1->transform.position.y += 4.0f;
@@ -72,17 +72,17 @@ void PBRDemoScene::Init() {
 
 	GameObject* pointLight2 = new GameObject("pointLight2");
 	AddChild(pointLight2);
-	pointLight2->AddComponent<PointLight>(pointLight2, XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f));
+	pointLight2->AddComponent<PointLight>(pointLight2, Color(0.6f, 0.6f, 0.6f, 1.0f));
 	pointLight2->GetComponentType<PointLight>()->SetIntensity(1.0f);
 	pointLight2->transform.position.x += 6.0f;
 	pointLight2->transform.position.y += 3.0f;
 
 	GameObject* spotLight1 = new GameObject("spotLight1");
 	dirLight->AddChild(spotLight1);
-	spotLight1->AddComponent<SpotLight>(spotLight1, XMFLOAT4(0.901f, 0.239f, 0.337f, 1.0f));
+	spotLight1->AddComponent<SpotLight>(spotLight1, Color(0.901f, 0.239f, 0.337f, 1.0f));
 	spotLight1->GetComponentType<SpotLight>()->SetCone(15.0f);
 	spotLight1->GetComponentType<SpotLight>()->SetRange(80.0f);
-	spotLight1->GetComponentType<SpotLight>()->SetDirection(XMFLOAT3(0.0f, -1.0f, 0.0f));
+	spotLight1->GetComponentType<SpotLight>()->SetDirection(Vector3(0.0f, -1.0f, 0.0f));
 	spotLight1->transform.position.y += 15.0f;
 
 	//Create a camera

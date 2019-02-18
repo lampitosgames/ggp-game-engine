@@ -7,6 +7,8 @@
 #include "GameObject.h"
 #include "RenderManager.h"
 
+using namespace DirectX::SimpleMath;
+
 MeshRenderer::MeshRenderer(GameObject* _gameObject) {
 	gameObject = _gameObject;
 	owner = _gameObject->GetUniqueID();
@@ -49,11 +51,11 @@ void MeshRenderer::Draw(ID3D11DeviceContext* _dxContext) {
 	return;
 }
 
-DirectX::XMFLOAT4X4 MeshRenderer::GetWorldMatrix() {
+Matrix MeshRenderer::GetWorldMatrix() {
 	return gameObject->transform.GetWorldMatrix();
 }
 
-DirectX::XMFLOAT4X4 MeshRenderer::GetWorldInvTransMatrix() {
+Matrix MeshRenderer::GetWorldInvTransMatrix() {
 	return gameObject->transform.GetWorldInvTransMatrix();
 }
 
@@ -75,7 +77,7 @@ SimplePixelShader* MeshRenderer::GetPixelShader() {
 	return material->GetPixelShader();
 }
 
-DirectX::XMFLOAT4 MeshRenderer::GetColor() {
-	if (material == nullptr) { return DirectX::XMFLOAT4(); }
+Color MeshRenderer::GetColor() {
+	if (material == nullptr) { return Color(); }
 	return material->GetColor();
 }

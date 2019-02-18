@@ -7,24 +7,21 @@
 #include "Mesh.h"
 #include "Vertex.h"
 
-typedef DirectX::XMFLOAT2 float2;
-typedef DirectX::XMFLOAT3 float3;
-
 class MeshGen {
 	ID3D11Device* dxDevice;
 	float PI = 3.14159264349f;
 
 	struct vert {
-		float3 pos;
-		float2 uv;
-		float3 norm;
+		DirectX::SimpleMath::Vector3 pos;
+		DirectX::SimpleMath::Vector2 uv;
+		DirectX::SimpleMath::Vector3 norm;
 		std::vector<UINT> faces;
 	};
 	struct tri {
 		UINT vert1;
 		UINT vert2;
 		UINT vert3;
-		float3 normal;
+		DirectX::SimpleMath::Vector3 normal;
 	};
 
 	//Full mesh data storage
@@ -35,12 +32,12 @@ class MeshGen {
 
 	//Mesh geometry builder functions
 	void StartMesh();
-	UINT addVert(float3 _pos, float2 _uv);
+	UINT addVert(DirectX::SimpleMath::Vector3 _pos, DirectX::SimpleMath::Vector2 _uv);
 	UINT addTri(UINT _v1, UINT _v2, UINT _v3, bool _invertTanNormal = false);
 	void addQuad(UINT _v1, UINT _v2, UINT _v3, UINT _v4, bool _invertTanNormal = false);
 
 	//Get a triangle's normal vector given it's three vertices
-	float3 getFaceNormal(float3 _pos1, float3 _pos2, float3 _pos3);
+	DirectX::SimpleMath::Vector3 getFaceNormal(DirectX::SimpleMath::Vector3 _pos1, DirectX::SimpleMath::Vector3 _pos2, DirectX::SimpleMath::Vector3 _pos3);
 
 	//Build the mesh with individual verts for each face, with unique normals and uv coords
 	void buildWithFaceNormals();

@@ -2,8 +2,6 @@
 
 #include "LightManager.h"
 
-using namespace DirectX;
-
 LightManager* LightManager::instance = nullptr;
 
 LightManager* LightManager::GetInstance() {

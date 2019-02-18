@@ -2,7 +2,7 @@
 #define GGP_LIGHT_MANAGER_H
 
 #include <map>
-#include <DirectXMath.h>
+#include <SimpleMath.h>
 #include "PointLight.h"
 #include "SpotLight.h"
 #include "DirLight.h"

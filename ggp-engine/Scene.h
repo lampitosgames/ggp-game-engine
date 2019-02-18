@@ -7,7 +7,7 @@ class Camera;
 
 class Scene : public GameObject {
 protected:
-	Camera * activeCamera;
+	Camera* activeCamera;
 	float totalTime;
 public:
 	Scene(std::string _uniqueID);

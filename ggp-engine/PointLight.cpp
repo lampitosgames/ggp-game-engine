@@ -3,14 +3,14 @@
 #include "PointLight.h"
 #include "GameObject.h"
 #include "LightManager.h"
-using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 PointLight::PointLight(GameObject* _gameObject) {
 	//Call the fully parameterized constructor
-	PointLight(_gameObject, XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+	PointLight(_gameObject, Color(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
-PointLight::PointLight(GameObject* _gameObject, XMFLOAT4 _color, float _intensity, float _range) {
+PointLight::PointLight(GameObject* _gameObject, Color _color, float _intensity, float _range) {
 	gameObject = _gameObject;
 	owner = gameObject->GetUniqueID();
 	//Store light data
@@ -28,11 +28,11 @@ PointLight::~PointLight() {
 	LightManager::GetInstance()->RemovePointLight(this);
 }
 
-DirectX::XMFLOAT4 PointLight::GetColor() {
+Color PointLight::GetColor() {
 	return lightData.color;
 }
 
-void PointLight::SetColor(DirectX::XMFLOAT4 _color) { lightData.color = _color; }
+void PointLight::SetColor(Color _color) { lightData.color = _color; }
 
 float PointLight::GetIntensity() { return lightData.intensity; }
 

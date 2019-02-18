@@ -3,10 +3,9 @@
 
 #include "stdafx.h"
 
-#include <DirectXMath.h>
-#include "Math.h"
 #include <d3d11.h>
 #include <random>
+#include <SimpleMath.h>
 #include "BaseComponent.h"
 class SimpleVertexShader;
 class SimplePixelShader;
@@ -25,19 +24,19 @@ public:
 		- update code in UpdateParticleBuffers()
 		- update the shader input layout
 	*/
-	float3* iPos = nullptr;	        //Initial position. Final pos calculated on GPU with kinematics
-	float3* iVel = nullptr;	        //Initial velocity. Final vel ...
-	float3* accel = nullptr;	    //Const Accel. This can't change per-particle, but it can be different per-particle
-	float* iRot = nullptr;          //Initial rotation (in radians) of the particle's quad
-	float* angularVel = nullptr;   	//Angular velocity (in radians)
-	float* startSize = nullptr;     //Initial scale of particle
-	float* endSize = nullptr;       //Final scale of particle
-	float4* startColor = nullptr;   //Initial color of particle
-	float4* endColor = nullptr;     //Final color of particle
-	float* startLife = nullptr;     //Length of particle's life (seconds)
-	float* remainLife = nullptr;    //Currently remaining time in this particle's life (seconds)
+	DirectX::SimpleMath::Vector3* iPos = nullptr;	        //Initial position. Final pos calculated on GPU with kinematics
+	DirectX::SimpleMath::Vector3* iVel = nullptr;	        //Initial velocity. Final vel ...
+	DirectX::SimpleMath::Vector3* accel = nullptr;	        //Const Accel. This can't change per-particle, but it can be different per-particle
+	float* iRot = nullptr;                                  //Initial rotation (in radians) of the particle's quad
+	float* angularVel = nullptr;                         	//Angular velocity (in radians)
+	float* startSize = nullptr;                             //Initial scale of particle
+	float* endSize = nullptr;                               //Final scale of particle
+	DirectX::SimpleMath::Vector4* startColor = nullptr;     //Initial color of particle
+	DirectX::SimpleMath::Vector4* endColor = nullptr;       //Final color of particle
+	float* startLife = nullptr;                             //Length of particle's life (seconds)
+	float* remainLife = nullptr;                            //Currently remaining time in this particle's life (seconds)
 	//Alive is the only one without a buffer
-	bool* alive = nullptr;          //Is the particle active?
+	bool* alive = nullptr;                                  //Is the particle active?
 
 	//Tracking data
 	UINT particleCount;
@@ -81,7 +80,7 @@ public:
 	bool looping;          //If true, emitter's duration is reset once it hits 0
 	bool playing;          //If true, the particle emitter is currently emitting
 	UINT hasTexture;       //Using a texture?
-	LPCWSTR textureFilepath; //Filepath to particle texture
+	FileName textureFilepath; //Filepath to particle texture
 	bool useDepthSettings; //Use additive blending with depth turned off
 
 	//Emission shape props
@@ -101,17 +100,17 @@ public:
 	float height; //Height of cylinder
 
 	//Particle properties
-	float partLifetime;     //Lifetime of individual particles
-	float partInitialSpeed; //Initial particle speed. Actual velocity is determined by emission shape props
-	float3 partAccel;       //Acceleration vector
-	bool partAccelLSpace;   //Is the acceleration in local space?
-	float partInitialRot;   //Initial rotation of each particle
-	float partAngularVel;   //Angular velocity for rotation
-	bool partRandomRotDir;  //Randomize the +/- sign of the angular velocity on a per-particle basis
-	float partStartSize;    //Initial particle size
-	float partEndSize;      //Final particle size
-	float4 partStartColor;  //Initial particle color (Should be (1,1,1) if using texture)
-	float4 partEndColor;    //Final particle color
+	float partLifetime;                           //Lifetime of individual particles
+	float partInitialSpeed;                       //Initial particle speed. Actual velocity is determined by emission shape props
+	DirectX::SimpleMath::Vector3 partAccel;       //Acceleration vector
+	bool partAccelLSpace;                         //Is the acceleration in local space?
+	float partInitialRot;                         //Initial rotation of each particle
+	float partAngularVel;                         //Angular velocity for rotation
+	bool partRandomRotDir;                        //Randomize the +/- sign of the angular velocity on a per-particle basis
+	float partStartSize;                          //Initial particle size
+	float partEndSize;                            //Final particle size
+	DirectX::SimpleMath::Vector4 partStartColor;  //Initial particle color (Should be (1,1,1) if using texture)
+	DirectX::SimpleMath::Vector4 partEndColor;    //Final particle color
 public:
 	EmitterOptions();
 	~EmitterOptions() {};
@@ -122,7 +121,7 @@ private:
 	//Struct holding all of the particle data in a bunch of arrays
 	ParticleData particles;
 	EmitterOptions settings;
-	DirectX::XMFLOAT4X4 worldMatRaw;
+	DirectX::SimpleMath::Matrix worldMat;
 	float totalPlayTime;
 	UINT totalSpawned;
 

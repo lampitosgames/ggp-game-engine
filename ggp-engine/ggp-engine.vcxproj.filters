@@ -89,9 +89,6 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
-    <ClCompile Include="Basis.cpp">
-      <Filter>Source Files\Data Structures</Filter>
-    </ClCompile>
     <ClCompile Include="Transform.cpp">
       <Filter>Source Files\Data Structures</Filter>
     </ClCompile>
@@ -199,9 +196,6 @@
     <ClInclude Include="Camera.h">
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
-    <ClInclude Include="Basis.h">
-      <Filter>Header Files\Data Structures</Filter>
-    </ClInclude>
     <ClInclude Include="Transform.h">
       <Filter>Header Files\Data Structures</Filter>
     </ClInclude>
@@ -304,9 +298,6 @@
     <ClInclude Include="ParticleManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="Math.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\additional\json\json.hpp">
       <Filter>additional\json</Filter>
     </ClInclude>
@@ -315,6 +306,9 @@
     </ClInclude>
     <ClInclude Include="GameObjectTypes.h">
       <Filter>Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="json.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

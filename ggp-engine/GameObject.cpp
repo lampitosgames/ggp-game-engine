@@ -9,12 +9,12 @@
 #include "ComponentManager.h"
 
 using namespace std;
-using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 map<std::string, GameObject*> GameObject::goUIDMap = map<std::string, GameObject*>();
 
 
-GameObject::GameObject(string _uniqueID, XMFLOAT3 _position, XMFLOAT3 _rotation, XMFLOAT3 _scale) {
+GameObject::GameObject(string _uniqueID, Vector3 _position, Vector3 _rotation, Vector3 _scale) {
 	Init();
 	//Ensure the provided ID is unique
 	GenerateUID(_uniqueID);

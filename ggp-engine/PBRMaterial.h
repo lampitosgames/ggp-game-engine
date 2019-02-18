@@ -16,7 +16,7 @@ public:
 	PBRMaterial(std::string _uniqueID,
 				SimpleVertexShader* _vertexShader,
 				SimplePixelShader* _pixelShader,
-				DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+				DirectX::SimpleMath::Color _color = DirectX::SimpleMath::Color(1.0f, 1.0f, 1.0f, 1.0f),
 				float _roughness = 0.0f,
 				float _metalness = 0.0f);
 	//Full texture constructor. Requires all texture channels
@@ -28,7 +28,7 @@ public:
 				Texture* _roughness,
 				Texture* _metalness);
 
-	virtual void UploadPSData(DirectX::XMFLOAT3 _cameraPos, ID3D11SamplerState* _samplerState, SimplePixelShader* _pixelShader = nullptr);
+	virtual void UploadPSData(DirectX::SimpleMath::Vector3 _cameraPos, ID3D11SamplerState* _samplerState, SimplePixelShader* _pixelShader = nullptr);
 
 	//Roughness map get/set
 	Texture* GetRoughnessMap();

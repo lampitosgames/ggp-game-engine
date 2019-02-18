@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iostream>
 
-using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 void MeshGen::StartMesh() {
 	vIndex = -1;
@@ -19,14 +19,14 @@ void MeshGen::StartMesh() {
 }
 
 #pragma region Adding Geometry
-UINT MeshGen::addVert(float3 _pos, float2 _uv) {
+UINT MeshGen::addVert(Vector3 _pos, Vector2 _uv) {
 	//Add a new vert struct to the vertData array
 	vertData.push_back({
 		_pos,
 		_uv,
-		float3()
-					   });
-					   //Increment and return the index
+		Vector3()
+		});
+	//Increment and return the index
 	vIndex++;
 	return vIndex;
 }
@@ -39,17 +39,17 @@ UINT MeshGen::addVert(float3 _pos, float2 _uv) {
 */
 UINT MeshGen::addTri(UINT _v1, UINT _v2, UINT _v3, bool _invertTanNormal) {
 	//Get normal vector to the plane
-	float3 triNormal = getFaceNormal(vertData[_v1].pos, vertData[_v2].pos, vertData[_v3].pos);
+	Vector3 triNormal = getFaceNormal(vertData[_v1].pos, vertData[_v2].pos, vertData[_v3].pos);
 	//Invert the normal? Used when winding order and the tangent calculation don't line up exactly right
-	triNormal = _invertTanNormal ? float3(-triNormal.x, -triNormal.y, -triNormal.z) : triNormal;
+	triNormal = _invertTanNormal ? Vector3(-triNormal.x, -triNormal.y, -triNormal.z) : triNormal;
 	//Push a new tri face onto the triData array
 	triData.push_back({
 		_v1,
 		_v2,
 		_v3,
 		triNormal
-					  });
-					  //Increment the tri index
+		});
+	//Increment the tri index
 	tIndex++;
 	//Add this tri to the verts that make it up
 	vertData[_v1].faces.push_back(tIndex);
@@ -71,16 +71,14 @@ void MeshGen::addQuad(UINT _v1, UINT _v2, UINT _v3, UINT _v4, bool _invertTanNor
 }
 #pragma endregion
 
-float3 MeshGen::getFaceNormal(float3 _pos1, float3 _pos2, float3 _pos3) {
+Vector3 MeshGen::getFaceNormal(Vector3 _pos1, Vector3 _pos2, Vector3 _pos3) {
 	//Get the face's bounding vectors
-	float3 vec1 = float3(_pos2.x - _pos1.x, _pos2.y - _pos1.y, _pos2.z - _pos1.z);
-	float3 vec2 = float3(_pos3.x - _pos1.x, _pos3.y - _pos1.y, _pos3.z - _pos1.z);
+	Vector3 vec1 = Vector3(_pos2.x - _pos1.x, _pos2.y - _pos1.y, _pos2.z - _pos1.z);
+	Vector3 vec2 = Vector3(_pos3.x - _pos1.x, _pos3.y - _pos1.y, _pos3.z - _pos1.z);
 	//Get normalized cross product
-	XMVECTOR cross = XMVector3Normalize(XMVector3Cross(XMLoadFloat3(&vec1), XMLoadFloat3(&vec2)));
-	//Store and return
-	float3 storedCross;
-	XMStoreFloat3(&storedCross, cross);
-	return storedCross;
+	Vector3 cross = vec1.Cross(vec2);
+	cross.Normalize();
+	return cross;
 }
 
 void MeshGen::buildWithFaceNormals() {
@@ -88,9 +86,9 @@ void MeshGen::buildWithFaceNormals() {
 	for (UINT i = 0; i <= tIndex; i++) {
 		tri curTri = triData[i];
 		//Push the three verts onto the output array
-		mVerts.push_back({vertData[curTri.vert1].pos, vertData[curTri.vert1].uv, curTri.normal}); vertCount++;
-		mVerts.push_back({vertData[curTri.vert2].pos, vertData[curTri.vert2].uv, curTri.normal}); vertCount++;
-		mVerts.push_back({vertData[curTri.vert3].pos, vertData[curTri.vert3].uv, curTri.normal}); vertCount++;
+		mVerts.push_back({ vertData[curTri.vert1].pos, vertData[curTri.vert1].uv, curTri.normal }); vertCount++;
+		mVerts.push_back({ vertData[curTri.vert2].pos, vertData[curTri.vert2].uv, curTri.normal }); vertCount++;
+		mVerts.push_back({ vertData[curTri.vert3].pos, vertData[curTri.vert3].uv, curTri.normal }); vertCount++;
 		//Push their indices onto the output index array
 		mIndices.push_back(indCount++);
 		mIndices.push_back(indCount++);
@@ -102,16 +100,16 @@ void MeshGen::buildWithSmoothNormals() {
 	//Loop through all verts and calculate normals from faces.  Create Vertex struct and add it to the final array
 	for (UINT i = 0; i <= vIndex; i++) {
 		vert curVert = vertData[i];
-		XMVECTOR averageNormal = XMVectorZero();
+		Vector3 averageNormal = Vector3();
 		//Loop through all faces this vert belongs to and average them
 		for (UINT f = 0; f < curVert.faces.size(); f++) {
-			averageNormal += XMLoadFloat3(&triData[curVert.faces[f]].normal);
+			averageNormal += triData[curVert.faces[f]].normal;
 		}
-		averageNormal = XMVector3Normalize(averageNormal);
+		averageNormal.Normalize();
 		//Store the normal
-		XMStoreFloat3(&curVert.norm, averageNormal);
+		curVert.norm = averageNormal;
 		//Add the vertex and it's averaged normal to the output array
-		mVerts.push_back({curVert.pos, curVert.uv, curVert.norm});
+		mVerts.push_back({ curVert.pos, curVert.uv, curVert.norm });
 		vertCount++;
 	}
 	//Loop through all tris and simply pass the stored index into the index buffer
@@ -129,7 +127,7 @@ void MeshGen::buildWithSmoothNormals() {
 void MeshGen::CalculateTangents() {
 	// Reset tangents
 	for (UINT i = 0; i < vertCount; i++) {
-		mVerts[i].tangent = float3(0, 0, 0);
+		mVerts[i].tangent = Vector3(0, 0, 0);
 	}
 
 	// Calculate tangents one whole triangle at a time
@@ -182,14 +180,10 @@ void MeshGen::CalculateTangents() {
 	// Ensure all of the tangents are orthogonal to the normals
 	for (UINT i = 0; i < vertCount; i++) {
 		// Grab the two vectors
-		XMVECTOR normal = XMLoadFloat3(&mVerts[i].normal);
-		XMVECTOR tangent = XMLoadFloat3(&mVerts[i].tangent);
-
+		Vector3 normal = mVerts[i].normal;
+		Vector3 tangent = mVerts[i].tangent;
 		// Use Gram-Schmidt orthogonalize
-		tangent = XMVector3Normalize(tangent - normal * XMVector3Dot(normal, tangent));
-
-		// Store the tangent
-		XMStoreFloat3(&mVerts[i].tangent, tangent);
+		mVerts[i].tangent = tangent - normal * normal.Dot(tangent);
 	}
 }
 
@@ -207,7 +201,8 @@ Mesh* MeshGen::LoadTerrain(std::string _rawFilepath, UINT _resolution, float _he
 	if (file) {
 		file.read((char*)&heights[0], _resolution * _resolution);
 		file.close();
-	} else {
+	}
+	else {
 		return nullptr;
 	}
 
@@ -258,7 +253,7 @@ Mesh* MeshGen::LoadTerrain(std::string _rawFilepath, UINT _resolution, float _he
 		float v = _uvScale * ((float)lz / (float)_resolution);
 
 		//Create a new vertex and store it in the vertInds array
-		vertInds[j] = addVert(float3(vx, vy, vz), float2(u, v));
+		vertInds[j] = addVert(Vector3(vx, vy, vz), Vector2(u, v));
 	}
 
 	//Create faces for the terrain
@@ -292,54 +287,54 @@ Mesh* MeshGen::GenerateCube(float _sideLength, float _uvScale) {
 	//Half length
 	float sl = _sideLength * 0.5f;
 	//Create all 8 positions
-	float3 fnw(-sl, +sl, +sl); //front north west
-	float3 fne(+sl, +sl, +sl); //front north east
-	float3 fsw(-sl, -sl, +sl); //front south west
-	float3 fse(+sl, -sl, +sl); //front south east
-	float3 bnw(-sl, +sl, -sl); //back north west
-	float3 bne(+sl, +sl, -sl); //back north east
-	float3 bsw(-sl, -sl, -sl); //back south west
-	float3 bse(+sl, -sl, -sl); //back south east
+	Vector3 fnw(-sl, +sl, +sl); //front north west
+	Vector3 fne(+sl, +sl, +sl); //front north east
+	Vector3 fsw(-sl, -sl, +sl); //front south west
+	Vector3 fse(+sl, -sl, +sl); //front south east
+	Vector3 bnw(-sl, +sl, -sl); //back north west
+	Vector3 bne(+sl, +sl, -sl); //back north east
+	Vector3 bsw(-sl, -sl, -sl); //back south west
+	Vector3 bse(+sl, -sl, -sl); //back south east
 
 	//Vert index storage
 	UINT v1, v2, v3, v4;
 
 	//Add all faces. Remember that winding order is counter-clockwise
 	//Front face
-	v1 = addVert(fsw, float2(0.0f, _uvScale));
-	v2 = addVert(fse, float2(_uvScale, _uvScale));
-	v3 = addVert(fne, float2(_uvScale, 0.0f));
-	v4 = addVert(fnw, float2(0.0f, 0.0f));
+	v1 = addVert(fsw, Vector2(0.0f, _uvScale));
+	v2 = addVert(fse, Vector2(_uvScale, _uvScale));
+	v3 = addVert(fne, Vector2(_uvScale, 0.0f));
+	v4 = addVert(fnw, Vector2(0.0f, 0.0f));
 	addQuad(v1, v2, v3, v4);
 	//Right face
-	v1 = addVert(fse, float2(0.0f, _uvScale));
-	v2 = addVert(bse, float2(_uvScale, _uvScale));
-	v3 = addVert(bne, float2(_uvScale, 0.0f));
-	v4 = addVert(fne, float2(0.0f, 0.0f));
+	v1 = addVert(fse, Vector2(0.0f, _uvScale));
+	v2 = addVert(bse, Vector2(_uvScale, _uvScale));
+	v3 = addVert(bne, Vector2(_uvScale, 0.0f));
+	v4 = addVert(fne, Vector2(0.0f, 0.0f));
 	addQuad(v1, v2, v3, v4);
 	//Back face
-	v1 = addVert(bse, float2(0.0f, _uvScale));
-	v2 = addVert(bsw, float2(_uvScale, _uvScale));
-	v3 = addVert(bnw, float2(_uvScale, 0.0f));
-	v4 = addVert(bne, float2(0.0f, 0.0f));
+	v1 = addVert(bse, Vector2(0.0f, _uvScale));
+	v2 = addVert(bsw, Vector2(_uvScale, _uvScale));
+	v3 = addVert(bnw, Vector2(_uvScale, 0.0f));
+	v4 = addVert(bne, Vector2(0.0f, 0.0f));
 	addQuad(v1, v2, v3, v4);
 	//Left face
-	v1 = addVert(bsw, float2(0.0f, _uvScale));
-	v2 = addVert(fsw, float2(_uvScale, _uvScale));
-	v3 = addVert(fnw, float2(_uvScale, 0.0f));
-	v4 = addVert(bnw, float2(0.0f, 0.0f));
+	v1 = addVert(bsw, Vector2(0.0f, _uvScale));
+	v2 = addVert(fsw, Vector2(_uvScale, _uvScale));
+	v3 = addVert(fnw, Vector2(_uvScale, 0.0f));
+	v4 = addVert(bnw, Vector2(0.0f, 0.0f));
 	addQuad(v1, v2, v3, v4);
 	//Top face
-	v1 = addVert(fnw, float2(0.0f, _uvScale));
-	v2 = addVert(fne, float2(_uvScale, _uvScale));
-	v3 = addVert(bne, float2(_uvScale, 0.0f));
-	v4 = addVert(bnw, float2(0.0f, 0.0f));
+	v1 = addVert(fnw, Vector2(0.0f, _uvScale));
+	v2 = addVert(fne, Vector2(_uvScale, _uvScale));
+	v3 = addVert(bne, Vector2(_uvScale, 0.0f));
+	v4 = addVert(bnw, Vector2(0.0f, 0.0f));
 	addQuad(v1, v2, v3, v4);
 	//Bottom face
-	v1 = addVert(bsw, float2(0.0f, _uvScale));
-	v2 = addVert(bse, float2(_uvScale, _uvScale));
-	v3 = addVert(fse, float2(_uvScale, 0.0f));
-	v4 = addVert(fsw, float2(0.0f, 0.0f));
+	v1 = addVert(bsw, Vector2(0.0f, _uvScale));
+	v2 = addVert(bse, Vector2(_uvScale, _uvScale));
+	v3 = addVert(fse, Vector2(_uvScale, 0.0f));
+	v4 = addVert(fsw, Vector2(0.0f, 0.0f));
 	UINT tri1 = addTri(v1, v2, v3);
 	UINT tri2 = addTri(v1, v3, v4);
 
@@ -366,10 +361,10 @@ Mesh* MeshGen::GenerateSphere(float _radius, UINT _subdivs, float _uvScale) {
 	float z = cos(0.5532694f) * _radius;
 	float n = 0.0f;
 	//Vector of points that make up the sphere
-	std::vector<float3> sphereVerts = {
-		float3(-x, +n, +z), float3(+x, +n, +z), float3(-x, +n, -z), float3(+x, +n, -z),
-		float3(+n, +z, +x), float3(+n, +z, -x), float3(+n, -z, +x), float3(+n, -z, -x),
-		float3(+z, +x, +n), float3(-z, +x, +n), float3(+z, -x, +n), float3(-z, -x, +n)
+	std::vector<Vector3> sphereVerts = {
+		Vector3(-x, +n, +z), Vector3(+x, +n, +z), Vector3(-x, +n, -z), Vector3(+x, +n, -z),
+		Vector3(+n, +z, +x), Vector3(+n, +z, -x), Vector3(+n, -z, +x), Vector3(+n, -z, -x),
+		Vector3(+z, +x, +n), Vector3(-z, +x, +n), Vector3(+z, -x, +n), Vector3(-z, -x, +n)
 	};
 	//Vector of tri indices on the sphere
 	std::vector<std::vector<int>> sphereTris = {
@@ -405,14 +400,14 @@ Mesh* MeshGen::GenerateSphere(float _radius, UINT _subdivs, float _uvScale) {
 				//being two different values in the map(which would generate 2 different middle vertices)
 				if (sides[j].first > sides[j].second) { std::swap(sides[j].first, sides[j].second); }
 				//If the middle vert for this side doesn't exist, create it
-				auto middleInsert = edgesMiddleInd.insert({sides[j], (int)sphereVerts.size()});
+				auto middleInsert = edgesMiddleInd.insert({ sides[j], (int)sphereVerts.size() });
 				if (middleInsert.second) {
-					//Get the average position between the two bounding verts and store it as an XMVECTOR
-					XMVECTOR newVertVec = XMLoadFloat3(&sphereVerts[sides[j].first]) + XMLoadFloat3(&sphereVerts[sides[j].second]);
+					//Get the average position between the two bounding verts and store it as an Vector3
+					Vector3 newVertVec = sphereVerts[sides[j].first] + sphereVerts[sides[j].second];
+					newVertVec.Normalize();
 					//Generate the middle vertex and add it to the array.
 					//radius * norm(point1 + point2) = a point equidistant from both point1 and point2, normalized onto the sphere's shell
-					float3 newVert;
-					XMStoreFloat3(&newVert, _radius * XMVector3Normalize(newVertVec));
+					Vector3 newVert = _radius * newVertVec;
 					sphereVerts.push_back(newVert);
 				}
 			}
@@ -429,10 +424,10 @@ Mesh* MeshGen::GenerateSphere(float _radius, UINT _subdivs, float _uvScale) {
 			  / \ 3 / \
 			 / 1 \ / 2 \
 			*-----*-----*/
-			newTris.push_back({corner1,middle1,middle3}); //1
-			newTris.push_back({middle1,corner2,middle2}); //2
-			newTris.push_back({middle1,middle2,middle3}); //3
-			newTris.push_back({middle3,middle2,corner3}); //4
+			newTris.push_back({ corner1,middle1,middle3 }); //1
+			newTris.push_back({ middle1,corner2,middle2 }); //2
+			newTris.push_back({ middle1,middle2,middle3 }); //3
+			newTris.push_back({ middle3,middle2,corner3 }); //4
 		}
 		//Replace the old triangles array with the new one for the next iteration
 		sphereTris = newTris;
@@ -441,7 +436,7 @@ Mesh* MeshGen::GenerateSphere(float _radius, UINT _subdivs, float _uvScale) {
 	//Add a mesh point for every vertex
 	std::vector<UINT> sphereVertInds;
 	for (UINT v = 0; v < sphereVerts.size(); v++) {
-		float3 vertPos = sphereVerts[v];
+		Vector3 vertPos = sphereVerts[v];
 		//Calculate UV coordinates
 		//Atan returns a range from -pi/2 to pi/2
 		float trigMin = -PI / 2;
@@ -454,7 +449,7 @@ Mesh* MeshGen::GenerateSphere(float _radius, UINT _subdivs, float _uvScale) {
 		float yUV = (atan(vertPos.z / vertPos.x) - trigMin) / (trigMax - trigMin);
 
 		//Put the UV coordinate vector together
-		float2 uvCoords = float2(xUV * _uvScale, yUV * _uvScale);
+		Vector2 uvCoords = Vector2(xUV * _uvScale, yUV * _uvScale);
 		//Add a vertex
 		sphereVertInds.push_back(addVert(vertPos, uvCoords));
 	}

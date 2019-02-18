@@ -3,14 +3,14 @@
 #include "LightManager.h"
 #include "SpotLight.h"
 #include "GameObject.h"
-using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 SpotLight::SpotLight(GameObject* _gameObject) {
 	//call the fully parameterized constructor
-	SpotLight(_gameObject, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+	SpotLight(_gameObject, Color(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
-SpotLight::SpotLight(GameObject* _gameObject, DirectX::XMFLOAT4 _color, DirectX::XMFLOAT3 _direction, float _cone, float _range) {
+SpotLight::SpotLight(GameObject* _gameObject, Color _color, Vector3 _direction, float _cone, float _range) {
 	gameObject = _gameObject;
 	owner = _gameObject->GetUniqueID();
 	//store light data
@@ -28,23 +28,21 @@ SpotLight::~SpotLight() {
 	LightManager::GetInstance()->RemoveSpotLight(this);
 }
 
-DirectX::XMFLOAT4 SpotLight::GetColor() {
+Color SpotLight::GetColor() {
 	return lightData.color;
 }
 
-void SpotLight::SetColor(DirectX::XMFLOAT4 _color) {
+void SpotLight::SetColor(Color _color) {
 	lightData.color = _color;
 }
 
-DirectX::XMFLOAT3 SpotLight::GetDirection() {
+Vector3 SpotLight::GetDirection() {
 	return lightData.direction;
 }
 
-void SpotLight::SetDirection(DirectX::XMFLOAT3 _direction) {
+void SpotLight::SetDirection(Vector3 _direction) {
 	lightData.direction = _direction;
 }
-
-
 
 float SpotLight::GetCone() {
 	return lightData.cone;

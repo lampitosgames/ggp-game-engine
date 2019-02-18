@@ -3,6 +3,7 @@
 
 
 #include <map>
+#include <SimpleMath.h>
 #include "SimpleShader.h"
 #include "ParticleEmitter.h"
 class ResourceManager;

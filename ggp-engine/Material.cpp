@@ -3,13 +3,23 @@
 #include "Material.h"
 #include "Texture.h"
 
-using namespace DirectX;
+using namespace DirectX::SimpleMath;
 using namespace std;
 
 #pragma region Constructors
+Material::Material() {
+	vertexShader = nullptr;
+	pixelShader = nullptr;
+	baseColor = Color();
+	baseSpecular = 0.0f;
+	diffuse = nullptr;
+	normal = nullptr;
+	specular = nullptr;
+}
+
 Material::Material(std::string _uniqueID) {
 	uniqueID = _uniqueID;
-	baseColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	baseColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 	baseSpecular = 0.0f;
 	//With the default constructor, the object will use the renderManager's default shaders
 	vertexShader = nullptr;
@@ -19,7 +29,7 @@ Material::Material(std::string _uniqueID) {
 	specular = nullptr;
 }
 
-Material::Material(string _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, XMFLOAT4 _color, float _specular) {
+Material::Material(string _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, Color _color, float _specular) {
 	uniqueID = _uniqueID;
 	vertexShader = _vertexShader;
 	pixelShader = _pixelShader;
@@ -34,7 +44,7 @@ Material::Material(std::string _uniqueID, SimpleVertexShader* _vertexShader, Sim
 	uniqueID = _uniqueID;
 	vertexShader = _vertexShader;
 	pixelShader = _pixelShader;
-	baseColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	baseColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 	baseSpecular = _specular;
 	diffuse = _texture;
 	normal = nullptr;
@@ -45,7 +55,7 @@ Material::Material(std::string _uniqueID, SimpleVertexShader* _vertexShader, Sim
 	uniqueID = _uniqueID;
 	vertexShader = _vertexShader;
 	pixelShader = _pixelShader;
-	baseColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	baseColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 	baseSpecular = 0.0f;
 	diffuse = _diffuse;
 	normal = _normal;
@@ -63,9 +73,9 @@ SimpleVertexShader* Material::GetVertexShader() { return vertexShader; }
 
 SimplePixelShader* Material::GetPixelShader() { return pixelShader; }
 
-void Material::UploadPSData(DirectX::XMFLOAT3 _cameraPos, ID3D11SamplerState* _samplerState, SimplePixelShader* _pixelShader) {
+void Material::UploadPSData(Vector3 _cameraPos, ID3D11SamplerState* _samplerState, SimplePixelShader* _pixelShader) {
 	//Build texture channel toggle array
-	XMINT3 channelToggle = XMINT3(HasDiffuseTexture(),
+	DirectX::XMINT3 channelToggle = DirectX::XMINT3(HasDiffuseTexture(),
 								  HasNormalMap(),
 								  HasSpecularMap());
 	//Upload to pixel shader
@@ -88,9 +98,9 @@ void Material::UploadPSData(DirectX::XMFLOAT3 _cameraPos, ID3D11SamplerState* _s
 	_pixelShader->SetFloat("baseSpec", GetBaseSpecular());
 }
 
-DirectX::XMFLOAT4 Material::GetColor() { return baseColor; }
+Color Material::GetColor() { return baseColor; }
 
-void Material::SetColor(DirectX::XMFLOAT4 _newColor) { baseColor = _newColor; }
+void Material::SetColor(Color _newColor) { baseColor = _newColor; }
 
 float Material::GetBaseSpecular() { return baseSpecular; }
 
@@ -133,14 +143,4 @@ ID3D11ShaderResourceView* Material::GetSpecularSRV() {
 void Material::SetSpecularMap(Texture* _newSpecular) { specular = _newSpecular; }
 
 bool Material::HasSpecularMap() { return specular != nullptr; }
-
-Material::Material() {
-	vertexShader = nullptr;
-	pixelShader = nullptr;
-	baseColor = XMFLOAT4();
-	baseSpecular = 0.0f;
-	diffuse = nullptr;
-	normal = nullptr;
-	specular = nullptr;
-}
 #pragma endregion

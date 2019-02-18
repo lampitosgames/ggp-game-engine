@@ -11,8 +11,8 @@ protected:
 	float farPlane = 1000.0f;
 
 	//View and Projection Matrices
-	DirectX::XMFLOAT4X4 viewMatrix;
-	DirectX::XMFLOAT4X4 projMatrix;
+	DirectX::SimpleMath::Matrix viewMatrix;
+	DirectX::SimpleMath::Matrix projMatrix;
 public:
 	//Constructor. Passes transform data to parent.
 	//FOV is in radians
@@ -21,9 +21,9 @@ public:
 		   float _aspectRatio = 1.777777777f,
 		   float _nearPlane = 0.01f,
 		   float _farPlane = 1000.0f,
-		   DirectX::XMFLOAT3 _position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-		   DirectX::XMFLOAT3 _rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-		   DirectX::XMFLOAT3 _scale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
+		   DirectX::SimpleMath::Vector3 _position = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f),
+		   DirectX::SimpleMath::Vector3 _rotation = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f),
+		   DirectX::SimpleMath::Vector3 _scale = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
 
 	//Build view matrix from member data and return it
 	void CalculateViewMatrix();
@@ -47,9 +47,9 @@ public:
 	void SetFar(float _far);
 
 	//Get the view matrix
-	DirectX::XMFLOAT4X4 GetViewMatrix();
+	DirectX::SimpleMath::Matrix GetViewMatrix();
 	//Get the projection matrix
-	DirectX::XMFLOAT4X4 GetProjectionMatrix();
+	DirectX::SimpleMath::Matrix GetProjectionMatrix();
 };
 
 #endif //GGP_CAMERA_H

@@ -9,7 +9,7 @@
 #include "Camera.h"
 #include "Texture.h"
 
-using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 #pragma region Particle Data Struct
 ParticleData::ParticleData(UINT _maxCount) { generate(_maxCount); }
@@ -18,15 +18,15 @@ void ParticleData::generate(UINT _maxCount) {
 	particleCount = _maxCount;
 	aliveCount = 0;
 	release();
-	iPos = new float3[_maxCount];
-	iVel = new float3[_maxCount];
-	accel = new float3[_maxCount];
+	iPos = new Vector3[_maxCount];
+	iVel = new Vector3[_maxCount];
+	accel = new Vector3[_maxCount];
 	iRot = new float[_maxCount];
 	angularVel = new float[_maxCount];
 	startSize = new float[_maxCount];
 	endSize = new float[_maxCount];
-	startColor = new float4[_maxCount];
-	endColor = new float4[_maxCount];
+	startColor = new Vector4[_maxCount];
+	endColor = new Vector4[_maxCount];
 	startLife = new float[_maxCount];
 	remainLife = new float[_maxCount];
 	alive = new bool[_maxCount];
@@ -91,15 +91,15 @@ EmitterOptions::EmitterOptions() {
 	height = 0.5f;
 	partLifetime = 5.0f;
 	partInitialSpeed = 0.5f;
-	partAccel = float3(0.0f, 0.0f, 0.0f);
+	partAccel = Vector3(0.0f, 0.0f, 0.0f);
 	partAccelLSpace = true;
 	partInitialRot = 0.0f;
 	partAngularVel = 0.0f;
 	partRandomRotDir = true;
 	partStartSize = 0.1f;
 	partEndSize = 0.5f;
-	partStartColor = float4(1.0f, 0.1f, 0.1f, 0.3f);
-	partEndColor = float4(1.0f, 0.6f, 0.1f, 0.0f);
+	partStartColor = Vector4(1.0f, 0.1f, 0.1f, 0.3f);
+	partEndColor = Vector4(1.0f, 0.6f, 0.1f, 0.0f);
 }
 #pragma endregion
 
@@ -115,7 +115,7 @@ ParticleEmitter::ParticleEmitter(GameObject* _gameObject, EmitterOptions _settin
 	forceBufferUpdate = false;
 	GenerateParticleBuffers(ResourceManager::GetDevicePointer());
 	//Update world matrix
-	worldMatRaw = gameObject->transform.GetWorldMatrix(false);
+	worldMat = gameObject->transform.GetWorldMatrix(false);
 	//Init variables
 	totalPlayTime = 0.0f;
 	totalSpawned = 0;
@@ -148,7 +148,7 @@ void ParticleEmitter::Update(float _dt) {
 	}
 
 	//Update world matrix
-	worldMatRaw = gameObject->transform.GetWorldMatrix(false);
+	worldMat = gameObject->transform.GetWorldMatrix(false);
 
 	for (UINT i = 0; i < particles.aliveCount; i++) {
 		particles.remainLife[i] -= _dt;
@@ -221,18 +221,18 @@ void ParticleEmitter::GenerateParticleBuffers(ID3D11Device * _dxDevice) {
 	//Initialize the offsets array to all 0s
 	for (UINT i = 0; i < bufferCount; i++) { offsets[i] = 0; }
 	//Set the vertex stride
-	strides[vbSlots::BVERTEX_DATA] = sizeof(float2);
+	strides[vbSlots::BVERTEX_DATA] = sizeof(Vector2);
 
 	//Create a buffer for every particle property
-	MakeDynamicBuffer(sizeof(float3), vbSlots::BPOS, particles.iPos, _dxDevice);
-	MakeDynamicBuffer(sizeof(float3), vbSlots::BVEL, particles.iVel, _dxDevice);
-	MakeDynamicBuffer(sizeof(float3), vbSlots::BACCEL, particles.accel, _dxDevice);
+	MakeDynamicBuffer(sizeof(Vector3), vbSlots::BPOS, particles.iPos, _dxDevice);
+	MakeDynamicBuffer(sizeof(Vector3), vbSlots::BVEL, particles.iVel, _dxDevice);
+	MakeDynamicBuffer(sizeof(Vector3), vbSlots::BACCEL, particles.accel, _dxDevice);
 	MakeDynamicBuffer(sizeof(float), vbSlots::BROT, particles.iRot, _dxDevice);
 	MakeDynamicBuffer(sizeof(float), vbSlots::BANGULAR_VEL, particles.angularVel, _dxDevice);
 	MakeDynamicBuffer(sizeof(float), vbSlots::BSTART_SIZE, particles.startSize, _dxDevice);
 	MakeDynamicBuffer(sizeof(float), vbSlots::BEND_SIZE, particles.endSize,_dxDevice);
-	MakeDynamicBuffer(sizeof(float4), vbSlots::BSTART_COLOR, particles.startColor, _dxDevice);
-	MakeDynamicBuffer(sizeof(float4), vbSlots::BEND_COLOR, particles.endColor, _dxDevice);
+	MakeDynamicBuffer(sizeof(Vector4), vbSlots::BSTART_COLOR, particles.startColor, _dxDevice);
+	MakeDynamicBuffer(sizeof(Vector4), vbSlots::BEND_COLOR, particles.endColor, _dxDevice);
 	MakeDynamicBuffer(sizeof(float), vbSlots::BSTART_LIFE, particles.startLife, _dxDevice);
 	MakeDynamicBuffer(sizeof(float), vbSlots::BREMAIN_LIFE, particles.remainLife, _dxDevice);
 }
@@ -242,15 +242,15 @@ void ParticleEmitter::UploadParticleBuffers(ID3D11DeviceContext * _dxContext) {
 	UpdateDynamicBuffer(sizeof(float), vbSlots::BREMAIN_LIFE, particles.remainLife, _dxContext);
 
 	if (forceBufferUpdate) {
-		UpdateDynamicBuffer(sizeof(float3), vbSlots::BPOS, particles.iPos, _dxContext);
-		UpdateDynamicBuffer(sizeof(float3), vbSlots::BVEL, particles.iVel, _dxContext);
-		UpdateDynamicBuffer(sizeof(float3), vbSlots::BACCEL, particles.accel, _dxContext);
+		UpdateDynamicBuffer(sizeof(Vector3), vbSlots::BPOS, particles.iPos, _dxContext);
+		UpdateDynamicBuffer(sizeof(Vector3), vbSlots::BVEL, particles.iVel, _dxContext);
+		UpdateDynamicBuffer(sizeof(Vector3), vbSlots::BACCEL, particles.accel, _dxContext);
 		UpdateDynamicBuffer(sizeof(float), vbSlots::BROT, particles.iRot, _dxContext);
 		UpdateDynamicBuffer(sizeof(float), vbSlots::BANGULAR_VEL, particles.angularVel, _dxContext);
 		UpdateDynamicBuffer(sizeof(float), vbSlots::BSTART_SIZE, particles.startSize, _dxContext);
 		UpdateDynamicBuffer(sizeof(float), vbSlots::BEND_SIZE, particles.endSize, _dxContext);
-		UpdateDynamicBuffer(sizeof(float4), vbSlots::BSTART_COLOR, particles.startColor, _dxContext);
-		UpdateDynamicBuffer(sizeof(float4), vbSlots::BEND_COLOR, particles.endColor, _dxContext);
+		UpdateDynamicBuffer(sizeof(Vector4), vbSlots::BSTART_COLOR, particles.startColor, _dxContext);
+		UpdateDynamicBuffer(sizeof(Vector4), vbSlots::BEND_COLOR, particles.endColor, _dxContext);
 		UpdateDynamicBuffer(sizeof(float), vbSlots::BSTART_LIFE, particles.startLife, _dxContext);
 	}
 }
@@ -304,44 +304,37 @@ void ParticleEmitter::WakeNext() {
 			iy = ((float)(rand() % (UINT)(settings.radius * 2 * 1000)) / 1000.0f) - settings.radius;
 			iz = ((float)(rand() % (UINT)(settings.radius * 2 * 1000)) / 1000.0f) - settings.radius;
 		} while (ix*ix + iy*iy + iz*iz > settings.radius * settings.radius);
-		particles.iPos[i] = float3(ix, iy, iz);
+		particles.iPos[i] = Vector3(ix, iy, iz);
 		particles.iVel[i] = particles.iPos[i];
-		XMStoreFloat3(&particles.iVel[i], XMVectorScale(
-			XMVector3Normalize(XMLoadFloat3(&particles.iVel[i])),
-			settings.partInitialSpeed
-		));
+		particles.iVel[i].Normalize();
+		particles.iVel[i] *= settings.partInitialSpeed;
 		break;
 	case EmitterOptions::emitterShape::CUBE:
 		ix = ((float)(rand() % (UINT)(settings.radius * 2 * 1000)) / 1000.0f) - settings.radius;
 		iy = ((float)(rand() % (UINT)(settings.radius * 2 * 1000)) / 1000.0f) - settings.radius;
 		iz = ((float)(rand() % (UINT)(settings.radius * 2 * 1000)) / 1000.0f) - settings.radius;
-		particles.iPos[i] = float3(ix, iy, iz);
-		particles.iVel[i] = float3(0.0f, 0.0f, settings.partInitialSpeed);
+		particles.iPos[i] = Vector3(ix, iy, iz);
+		particles.iVel[i] = Vector3(0.0f, 0.0f, settings.partInitialSpeed);
 		break;
 	case EmitterOptions::emitterShape::CYLINDER:
 	case EmitterOptions::emitterShape::CONE:
 	default:
 		//Default to spawning every particle from the center with a velocity of +speed on the z axis
-		particles.iPos[i] = float3(0.0f, 0.0f, 0.0f);
-		particles.iVel[i] = float3(0.0f, 0.0f, settings.partInitialSpeed);
+		particles.iPos[i] = Vector3(0.0f, 0.0f, 0.0f);
+		particles.iVel[i] = Vector3(0.0f, 0.0f, settings.partInitialSpeed);
 		break;
 	}
-	//Load world matrix
-	XMMATRIX worldMat = XMLoadFloat4x4(&worldMatRaw);
 	//Transform position into world space
-	XMVECTOR localPos = XMLoadFloat3(&particles.iPos[i]);
-	XMStoreFloat3(&particles.iPos[i], XMVector3Transform(localPos, worldMat));
+	particles.iPos[i] = Vector3::Transform(particles.iPos[i], worldMat);
 	//Transform velocity into world space
-	XMMATRIX rotMat = XMLoadFloat4x4(&gameObject->transform.GetRotationMatrix());
-	XMVECTOR localVel = XMLoadFloat3(&particles.iVel[i]);
-	XMStoreFloat3(&particles.iVel[i], XMVector3Transform(localVel, rotMat));
+	Matrix rotMat = gameObject->transform.GetRotationMatrix();
+	particles.iVel[i] = Vector3::Transform(particles.iVel[i], rotMat);
 	//Set constant acceleration
 	particles.accel[i] = settings.partAccel;
 	//If acceleration is in local space
 	if (settings.partAccelLSpace && (particles.accel[i].x != 0 || particles.accel[i].y != 0 || particles.accel[i].z != 0)) {
 		//Transform by the world matrix
-		XMVECTOR localAccel = XMLoadFloat3(&particles.accel[i]);
-		XMStoreFloat3(&particles.accel[i], XMVector3Transform(localAccel, worldMat));
+		particles.accel[i] = Vector3::Transform(particles.accel[i], worldMat);
 	}
 
 	//Set initial rotation amount

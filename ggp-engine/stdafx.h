@@ -12,26 +12,7 @@
 #include <codecvt>
 
 // Common Libraries ---------------------
-#include <DirectXMath.h>
 #include <d3d11.h>
-
-/**************************************************************/
-/* Platform specifications                                    */
-/**************************************************************/
-#if defined( _WIN32 ) || defined ( _WIN64 )
-
-#include <DirectXMath.h>	// XMFLOAT3, XMFLOAT4X4
-#include <d3d11.h>
-
-using FileName = std::wstring;
-
-#else 
-
-// Using other another graphics library
-
-using FileName = std::string;
-
-#endif
 
 // Debug Settings --------------------
 #ifdef DEBUG
@@ -47,3 +28,4 @@ using FileName = std::string;
 // Typedefs -----------------------------
 
 typedef unsigned int UINT;
+typedef LPCWSTR FileName;

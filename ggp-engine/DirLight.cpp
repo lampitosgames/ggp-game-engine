@@ -4,9 +4,9 @@
 #include "DirLight.h"
 #include "GameObject.h"
 
-using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
-DirLight::DirLight(GameObject* _gameObject, XMFLOAT4 _color, XMFLOAT3 _direction, float _diffuseIntensity, float _ambientIntensity) {
+DirLight::DirLight(GameObject* _gameObject, Color _color, Vector3 _direction, float _diffuseIntensity, float _ambientIntensity) {
 	gameObject = _gameObject;
 	owner = _gameObject->GetUniqueID();
 	lightData = {
@@ -14,7 +14,7 @@ DirLight::DirLight(GameObject* _gameObject, XMFLOAT4 _color, XMFLOAT3 _direction
 		_direction,
 		_diffuseIntensity,
 		_ambientIntensity,
-		XMFLOAT3()
+		Vector3()
 	};
 	LightManager::GetInstance()->AddDirLight(this);
 }

@@ -1,7 +1,7 @@
 #ifndef GAME_FLYING_CAMERA_H
 #define GAME_FLYING_CAMERA_H
 
-#include <DirectXMath.h>
+#include <SimpleMath.h>
 #include <string>
 #include "Camera.h"
 struct InputEvent;
@@ -19,9 +19,9 @@ public:
 				 float _aspectRatio = 1.777777777f,
 				 float _nearPlane = 0.01f,
 				 float _farPlane = 1000.0f,
-				 DirectX::XMFLOAT3 _position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-				 DirectX::XMFLOAT3 _rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-				 DirectX::XMFLOAT3 _scale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
+				 DirectX::SimpleMath::Vector3 _position = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f),
+				 DirectX::SimpleMath::Vector3 _rotation = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f),
+				 DirectX::SimpleMath::Vector3 _scale = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
 
 	void Update(float _deltaTime);
 

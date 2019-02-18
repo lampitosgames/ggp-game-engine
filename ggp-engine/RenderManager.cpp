@@ -14,8 +14,6 @@
 #include "Camera.h"
 #include "Mesh.h"
 
-using namespace DirectX;
-
 RenderManager* RenderManager::instance = nullptr;
 
 RenderManager* RenderManager::GetInstance() {
@@ -94,9 +92,7 @@ void RenderManager::RemoveMeshRenderer(MeshRenderer * _meshRenderer) {
 
 void RenderManager::SetSkyboxPS(SimplePixelShader * aSkyPS) {
 	assert(aSkyPS != nullptr);
-
 	skyboxPS = aSkyPS;
-	skyboxPS->SetFloat4("dofPara", dofPara);
 }
 
 void RenderManager::Render() {
@@ -183,7 +179,6 @@ void RenderManager::Render() {
 		matTemp->UploadPSData(activeCamera->transform.position, samplerState, psTemp);
 		//Upload gamma correction
 		psTemp->SetFloat("gammaModifier", gammaCorrection);
-		psTemp->SetFloat4("dofPara", dofPara);
 		//Copy all buffer data
 		psTemp->CopyAllBufferData();
 
@@ -225,7 +220,6 @@ RenderManager::RenderManager() {
 	//Get an instance of the resource manager
 	resourceManager = ResourceManager::GetInstance();
 	lightManager = LightManager::GetInstance();
-	dofPara = DirectX::XMFLOAT4(2.0f, 8.0f, 20.0f, 15.0f);
 }
 
 RenderManager::~RenderManager() {
