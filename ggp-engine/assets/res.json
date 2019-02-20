@@ -1,0 +1,28 @@
+{
+  "meshe": {
+
+  },
+  "texture": {
+    "ice": {
+      "albedo": "assets/textures/PBR/ice_a.jpg",
+      "normal": "assets/textures/PBR/ice_n.jpg",
+      "rough": "assets/textures/PBR/ice_r.jpg",
+      "metal": null
+    },
+    "gold": {
+      "albedo": "assets/textures/PBR/gold_a.jpg",
+      "normal": "assets/textures/PBR/gold_n.jpg",
+      "rough": "assets/textures/PBR/gold_r.jpg",
+      "metal": "assets/textures/PBR/gold_m.jpg"
+    },
+    "bronze": {
+      "albedo": "assets/textures/PBR/bronze_a.jpg",
+      "normal": "assets/textures/PBR/bronze_n.jpg",
+      "rough": "assets/textures/PBR/bronze_r.jpg",
+      "metal": "assets/textures/PBR/bronze_m.jpg"
+    }
+  },
+  "shader": {
+
+  }
+}
