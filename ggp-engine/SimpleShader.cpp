@@ -69,7 +69,8 @@ void ISimpleShader::CleanUp() {
 // --------------------------------------------------------
 bool ISimpleShader::LoadShaderFile(FileName shaderFile) {
 	// Load the shader to a blob and ensure it worked
-	HRESULT hr = D3DReadFileToBlob(shaderFile, &shaderBlob);
+	std::wstring wsf = toWSTR(shaderFile);
+	HRESULT hr = D3DReadFileToBlob(wsf.c_str(), &shaderBlob);
 	if (hr != S_OK) {
 		return false;
 	}

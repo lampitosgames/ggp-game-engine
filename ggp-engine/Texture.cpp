@@ -7,7 +7,8 @@
 using namespace DirectX;
 
 Texture::Texture(FileName _uniqueID, ID3D11Device* _device, ID3D11DeviceContext* _context) {
-	HRESULT texSuccessfulLoad = CreateWICTextureFromFile(_device, _context, _uniqueID, 0, &shaderResourceView);
+	std::wstring wid = toWSTR(_uniqueID);
+	HRESULT texSuccessfulLoad = CreateWICTextureFromFile(_device, _context, wid.c_str(), 0, &shaderResourceView);
 	loadError = false;
 	if (texSuccessfulLoad != S_OK) {
 		std::cout << "Texture load error! " << _uniqueID << std::endl;

@@ -6,6 +6,7 @@
 #include <string>
 #include <d3d11.h>
 #include <SimpleMath.h>
+#include "json.hpp"
 
 #include "MeshGen.h"
 //Forward declaration
@@ -24,6 +25,8 @@ class ResourceManager {
 	//Helper object for generating meshes
 	static MeshGen meshGen;
 
+	//Object storing filepaths with a JSON filestructure
+	nlohmann::json res;
 	//Map of unique material resources
 	std::map<std::string, Material*> materialUIDMap;
 	//Map of unique mesh resources
@@ -48,6 +51,9 @@ public:
 	static ID3D11Device* GetDevicePointer();
 	static ID3D11DeviceContext* GetContextPointer();
 
+	//Get the resource structure
+	nlohmann::json GetRes();
+
 	/*
 		MATERIAL RESOURCE MANAGEMENT
 	*/
@@ -57,27 +63,27 @@ public:
 	//Has space for extra materials.
 	Material* AddMaterial(std::string _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, DirectX::SimpleMath::Color _color = DirectX::SimpleMath::Color(1.0f, 1.0f, 1.0f, 1.0f), float _specular = 0.0f);
 	//Same as above, but it fetches the shaders from their filepaths
-	Material* AddMaterial(std::string _uniqueID, FileName _vertexFilestring, FileName _pixelFilestring, DirectX::SimpleMath::Color _color = DirectX::SimpleMath::Color(1.0f, 1.0f, 1.0f, 1.0f), float _specular = 0.0f);
+	Material* AddMaterial(std::string _uniqueID, FileName _vertexFileFileName, FileName _pixelFileFileName, DirectX::SimpleMath::Color _color = DirectX::SimpleMath::Color(1.0f, 1.0f, 1.0f, 1.0f), float _specular = 0.0f);
 	//Same as above, but it uses a texture instead of a color
-	Material* AddMaterial(std::string _uniqueID, FileName _vertexFilestring, FileName _pixelFilestring, FileName _textureFilestring);
+	Material* AddMaterial(std::string _uniqueID, FileName _vertexFileFileName, FileName _pixelFileFileName, FileName _textureFileFileName);
 	//Same as above, but has all 3 texture channels (diffuse, normal, specular)
-	Material* AddMaterial(std::string _uniqueID, FileName _vertexFilestring, FileName _pixelFilestring, FileName _diffuseFilestring, FileName _normalFilestring, FileName _specularFilestring);
+	Material* AddMaterial(std::string _uniqueID, FileName _vertexFileFileName, FileName _pixelFileFileName, FileName _diffuseFileFileName, FileName _normalFileFileName, FileName _specularFileFileName);
 	//Create and return a new color material with this UID (If the id already exists, the existing mat gets returned)
 	Material* AddMaterial(std::string _uniqueID, DirectX::SimpleMath::Color _color, float _specular = 0.0f);
 	//Create and return a new basic texture material without shaders
-	Material* AddMaterial(std::string _uniqueID, FileName _textureFilestring);
+	Material* AddMaterial(std::string _uniqueID, FileName _textureFileFileName);
 
 	/// <summary>
 	/// Load in a DDS texture
 	/// </summary>
-	/// <param name="_textureFileString"></param>
+	/// <param name="_textureFileFileName"></param>
 	/// <returns></returns>
-	ID3D11ShaderResourceView* LoadSRV_DDS(FileName _textureFileString);
+	ID3D11ShaderResourceView* LoadSRV_DDS(FileName _textureFileFileName);
 	/*
 		PBR MATERIAL MANAGEMENT
 	*/
-	PBRMaterial* GetPBRMaterial(std::string _uniqueID, FileName _vertexShaderFilestring, FileName _pixelShaderFilestring, DirectX::SimpleMath::Color _color = DirectX::SimpleMath::Color(1.0f, 1.0f, 1.0f, 1.0f), float _roughness = 0.0f, float _metalness = 0.0f);
-	PBRMaterial* GetPBRMaterial(std::string _uniqueID, FileName _vertexShaderFilestring, FileName _pixelShaderFilestring, FileName _albedoFilestring, FileName _normalFilestring, FileName _roughnessFilestring, FileName _metalnessFilestring);
+	PBRMaterial* GetPBRMaterial(std::string _uniqueID, FileName _vertexShaderFileFileName, FileName _pixelShaderFileFileName, DirectX::SimpleMath::Color _color = DirectX::SimpleMath::Color(1.0f, 1.0f, 1.0f, 1.0f), float _roughness = 0.0f, float _metalness = 0.0f);
+	PBRMaterial* GetPBRMaterial(std::string _uniqueID, FileName _vertexShaderFileFileName, FileName _pixelShaderFileFileName, FileName _albedoFileFileName, FileName _normalFileFileName, FileName _roughnessFileFileName, FileName _metalnessFileFileName);
 
 	/*
 		SHADER MANAGEMENT
@@ -118,8 +124,8 @@ private:
 
 	//Private function to load a mesh from a file
 	Mesh* LoadMesh(std::string _filepath);
-    Mesh* LoadMeshOBJ( std::string _filepath );
-    Mesh* LoadMeshFBX( std::string _filepath );
+    Mesh* LoadMeshOBJ(std::string _filepath );
+    Mesh* LoadMeshFBX(std::string _filepath );
 
 	void CalculateTangents(int numVerts, int numIndices);
 };

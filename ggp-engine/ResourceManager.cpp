@@ -13,6 +13,7 @@
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 using namespace std;
+using json = nlohmann::json;
 
 ResourceManager* ResourceManager::instance = nullptr;
 ID3D11Device* ResourceManager::dxDevice = nullptr;
@@ -51,6 +52,10 @@ ID3D11DeviceContext* ResourceManager::GetContextPointer() {
 	return ResourceManager::dxContext;
 }
 
+json ResourceManager::GetRes() {
+	return this->res;
+}
+
 #pragma region Material Creation/Loading
 Material* ResourceManager::GetMaterial(string _uniqueID) {
 	//First, look up this material.  If it exists, just return it
@@ -80,42 +85,42 @@ Material* ResourceManager::AddMaterial(string _uniqueID, SimpleVertexShader* _ve
 	return newMaterial;
 }
 
-Material* ResourceManager::AddMaterial(string _uniqueID, FileName _vertexFilestring, FileName _pixelFilestring, Color _color, float _specular) {
+Material* ResourceManager::AddMaterial(string _uniqueID, FileName _vertexFileFileName, FileName _pixelFileFileName, Color _color, float _specular) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
 		return thisMaterial->second;
 	}
 	//Create a new material. Fetch shaders inline
-	Material* newMaterial = new Material(_uniqueID, GetVertexShader(_vertexFilestring), GetPixelShader(_pixelFilestring), _color, _specular);
+	Material* newMaterial = new Material(_uniqueID, GetVertexShader(_vertexFileFileName), GetPixelShader(_pixelFileFileName), _color, _specular);
 	//Add it to the map
 	materialUIDMap[_uniqueID] = newMaterial;
 	//Return new material
 	return newMaterial;
 }
 
-Material* ResourceManager::AddMaterial(std::string _uniqueID, FileName _vertexFilestring, FileName _pixelFilestring, FileName _textureFilestring) {
+Material* ResourceManager::AddMaterial(string _uniqueID, FileName _vertexFileFileName, FileName _pixelFileFileName, FileName _textureFileFileName) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
 		return thisMaterial->second;
 	}
 	//Create a new material. Fetch shaders inline
-	Material* newMaterial = new Material(_uniqueID, GetVertexShader(_vertexFilestring), GetPixelShader(_pixelFilestring), GetTexture(_textureFilestring));
+	Material* newMaterial = new Material(_uniqueID, GetVertexShader(_vertexFileFileName), GetPixelShader(_pixelFileFileName), GetTexture(_textureFileFileName));
 	//Add it to the map
 	materialUIDMap[_uniqueID] = newMaterial;
 	//Return new material
 	return newMaterial;
 }
 
-Material* ResourceManager::AddMaterial(std::string _uniqueID, FileName _vertexFilestring, FileName _pixelFilestring, FileName _diffuseFilestring, FileName _normalFilestring, FileName _specularFilestring) {
+Material* ResourceManager::AddMaterial(string _uniqueID, FileName _vertexFileFileName, FileName _pixelFileFileName, FileName _diffuseFileFileName, FileName _normalFileFileName, FileName _specularFileFileName) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
 		return thisMaterial->second;
 	}
 	//Create a new material. Fetch shaders inline
-	Material* newMaterial = new Material(_uniqueID, GetVertexShader(_vertexFilestring), GetPixelShader(_pixelFilestring), GetTexture(_diffuseFilestring), GetTexture(_normalFilestring), GetTexture(_specularFilestring));
+	Material* newMaterial = new Material(_uniqueID, GetVertexShader(_vertexFileFileName), GetPixelShader(_pixelFileFileName), GetTexture(_diffuseFileFileName), GetTexture(_normalFileFileName), GetTexture(_specularFileFileName));
 	//Add it to the map
 	materialUIDMap[_uniqueID] = newMaterial;
 	//Return new material
@@ -139,14 +144,14 @@ Material* ResourceManager::AddMaterial(string _uniqueID, Color _color, float _sp
 	//Return new material
 	return newMaterial;
 }
-Material* ResourceManager::AddMaterial(std::string _uniqueID, FileName _textureFilestring) {
+Material* ResourceManager::AddMaterial(string _uniqueID, FileName _textureFileFileName) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
 		return thisMaterial->second;
 	}
 	//Create a new material. Fetch shaders inline
-	Material* newMaterial = new Material(_uniqueID, nullptr, nullptr, GetTexture(_textureFilestring));
+	Material* newMaterial = new Material(_uniqueID, nullptr, nullptr, GetTexture(_textureFileFileName));
 	//Add it to the map
 	materialUIDMap[_uniqueID] = newMaterial;
 	//Return new material
@@ -155,13 +160,15 @@ Material* ResourceManager::AddMaterial(std::string _uniqueID, FileName _textureF
 #pragma endregion
 
 #pragma region PBR Material Loading
-ID3D11ShaderResourceView * ResourceManager::LoadSRV_DDS(FileName _textureFileString) {
+ID3D11ShaderResourceView * ResourceManager::LoadSRV_DDS(FileName _textureFileFileName) {
 	ID3D11ShaderResourceView* tempSRV = nullptr;
+
+	std::wstring wfn = toWSTR(_textureFileFileName);
 
 	HRESULT iResult = CreateDDSTextureFromFile(
 		dxDevice,
 		dxContext,
-		_textureFileString,
+		wfn.c_str(),
 		0,
 		&tempSRV
 	);
@@ -178,27 +185,27 @@ ID3D11ShaderResourceView * ResourceManager::LoadSRV_DDS(FileName _textureFileStr
 		return nullptr;
 	}
 }
-PBRMaterial* ResourceManager::GetPBRMaterial(std::string _uniqueID, FileName _vertexShaderFilestring, FileName _pixelShaderFilestring, Color _color, float _roughness, float _metalness) {
+PBRMaterial* ResourceManager::GetPBRMaterial(string _uniqueID, FileName _vertexShaderFileFileName, FileName _pixelShaderFileFileName, Color _color, float _roughness, float _metalness) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
 		return (PBRMaterial*)thisMaterial->second;
 	}
 	//Create a new material
-	PBRMaterial* newPBRMaterial = new PBRMaterial(_uniqueID, GetVertexShader(_vertexShaderFilestring), GetPixelShader(_pixelShaderFilestring), _color, _roughness, _metalness);
+	PBRMaterial* newPBRMaterial = new PBRMaterial(_uniqueID, GetVertexShader(_vertexShaderFileFileName), GetPixelShader(_pixelShaderFileFileName), _color, _roughness, _metalness);
 	//Add the material to the material map
 	materialUIDMap[_uniqueID] = newPBRMaterial;
 	//Return new material
 	return newPBRMaterial;
 }
-PBRMaterial* ResourceManager::GetPBRMaterial(std::string _uniqueID, FileName _vertexShaderFilestring, FileName _pixelShaderFilestring, FileName _albedoFilestring, FileName _normalFilestring, FileName _roughnessFilestring, FileName _metalnessFilestring) {
+PBRMaterial* ResourceManager::GetPBRMaterial(string _uniqueID, FileName _vertexShaderFileFileName, FileName _pixelShaderFileFileName, FileName _albedoFileFileName, FileName _normalFileFileName, FileName _roughnessFileFileName, FileName _metalnessFileFileName) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
 		return (PBRMaterial*)thisMaterial->second;
 	}
 	//Create a new material
-	PBRMaterial* newPBRMaterial = new PBRMaterial(_uniqueID, GetVertexShader(_vertexShaderFilestring), GetPixelShader(_pixelShaderFilestring), GetTexture(_albedoFilestring), GetTexture(_normalFilestring), GetTexture(_roughnessFilestring), GetTexture(_metalnessFilestring));
+	PBRMaterial* newPBRMaterial = new PBRMaterial(_uniqueID, GetVertexShader(_vertexShaderFileFileName), GetPixelShader(_pixelShaderFileFileName), GetTexture(_albedoFileFileName), GetTexture(_normalFileFileName), GetTexture(_roughnessFileFileName), GetTexture(_metalnessFileFileName));
 	//Add the material to the material map
 	materialUIDMap[_uniqueID] = newPBRMaterial;
 	//Return new material
@@ -268,7 +275,7 @@ Mesh* ResourceManager::GetMesh(string _uniqueID) {
 	return newMesh;
 }
 
-Mesh* ResourceManager::GetTerrain(std::string _uniqueID, int _resolution, float _heightScale, float _uvScale) {
+Mesh* ResourceManager::GetTerrain(string _uniqueID, int _resolution, float _heightScale, float _uvScale) {
 	//If the mesh already exists, return it
 	auto thisTerrain = meshUIDMap.find(_uniqueID);
 	if (thisTerrain != meshUIDMap.end()) {
@@ -312,7 +319,7 @@ Mesh* ResourceManager::GenerateSphere(float _radius, int _subdivs, float _uvScal
 Mesh* ResourceManager::LoadMesh(string _filepath) {// File input object
 
 // Check the file type of this object
-	std::string extension = _filepath.substr(_filepath.find_last_of(".") + 1);
+	string extension = _filepath.substr(_filepath.find_last_of(".") + 1);
 	if (extension == "obj" || extension == "OBJ") {
 		return LoadMeshOBJ(_filepath);
 	}
@@ -324,7 +331,7 @@ Mesh* ResourceManager::LoadMesh(string _filepath) {// File input object
 	}
 }
 
-Mesh * ResourceManager::LoadMeshOBJ(std::string _filepath) {
+Mesh * ResourceManager::LoadMeshOBJ(string _filepath) {
 	std::ifstream obj(_filepath);
 
 	// Check for successful open
@@ -475,7 +482,7 @@ Mesh * ResourceManager::LoadMeshOBJ(std::string _filepath) {
 	return newMesh;
 }
 
-Mesh * ResourceManager::LoadMeshFBX(std::string _filepath) {
+Mesh * ResourceManager::LoadMeshFBX(string _filepath) {
 	DEBUG_PRINT("No FBX file support! Stoping file load...");
 
 	return nullptr;
@@ -563,7 +570,10 @@ Texture* ResourceManager::GetTexture(FileName _uniqueID) {
 	return newTex;
 }
 
-ResourceManager::ResourceManager() {}
+ResourceManager::ResourceManager() {
+	std::ifstream i(L"assets/res.json");
+	i >> this->res;
+}
 
 ResourceManager::~ResourceManager() {
 	Release();

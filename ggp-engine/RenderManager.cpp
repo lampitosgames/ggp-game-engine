@@ -32,8 +32,8 @@ void RenderManager::ReleaseInstance() {
 
 void RenderManager::Start() {
 	//Load default shaders
-	defaultVertexShader = resourceManager->GetVertexShader(L"VertexShader.cso");
-	defaultPixelShader = resourceManager->GetPixelShader(L"PhongPShader.cso");
+	defaultVertexShader = resourceManager->GetVertexShader("VertexShader.cso");
+	defaultPixelShader = resourceManager->GetPixelShader("PhongPShader.cso");
 	//Build the texture sampler state
 	D3D11_SAMPLER_DESC samplerDesc = {};
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -49,9 +49,9 @@ void RenderManager::Start() {
 
 	// Load skybox options ----------------------------------------
 	skyboxMesh = resourceManager->GetMesh("assets/meshes/cube.obj");
-	skyboxVS = resourceManager->GetVertexShader(L"SkyVS.cso");
-	skyboxPS = resourceManager->GetPixelShader(L"SkyPS.cso");
-	skyboxSrv = resourceManager->LoadSRV_DDS(L"assets/textures/nightSkybox.dds");
+	skyboxVS = resourceManager->GetVertexShader("SkyVS.cso");
+	skyboxPS = resourceManager->GetPixelShader("SkyPS.cso");
+	skyboxSrv = resourceManager->LoadSRV_DDS("assets/textures/nightSkybox.dds");
 
 	D3D11_RASTERIZER_DESC rs = {};
 	rs.FillMode = D3D11_FILL_SOLID;

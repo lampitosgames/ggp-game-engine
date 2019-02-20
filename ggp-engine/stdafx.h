@@ -25,7 +25,19 @@
 
 #endif
 
+//Convert a std::string to a LPCWSTR
+static std::wstring toWSTR(std::string _str) {
+	int len;
+	int slength = (int)_str.length() + 1;
+	len = MultiByteToWideChar(CP_ACP, 0, _str.c_str(), slength, 0, 0);
+	wchar_t* buf = new wchar_t[len];
+	MultiByteToWideChar(CP_ACP, 0, _str.c_str(), slength, buf, len);
+	std::wstring r(buf);
+	delete[] buf;
+	return r;
+}
+
 // Typedefs -----------------------------
 
 typedef unsigned int UINT;
-typedef LPCWSTR FileName;
+typedef std::string FileName;

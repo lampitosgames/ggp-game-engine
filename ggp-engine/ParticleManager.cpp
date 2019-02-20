@@ -42,8 +42,8 @@ void ParticleManager::Init() {
 		{"REMAIN_LIFE", 0, DXGI_FORMAT_R32_FLOAT, vbSlots::BREMAIN_LIFE, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1}
 	};
 	//Create default particle shaders
-	defaultPartVS = resourceManager->GetVertexShader(L"ParticleVertexShader.cso");
-	defaultPartPS = resourceManager->GetPixelShader(L"ParticlePixelShader.cso");
+	defaultPartVS = resourceManager->GetVertexShader("ParticleVertexShader.cso");
+	defaultPartPS = resourceManager->GetPixelShader("ParticlePixelShader.cso");
 	//Create the actual input layout resource and pass it to the vertex shader
 	HRESULT asdfresult = ResourceManager::GetDevicePointer()->CreateInputLayout(&layout[0], (UINT)layout.size(), defaultPartVS->GetShaderBlob()->GetBufferPointer(), defaultPartVS->GetShaderBlob()->GetBufferSize(), &inputLayout);
 	defaultPartVS->SetInputLayout(inputLayout, true);
