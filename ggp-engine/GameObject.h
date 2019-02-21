@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include <SimpleMath.h>
+#include "json.hpp"
 #include "GameObjectTypes.h"
 #include "InputEvent.h"
 #include "Transform.h"
@@ -36,14 +37,16 @@ protected:
 	std::vector<GameObject*> children;
 	UINT childCount;
 
+	//JSON map of resource filepaths
+	nlohmann::json res;
+
 	//Pointers to required singletons (used for component management)
 	RenderManager* renderManager;
 	InputManager* inputManager;
 	ResourceManager* resourceManager;
 	LightManager* lightManager;
 	ParticleManager* particleManager;
-
-	ComponentManager* componentManager = nullptr;
+	ComponentManager* componentManager;
 
 public:
 

@@ -31,9 +31,11 @@ void RenderManager::ReleaseInstance() {
 }
 
 void RenderManager::Start() {
+	//Reference to the resource json map
+	nlohmann::json res = ResourceManager::GetRes();
 	//Load default shaders
-	defaultVertexShader = resourceManager->GetVertexShader("VertexShader.cso");
-	defaultPixelShader = resourceManager->GetPixelShader("PhongPShader.cso");
+	defaultVertexShader = resourceManager->GetVertexShader(res["shdr"]["vert"]["default"]);
+	defaultPixelShader = resourceManager->GetPixelShader(res["shdr"]["pix"]["phong"]);
 	//Build the texture sampler state
 	D3D11_SAMPLER_DESC samplerDesc = {};
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -48,10 +50,10 @@ void RenderManager::Start() {
 	}
 
 	// Load skybox options ----------------------------------------
-	skyboxMesh = resourceManager->GetMesh("assets/meshes/cube.obj");
-	skyboxVS = resourceManager->GetVertexShader("SkyVS.cso");
-	skyboxPS = resourceManager->GetPixelShader("SkyPS.cso");
-	skyboxSrv = resourceManager->LoadSRV_DDS("assets/textures/nightSkybox.dds");
+	skyboxMesh = resourceManager->GetMesh(res["mesh"]["cube"]);
+	skyboxVS = resourceManager->GetVertexShader(res["shdr"]["vert"]["skybox"]);
+	skyboxPS = resourceManager->GetPixelShader(res["shdr"]["pix"]["skybox"]);
+	skyboxSrv = resourceManager->LoadSRV_DDS(res["tex"]["nightSky"]);
 
 	D3D11_RASTERIZER_DESC rs = {};
 	rs.FillMode = D3D11_FILL_SOLID;

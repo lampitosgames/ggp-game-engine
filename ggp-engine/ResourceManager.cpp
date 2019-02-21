@@ -13,15 +13,21 @@
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 using namespace std;
+using json = nlohmann::json;
 
 ResourceManager* ResourceManager::instance = nullptr;
 ID3D11Device* ResourceManager::dxDevice = nullptr;
 ID3D11DeviceContext* ResourceManager::dxContext = nullptr;
 MeshGen ResourceManager::meshGen;
+json ResourceManager::res;
 
 ResourceManager* ResourceManager::GetInstance() {
 	if (instance == nullptr) {
 		instance = new ResourceManager();
+	}
+	if (res == json()) {
+		std::ifstream i("assets/res.json");
+		i >> res;
 	}
 	return instance;
 }
@@ -49,6 +55,10 @@ ID3D11Device* ResourceManager::GetDevicePointer() {
 
 ID3D11DeviceContext* ResourceManager::GetContextPointer() {
 	return ResourceManager::dxContext;
+}
+
+nlohmann::json ResourceManager::GetRes() {
+	return ResourceManager::res;
 }
 
 #pragma region Material Creation/Loading

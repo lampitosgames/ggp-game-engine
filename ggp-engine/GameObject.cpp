@@ -36,6 +36,8 @@ GameObject::GameObject(ResName _uniqueID, Vector3 _position, Vector3 _rotation, 
 	//Set parent to nullptr
 	parent = nullptr;
 	parentHasTransform = false;
+	//Get a reference to the resource map
+	res = ResourceManager::GetRes();
 }
 
 

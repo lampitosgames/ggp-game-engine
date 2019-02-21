@@ -2,6 +2,7 @@
 
 #include "PBRDemoScene.h"
 #include <SimpleMath.h>
+#include "json.hpp"
 #include "InputManager.h"
 #include "RenderManager.h"
 #include "ResourceManager.h"
@@ -18,22 +19,32 @@
 
 using namespace DirectX::SimpleMath;
 using namespace std;
+using json = nlohmann::json;
 
 void PBRDemoScene::Init() {
 	Scene::Init();
 
 	Material* blueMatte = resourceManager->AddMaterial("blueMatte", Color(0.0f, 0.0f, 1.0f, 1.0f), 0.0f);
 	PBRMaterial* pbrMats[7];
-	//Create a PBR material for testing
-	pbrMats[0] = resourceManager->GetPBRMaterial("icePBR", "VertexShader.cso", "PBRPShader.cso", "assets/textures/PBR/ice_a.jpg", "assets/textures/PBR/ice_n.jpg", "assets/textures/PBR/ice_r.jpg", "");
-	pbrMats[1] = resourceManager->GetPBRMaterial("goldPBR", "VertexShader.cso", "PBRPShader.cso", "assets/textures/PBR/gold_a.jpg", "assets/textures/PBR/gold_n.jpg", "assets/textures/PBR/gold_r.jpg", "assets/textures/PBR/gold_m.jpg");
-	pbrMats[2] = resourceManager->GetPBRMaterial("bronzePBR", "VertexShader.cso", "PBRPShader.cso", "assets/textures/PBR/bronze_a.png", "assets/textures/PBR/bronze_n.png", "assets/textures/PBR/bronze_r.png", "assets/textures/PBR/bronze_m.png");
-	pbrMats[3] = resourceManager->GetPBRMaterial("woodFloorPBR", "VertexShader.cso", "PBRPShader.cso", "assets/textures/PBR/woodFloor_a.jpg", "assets/textures/PBR/woodFloor_n.jpg", "assets/textures/PBR/woodFloor_r.jpg", "");
-	pbrMats[4] = resourceManager->GetPBRMaterial("marblePBR", "VertexShader.cso", "PBRPShader.cso", "assets/textures/PBR/marble_a.jpg", "assets/textures/PBR/marble_n.jpg", "assets/textures/PBR/marble_r.jpg", "");
-	pbrMats[5] = resourceManager->GetPBRMaterial("tactilePavingPBR", "VertexShader.cso", "PBRPShader.cso", "assets/textures/PBR/tactilePaving_a.jpg", "assets/textures/PBR/tactilePaving_n.jpg", "assets/textures/PBR/tactilePaving_r.jpg", "");
-	pbrMats[6] = resourceManager->GetPBRMaterial("gravelPBR", "VertexShader.cso", "PBRPShader.cso", "assets/textures/PBR/gravel_a.jpg", "assets/textures/PBR/gravel_n.jpg", "assets/textures/PBR/gravel_r.jpg", "");
+
+	//Create PBR mats
+	pbrMats[0] = resourceManager->GetPBRMaterial(
+		"icePBR", 
+		res["shdr"]["vert"]["default"], 
+		res["shdr"]["pix"]["pbr"], 
+		res["tex"]["ice"]["a"], 
+		res["tex"]["ice"]["n"], 
+		res["tex"]["ice"]["r"], 
+		res["tex"]["ice"]["m"]
+	);
+	pbrMats[1] = resourceManager->GetPBRMaterial("goldPBR", res["shdr"]["vert"]["default"], res["shdr"]["pix"]["pbr"], res["tex"]["gold"]["a"], res["tex"]["gold"]["n"], res["tex"]["gold"]["r"], res["tex"]["gold"]["m"]);
+	pbrMats[2] = resourceManager->GetPBRMaterial("bronzePBR", res["shdr"]["vert"]["default"], res["shdr"]["pix"]["pbr"], res["tex"]["bronze"]["a"], res["tex"]["bronze"]["n"], res["tex"]["bronze"]["r"], res["tex"]["bronze"]["m"]);
+	pbrMats[3] = resourceManager->GetPBRMaterial("woodFloorPBR", res["shdr"]["vert"]["default"], res["shdr"]["pix"]["pbr"], res["tex"]["wood"]["a"], res["tex"]["wood"]["n"], res["tex"]["wood"]["r"], res["tex"]["wood"]["m"]);
+	pbrMats[4] = resourceManager->GetPBRMaterial("marblePBR", res["shdr"]["vert"]["default"], res["shdr"]["pix"]["pbr"], res["tex"]["marble"]["a"], res["tex"]["marble"]["n"], res["tex"]["marble"]["r"], res["tex"]["marble"]["m"]);
+	pbrMats[5] = resourceManager->GetPBRMaterial("tactilePavingPBR", res["shdr"]["vert"]["default"], res["shdr"]["pix"]["pbr"], res["tex"]["tacpav"]["a"], res["tex"]["tacpav"]["n"], res["tex"]["tacpav"]["r"], res["tex"]["tacpav"]["m"]);
+	pbrMats[6] = resourceManager->GetPBRMaterial("gravelPBR", res["shdr"]["vert"]["default"], res["shdr"]["pix"]["pbr"], res["tex"]["gravel"]["a"], res["tex"]["gravel"]["n"], res["tex"]["gravel"]["r"], res["tex"]["gravel"]["m"]);
 	//Load a sphere mesh
-	Mesh* sphereMesh = resourceManager->GetMesh("assets/meshes/sphere.obj");
+	Mesh* sphereMesh = resourceManager->GetMesh(res["mesh"]["sphere"]);
 	//Mesh* sphereMesh = resourceManager->GenerateCube(1.0f, 2.0f);
 	//Create a line of white spheres.
 	for (UINT i = 0; i < 7; i++) {
@@ -94,7 +105,7 @@ void PBRDemoScene::Init() {
 
 	////Load terrain
 	//GameObject* terrain = new GameObject("testTerrain");
-	//Mesh* terrainMesh = resourceManager->GetTerrain("assets/terrain/testTerrain.raw", 513, 100.0f);
+	//Mesh* terrainMesh = resourceManager->GetTerrain(res["tera"]["testTerrain"], 513, 100.0f);
 	//AddChild(terrain);
 	//terrain->AddComponent<MeshRenderer>(terrain, terrainMesh, pbrMats[0]);
 	//terrain->transform.position.y = -3.0f;

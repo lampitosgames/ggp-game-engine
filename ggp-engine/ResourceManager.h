@@ -24,6 +24,7 @@ class ResourceManager {
 	static ID3D11DeviceContext* dxContext;
 	//Helper object for generating meshes
 	static MeshGen meshGen;
+	static nlohmann::json res;
 
 	//Map of unique material resources
 	std::map<ResName, Material*> materialUIDMap;
@@ -48,6 +49,8 @@ public:
 	static void SetContextPointer(ID3D11DeviceContext* _dxContext);
 	static ID3D11Device* GetDevicePointer();
 	static ID3D11DeviceContext* GetContextPointer();
+	//Get the resource JSON structure
+	static nlohmann::json GetRes();
 
 	/*
 		MATERIAL RESOURCE MANAGEMENT

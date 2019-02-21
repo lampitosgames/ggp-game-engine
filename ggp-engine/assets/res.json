@@ -1,0 +1,84 @@
+{
+  "tex": {
+    "ice": {
+      "a": "assets/textures/PBR/ice_a.jpg",
+      "n": "assets/textures/PBR/ice_n.jpg",
+      "r": "assets/textures/PBR/ice_r.jpg",
+      "m": ""
+    },
+    "gold": {
+      "a": "assets/textures/PBR/gold_a.jpg",
+      "n": "assets/textures/PBR/gold_n.jpg",
+      "r": "assets/textures/PBR/gold_r.jpg",
+      "m": "assets/textures/PBR/gold_m.jpg"
+    },
+    "bronze": {
+      "a": "assets/textures/PBR/bronze_a.png",
+      "n": "assets/textures/PBR/bronze_n.png",
+      "r": "assets/textures/PBR/bronze_r.png",
+      "m": "assets/textures/PBR/bronze_m.png"
+    },
+    "wood": {
+      "a": "assets/textures/PBR/woodFloor_a.jpg",
+      "n": "assets/textures/PBR/woodFloor_n.jpg",
+      "r": "assets/textures/PBR/woodFloor_r.jpg",
+      "m": ""
+    },
+    "marble": {
+      "a": "assets/textures/PBR/marble_a.jpg",
+      "n": "assets/textures/PBR/marble_n.jpg",
+      "r": "assets/textures/PBR/marble_r.jpg",
+      "m": ""
+    },
+    "tacpav": {
+      "a": "assets/textures/PBR/tactilePaving_a.jpg",
+      "n": "assets/textures/PBR/tactilePaving_n.jpg",
+      "r": "assets/textures/PBR/tactilePaving_r.jpg",
+      "m": ""
+    },
+    "gravel": {
+      "a": "assets/textures/PBR/gravel_a.jpg",
+      "n": "assets/textures/PBR/gravel_n.jpg",
+      "r": "assets/textures/PBR/gravel_r.jpg",
+      "m": ""
+    },
+    "nightSky": "assets/textures/nightSkybox.dds",
+    "sunnySky": "assets/textures/SunnyCubeMap.dds",
+    "floor01": {
+      "c": "assets/textures/floor01_c.png",
+      "n": "assets/textures/floor01_n.png",
+      "s": "assets/textures/floor01_s.png"
+    },
+    "stone01": {
+      "c": "assets/textures/stone01_c.png",
+      "n": "assets/textures/stone01_n.png",
+      "s": "assets/textures/stone01_s.png"
+    },
+    "part": "assets/textures/particles/particle.jpg",
+    "firepart": "assets/textures/particles/fireParticle.jpg"
+  },
+  "mesh": {
+    "sphere": "assets/meshes/sphere.obj",
+    "cone": "assets/meshes/cone.obj",
+    "cube": "assets/meshes/cube.obj",
+    "cylinder": "assets/meshes/cylinder.obj",
+    "helix": "assets/meshes/helix.obj",
+    "torus": "assets/meshes/torus.obj"
+  },
+  "shdr": {
+    "vert": {
+      "default": "VertexShader.cso",
+      "skybox": "SkyVS.cso",
+      "particle": "ParticleVertexShader.cso"
+    },
+    "pix": {
+      "phong": "PhongPShader.cso",
+      "skybox": "SkyPS.cso",
+      "particle": "ParticlePixelShader.cso",
+      "pbr": "PBRPShader.cso"
+    }
+  },
+  "tera": {
+    "testTerrain": "assets/terrain/testTerrain.raw"
+  }
+}
