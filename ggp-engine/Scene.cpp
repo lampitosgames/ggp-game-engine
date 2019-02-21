@@ -3,7 +3,7 @@
 #include "Scene.h"
 #include "Camera.h"
 
-Scene::Scene(std::string _uniqueID) : GameObject(_uniqueID) {
+Scene::Scene(ResName _uniqueID) : GameObject(_uniqueID) {
 	type = GOType::SCENE;
 	activeCamera = nullptr;
 	totalTime = 0.0f;

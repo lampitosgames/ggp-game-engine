@@ -19,10 +19,10 @@ typedef unsigned int UINT;
 class GameObject {
 public:
     //Static, engine-wide map of all gameobjects.
-    static std::map<std::string, GameObject*> goUIDMap;
+    static std::map<ResName, GameObject*> goUIDMap;
 protected:
 	//Unique identifier of this object. Can be anything, must be unique.
-	std::string uniqueID;
+	ResName uniqueID;
 	//Every game object (and dervived type) will have a unique type so casting can be done
 	GOType type;
 	//Is the game object active or not? Defaults to true
@@ -47,7 +47,7 @@ protected:
 
 public:
 
-	GameObject(std::string _uniqueID = "NA",
+	GameObject(ResName _uniqueID = "NA",
 			   DirectX::SimpleMath::Vector3 _position = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f),
 			   DirectX::SimpleMath::Vector3 _rotation = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f),
 			   DirectX::SimpleMath::Vector3 _scale = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
@@ -61,7 +61,7 @@ public:
 	//static GameObject* GetGameObject(std::string _uniqueID);
 	//Override of GetGameObject that lets you pass in a type
 	template<typename T>
-	static T* GetGameObject(std::string _uniqueID) {
+	static T* GetGameObject(ResName _uniqueID) {
 		//Find an object in the map with this unique ID
 		//We have to use the find() function because accessing a 
 		//pair that doesn't exist directly creates an empty one for some reason
@@ -91,15 +91,15 @@ public:
 	//Adds a child
 	virtual void AddChild(GameObject* _newChild);
 	//Removes a child without deleting the object
-	void RemoveChild(std::string _uniqueID, bool _decrimentChildCount = true);
+	void RemoveChild(ResName _uniqueID, bool _decrimentChildCount = true);
 	void RemoveChild(UINT _index, bool _decrimentChildCount = true);
 	//Removes and deletes a child object
-	void DeleteChild(std::string _uniqueID);
+	void DeleteChild(ResName _uniqueID);
 	void DeleteChild(UINT _index);
 	//Check if a child exists
-	bool HasChild(std::string _uniqueID);
+	bool HasChild(ResName _uniqueID);
 	//Get the child
-	GameObject* GetChild(std::string _uniqueID);
+	GameObject* GetChild(ResName _uniqueID);
 	GameObject* GetChild(UINT _index);
 
 	//Get one of this object's components

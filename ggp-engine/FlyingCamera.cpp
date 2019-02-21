@@ -10,7 +10,7 @@ using namespace std;
 using namespace DirectX::SimpleMath;
 
 //Dummy constructor that passes things to the parent camera
-FlyingCamera::FlyingCamera(string _uniqueID,
+FlyingCamera::FlyingCamera(ResName _uniqueID,
 						   float _fov,
 						   float _aspectRatio,
 						   float _nearPlane,

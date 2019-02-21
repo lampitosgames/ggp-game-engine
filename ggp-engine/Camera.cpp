@@ -6,7 +6,7 @@
 using namespace DirectX::SimpleMath;
 using namespace DirectX;
 
-Camera::Camera(std::string _uniqueID,
+Camera::Camera(ResName _uniqueID,
 			   float _fov,
 			   float _aspectRatio,
 			   float _nearPlane,

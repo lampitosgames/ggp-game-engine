@@ -14,7 +14,7 @@ class FlyingCamera : public Camera {
 
 public:
 	//Dummy constructor.  Simply passes values to parent
-	FlyingCamera(std::string _uniqueID = "NA",
+	FlyingCamera(ResName _uniqueID = "NA",
 				 float _fov = 1.3962634f,
 				 float _aspectRatio = 1.777777777f,
 				 float _nearPlane = 0.01f,

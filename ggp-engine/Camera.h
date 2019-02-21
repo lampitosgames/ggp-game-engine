@@ -16,7 +16,7 @@ protected:
 public:
 	//Constructor. Passes transform data to parent.
 	//FOV is in radians
-	Camera(std::string _uniqueID = "NA",
+	Camera(ResName _uniqueID = "NA",
 		   float _fov = 1.3962634f,
 		   float _aspectRatio = 1.777777777f,
 		   float _nearPlane = 0.01f,

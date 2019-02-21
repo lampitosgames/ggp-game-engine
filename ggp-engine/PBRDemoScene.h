@@ -5,7 +5,7 @@
 
 class PBRDemoScene : public Scene {
 public:
-	PBRDemoScene(std::string _uniqueID) : Scene(_uniqueID) {}
+	PBRDemoScene(ResName _uniqueID) : Scene(_uniqueID) {}
 	void Init();
 	void Start();
 	void Update(float _deltaTime);

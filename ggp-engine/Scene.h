@@ -10,7 +10,7 @@ protected:
 	Camera* activeCamera;
 	float totalTime;
 public:
-	Scene(std::string _uniqueID);
+	Scene(ResName _uniqueID);
 
 	//Extra init method that runs before start. Useful to create objects and set up the scene
 	virtual void Init();

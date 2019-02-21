@@ -5,7 +5,7 @@
 
 class DebugScene : public Scene {
 public:
-	DebugScene(std::string _uniqueID) : Scene(_uniqueID) {}
+	DebugScene(ResName _uniqueID) : Scene(_uniqueID) {}
 	void Init();
 	void Start();
 	void Update(float _deltaTime);

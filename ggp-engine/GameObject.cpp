@@ -11,10 +11,10 @@
 using namespace std;
 using namespace DirectX::SimpleMath;
 
-map<std::string, GameObject*> GameObject::goUIDMap = map<std::string, GameObject*>();
+map<ResName, GameObject*> GameObject::goUIDMap = map<ResName, GameObject*>();
 
 
-GameObject::GameObject(string _uniqueID, Vector3 _position, Vector3 _rotation, Vector3 _scale) {
+GameObject::GameObject(ResName _uniqueID, Vector3 _position, Vector3 _rotation, Vector3 _scale) {
 	Init();
 	//Ensure the provided ID is unique
 	GenerateUID(_uniqueID);
@@ -77,7 +77,7 @@ void GameObject::AddChild(GameObject* _newChild) {
 	++childCount;
 }
 
-void GameObject::RemoveChild(std::string _uniqueID, bool _decrimentChildCount) {
+void GameObject::RemoveChild(ResName _uniqueID, bool _decrimentChildCount) {
 	for (UINT i = 0; i < childCount; i++) {
 		if (children[i] == nullptr) { continue; }
 		if (children[i]->uniqueID == _uniqueID) {
@@ -107,7 +107,7 @@ void GameObject::RemoveChild(UINT _index, bool _decrimentChildCount) {
 	}
 }
 
-void GameObject::DeleteChild(std::string _uniqueID) {
+void GameObject::DeleteChild(ResName _uniqueID) {
 	for (UINT i = 0; i < childCount; i++) {
 		if (children[i]->uniqueID == _uniqueID) {
 			//Swap this child with the last child
@@ -129,7 +129,7 @@ void GameObject::DeleteChild(UINT _index) {
 	}
 }
 
-bool GameObject::HasChild(std::string _uniqueID) {
+bool GameObject::HasChild(ResName _uniqueID) {
 	for (UINT i = 0; i < childCount; i++) {
 		if (children[i]->uniqueID == _uniqueID) {
 			return true;
@@ -138,7 +138,7 @@ bool GameObject::HasChild(std::string _uniqueID) {
 	return false;
 }
 
-GameObject* GameObject::GetChild(std::string _uniqueID) {
+GameObject* GameObject::GetChild(ResName _uniqueID) {
 	for (UINT i = 0; i < childCount; i++) {
 		if (children[i]->uniqueID == _uniqueID) {
 			return children[i];
