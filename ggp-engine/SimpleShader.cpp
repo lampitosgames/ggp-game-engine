@@ -67,9 +67,9 @@ void ISimpleShader::CleanUp() {
 // 
 // Returns true if shader is loaded properly, false otherwise
 // --------------------------------------------------------
-bool ISimpleShader::LoadShaderFile(FileName shaderFile) {
+bool ISimpleShader::LoadShaderFile(ResName shaderFile) {
 	// Load the shader to a blob and ensure it worked
-	HRESULT hr = D3DReadFileToBlob(shaderFile, &shaderBlob);
+	HRESULT hr = D3DReadFileToBlob(sconvert.from_bytes(shaderFile).c_str(), &shaderBlob);
 	if (hr != S_OK) {
 		return false;
 	}

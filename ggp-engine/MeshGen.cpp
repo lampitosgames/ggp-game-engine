@@ -193,7 +193,7 @@ MeshGen::MeshGen(ID3D11Device* _dxDevice) {
 	dxDevice = _dxDevice;
 }
 
-Mesh* MeshGen::LoadTerrain(std::string _rawFilepath, UINT _resolution, float _heightScale, float _uvScale) {
+Mesh* MeshGen::LoadTerrain(ResName _rawFilepath, UINT _resolution, float _heightScale, float _uvScale) {
 	StartMesh();
 	unsigned char* heights = new unsigned char[_resolution * _resolution];
 	std::ifstream file;

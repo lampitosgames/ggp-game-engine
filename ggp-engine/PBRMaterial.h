@@ -11,16 +11,16 @@ class PBRMaterial : public Material {
 public:
 	//Blank material constructor. Useful for manually putting all textures into place
 	//Doesn't call base constructor since PBR materials need to be set up differently
-	PBRMaterial(std::string _uniqueID);
+	PBRMaterial(ResName _uniqueID);
 	//Raw value constructor (no texture resources)
-	PBRMaterial(std::string _uniqueID,
+	PBRMaterial(ResName _uniqueID,
 				SimpleVertexShader* _vertexShader,
 				SimplePixelShader* _pixelShader,
 				DirectX::SimpleMath::Color _color = DirectX::SimpleMath::Color(1.0f, 1.0f, 1.0f, 1.0f),
 				float _roughness = 0.0f,
 				float _metalness = 0.0f);
 	//Full texture constructor. Requires all texture channels
-	PBRMaterial(std::string _uniqueID,
+	PBRMaterial(ResName _uniqueID,
 				SimpleVertexShader* _vertexShader,
 				SimplePixelShader* _pixelShader,
 				Texture* _albedo,

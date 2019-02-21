@@ -6,7 +6,7 @@
 using namespace std;
 using namespace DirectX::SimpleMath;
 
-PBRMaterial::PBRMaterial(string _uniqueID) {
+PBRMaterial::PBRMaterial(ResName _uniqueID) {
 	uniqueID = _uniqueID;
 	//We only need to initialize variables unique to PBRMaterial since the others are initialized in Material's default constructor
 	baseRoughness = 0.0f;
@@ -15,7 +15,7 @@ PBRMaterial::PBRMaterial(string _uniqueID) {
 	metalness = nullptr;
 }
 
-PBRMaterial::PBRMaterial(string _uniqueID,
+PBRMaterial::PBRMaterial(ResName _uniqueID,
 						 SimpleVertexShader* _vertexShader,
 						 SimplePixelShader* _pixelShader,
 						 Color _color,
@@ -31,7 +31,7 @@ PBRMaterial::PBRMaterial(string _uniqueID,
 	metalness = nullptr;
 }
 
-PBRMaterial::PBRMaterial(string _uniqueID,
+PBRMaterial::PBRMaterial(ResName _uniqueID,
 						 SimpleVertexShader* _vertexShader,
 						 SimplePixelShader* _pixelShader,
 						 Texture* _albedo,

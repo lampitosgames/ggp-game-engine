@@ -25,13 +25,13 @@ void PBRDemoScene::Init() {
 	Material* blueMatte = resourceManager->AddMaterial("blueMatte", Color(0.0f, 0.0f, 1.0f, 1.0f), 0.0f);
 	PBRMaterial* pbrMats[7];
 	//Create a PBR material for testing
-	pbrMats[0] = resourceManager->GetPBRMaterial("icePBR", L"VertexShader.cso", L"PBRPShader.cso", L"assets/textures/PBR/ice_a.jpg", L"assets/textures/PBR/ice_n.jpg", L"assets/textures/PBR/ice_r.jpg", nullptr);
-	pbrMats[1] = resourceManager->GetPBRMaterial("goldPBR", L"VertexShader.cso", L"PBRPShader.cso", L"assets/textures/PBR/gold_a.jpg", L"assets/textures/PBR/gold_n.jpg", L"assets/textures/PBR/gold_r.jpg", L"assets/textures/PBR/gold_m.jpg");
-	pbrMats[2] = resourceManager->GetPBRMaterial("bronzePBR", L"VertexShader.cso", L"PBRPShader.cso", L"assets/textures/PBR/bronze_a.png", L"assets/textures/PBR/bronze_n.png", L"assets/textures/PBR/bronze_r.png", L"assets/textures/PBR/bronze_m.png");
-	pbrMats[3] = resourceManager->GetPBRMaterial("woodFloorPBR", L"VertexShader.cso", L"PBRPShader.cso", L"assets/textures/PBR/woodFloor_a.jpg", L"assets/textures/PBR/woodFloor_n.jpg", L"assets/textures/PBR/woodFloor_r.jpg", nullptr);
-	pbrMats[4] = resourceManager->GetPBRMaterial("marblePBR", L"VertexShader.cso", L"PBRPShader.cso", L"assets/textures/PBR/marble_a.jpg", L"assets/textures/PBR/marble_n.jpg", L"assets/textures/PBR/marble_r.jpg", nullptr);
-	pbrMats[5] = resourceManager->GetPBRMaterial("tactilePavingPBR", L"VertexShader.cso", L"PBRPShader.cso", L"assets/textures/PBR/tactilePaving_a.jpg", L"assets/textures/PBR/tactilePaving_n.jpg", L"assets/textures/PBR/tactilePaving_r.jpg", nullptr);
-	pbrMats[6] = resourceManager->GetPBRMaterial("gravelPBR", L"VertexShader.cso", L"PBRPShader.cso", L"assets/textures/PBR/gravel_a.jpg", L"assets/textures/PBR/gravel_n.jpg", L"assets/textures/PBR/gravel_r.jpg", nullptr);
+	pbrMats[0] = resourceManager->GetPBRMaterial("icePBR", "VertexShader.cso", "PBRPShader.cso", "assets/textures/PBR/ice_a.jpg", "assets/textures/PBR/ice_n.jpg", "assets/textures/PBR/ice_r.jpg", "");
+	pbrMats[1] = resourceManager->GetPBRMaterial("goldPBR", "VertexShader.cso", "PBRPShader.cso", "assets/textures/PBR/gold_a.jpg", "assets/textures/PBR/gold_n.jpg", "assets/textures/PBR/gold_r.jpg", "assets/textures/PBR/gold_m.jpg");
+	pbrMats[2] = resourceManager->GetPBRMaterial("bronzePBR", "VertexShader.cso", "PBRPShader.cso", "assets/textures/PBR/bronze_a.png", "assets/textures/PBR/bronze_n.png", "assets/textures/PBR/bronze_r.png", "assets/textures/PBR/bronze_m.png");
+	pbrMats[3] = resourceManager->GetPBRMaterial("woodFloorPBR", "VertexShader.cso", "PBRPShader.cso", "assets/textures/PBR/woodFloor_a.jpg", "assets/textures/PBR/woodFloor_n.jpg", "assets/textures/PBR/woodFloor_r.jpg", "");
+	pbrMats[4] = resourceManager->GetPBRMaterial("marblePBR", "VertexShader.cso", "PBRPShader.cso", "assets/textures/PBR/marble_a.jpg", "assets/textures/PBR/marble_n.jpg", "assets/textures/PBR/marble_r.jpg", "");
+	pbrMats[5] = resourceManager->GetPBRMaterial("tactilePavingPBR", "VertexShader.cso", "PBRPShader.cso", "assets/textures/PBR/tactilePaving_a.jpg", "assets/textures/PBR/tactilePaving_n.jpg", "assets/textures/PBR/tactilePaving_r.jpg", "");
+	pbrMats[6] = resourceManager->GetPBRMaterial("gravelPBR", "VertexShader.cso", "PBRPShader.cso", "assets/textures/PBR/gravel_a.jpg", "assets/textures/PBR/gravel_n.jpg", "assets/textures/PBR/gravel_r.jpg", "");
 	//Load a sphere mesh
 	Mesh* sphereMesh = resourceManager->GetMesh("assets/meshes/sphere.obj");
 	//Mesh* sphereMesh = resourceManager->GenerateCube(1.0f, 2.0f);

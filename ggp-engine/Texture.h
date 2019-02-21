@@ -7,7 +7,7 @@ class Texture {
 	ID3D11ShaderResourceView* shaderResourceView;
 	bool loadError;
 public:
-	Texture(FileName _uniqueID, ID3D11Device* _device, ID3D11DeviceContext* _context);
+	Texture(ResName _uniqueID, ID3D11Device* _device, ID3D11DeviceContext* _context);
 	~Texture();
 
 	ID3D11ShaderResourceView* GetShaderResourceView();

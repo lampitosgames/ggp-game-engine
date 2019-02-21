@@ -17,7 +17,7 @@ Material::Material() {
 	specular = nullptr;
 }
 
-Material::Material(std::string _uniqueID) {
+Material::Material(ResName _uniqueID) {
 	uniqueID = _uniqueID;
 	baseColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 	baseSpecular = 0.0f;
@@ -29,7 +29,7 @@ Material::Material(std::string _uniqueID) {
 	specular = nullptr;
 }
 
-Material::Material(string _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, Color _color, float _specular) {
+Material::Material(ResName _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, Color _color, float _specular) {
 	uniqueID = _uniqueID;
 	vertexShader = _vertexShader;
 	pixelShader = _pixelShader;
@@ -40,7 +40,7 @@ Material::Material(string _uniqueID, SimpleVertexShader* _vertexShader, SimplePi
 	specular = nullptr;
 }
 
-Material::Material(std::string _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, Texture* _texture, float _specular) {
+Material::Material(ResName _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, Texture* _texture, float _specular) {
 	uniqueID = _uniqueID;
 	vertexShader = _vertexShader;
 	pixelShader = _pixelShader;
@@ -51,7 +51,7 @@ Material::Material(std::string _uniqueID, SimpleVertexShader* _vertexShader, Sim
 	specular = nullptr;
 }
 
-Material::Material(std::string _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, Texture* _diffuse, Texture* _normal, Texture* _specular) {
+Material::Material(ResName _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, Texture* _diffuse, Texture* _normal, Texture* _specular) {
 	uniqueID = _uniqueID;
 	vertexShader = _vertexShader;
 	pixelShader = _pixelShader;

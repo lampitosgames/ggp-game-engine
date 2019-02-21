@@ -80,7 +80,7 @@ public:
 	bool looping;          //If true, emitter's duration is reset once it hits 0
 	bool playing;          //If true, the particle emitter is currently emitting
 	UINT hasTexture;       //Using a texture?
-	FileName textureFilepath; //Filepath to particle texture
+	ResName textureFilepath; //Filepath to particle texture
 	bool useDepthSettings; //Use additive blending with depth turned off
 
 	//Emission shape props

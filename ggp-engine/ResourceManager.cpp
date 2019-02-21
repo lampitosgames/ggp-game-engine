@@ -52,7 +52,7 @@ ID3D11DeviceContext* ResourceManager::GetContextPointer() {
 }
 
 #pragma region Material Creation/Loading
-Material* ResourceManager::GetMaterial(string _uniqueID) {
+Material* ResourceManager::GetMaterial(ResName _uniqueID) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
@@ -66,7 +66,7 @@ Material* ResourceManager::GetMaterial(string _uniqueID) {
 	return newMaterial;
 }
 
-Material* ResourceManager::AddMaterial(string _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, Color _color, float _specular) {
+Material* ResourceManager::AddMaterial(ResName _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, Color _color, float _specular) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
@@ -80,7 +80,7 @@ Material* ResourceManager::AddMaterial(string _uniqueID, SimpleVertexShader* _ve
 	return newMaterial;
 }
 
-Material* ResourceManager::AddMaterial(string _uniqueID, FileName _vertexFilestring, FileName _pixelFilestring, Color _color, float _specular) {
+Material* ResourceManager::AddMaterial(ResName _uniqueID, ResName _vertexFilestring, ResName _pixelFilestring, Color _color, float _specular) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
@@ -94,7 +94,7 @@ Material* ResourceManager::AddMaterial(string _uniqueID, FileName _vertexFilestr
 	return newMaterial;
 }
 
-Material* ResourceManager::AddMaterial(std::string _uniqueID, FileName _vertexFilestring, FileName _pixelFilestring, FileName _textureFilestring) {
+Material* ResourceManager::AddMaterial(ResName _uniqueID, ResName _vertexFilestring, ResName _pixelFilestring, ResName _textureFilestring) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
@@ -108,7 +108,7 @@ Material* ResourceManager::AddMaterial(std::string _uniqueID, FileName _vertexFi
 	return newMaterial;
 }
 
-Material* ResourceManager::AddMaterial(std::string _uniqueID, FileName _vertexFilestring, FileName _pixelFilestring, FileName _diffuseFilestring, FileName _normalFilestring, FileName _specularFilestring) {
+Material* ResourceManager::AddMaterial(ResName _uniqueID, ResName _vertexFilestring, ResName _pixelFilestring, ResName _diffuseFilestring, ResName _normalFilestring, ResName _specularFilestring) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
@@ -122,7 +122,7 @@ Material* ResourceManager::AddMaterial(std::string _uniqueID, FileName _vertexFi
 	return newMaterial;
 }
 
-Material* ResourceManager::AddMaterial(string _uniqueID, Color _color, float _specular) {
+Material* ResourceManager::AddMaterial(ResName _uniqueID, Color _color, float _specular) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
@@ -139,7 +139,7 @@ Material* ResourceManager::AddMaterial(string _uniqueID, Color _color, float _sp
 	//Return new material
 	return newMaterial;
 }
-Material* ResourceManager::AddMaterial(std::string _uniqueID, FileName _textureFilestring) {
+Material* ResourceManager::AddMaterial(ResName _uniqueID, ResName _textureFilestring) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
@@ -155,13 +155,13 @@ Material* ResourceManager::AddMaterial(std::string _uniqueID, FileName _textureF
 #pragma endregion
 
 #pragma region PBR Material Loading
-ID3D11ShaderResourceView * ResourceManager::LoadSRV_DDS(FileName _textureFileString) {
+ID3D11ShaderResourceView * ResourceManager::LoadSRV_DDS(ResName _textureFileString) {
 	ID3D11ShaderResourceView* tempSRV = nullptr;
 
 	HRESULT iResult = CreateDDSTextureFromFile(
 		dxDevice,
 		dxContext,
-		_textureFileString,
+		sconvert.from_bytes(_textureFileString).c_str(),
 		0,
 		&tempSRV
 	);
@@ -178,7 +178,7 @@ ID3D11ShaderResourceView * ResourceManager::LoadSRV_DDS(FileName _textureFileStr
 		return nullptr;
 	}
 }
-PBRMaterial* ResourceManager::GetPBRMaterial(std::string _uniqueID, FileName _vertexShaderFilestring, FileName _pixelShaderFilestring, Color _color, float _roughness, float _metalness) {
+PBRMaterial* ResourceManager::GetPBRMaterial(ResName _uniqueID, ResName _vertexShaderFilestring, ResName _pixelShaderFilestring, Color _color, float _roughness, float _metalness) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
@@ -191,7 +191,7 @@ PBRMaterial* ResourceManager::GetPBRMaterial(std::string _uniqueID, FileName _ve
 	//Return new material
 	return newPBRMaterial;
 }
-PBRMaterial* ResourceManager::GetPBRMaterial(std::string _uniqueID, FileName _vertexShaderFilestring, FileName _pixelShaderFilestring, FileName _albedoFilestring, FileName _normalFilestring, FileName _roughnessFilestring, FileName _metalnessFilestring) {
+PBRMaterial* ResourceManager::GetPBRMaterial(ResName _uniqueID, ResName _vertexShaderFilestring, ResName _pixelShaderFilestring, ResName _albedoFilestring, ResName _normalFilestring, ResName _roughnessFilestring, ResName _metalnessFilestring) {
 	//First, look up this material.  If it exists, just return it
 	auto thisMaterial = materialUIDMap.find(_uniqueID);
 	if (thisMaterial != materialUIDMap.end()) {
@@ -207,7 +207,7 @@ PBRMaterial* ResourceManager::GetPBRMaterial(std::string _uniqueID, FileName _ve
 #pragma endregion
 
 #pragma region Shader Loading
-SimpleVertexShader* ResourceManager::GetVertexShader(FileName _filepath) {
+SimpleVertexShader* ResourceManager::GetVertexShader(ResName _filepath) {
 	//If the shader already exists, return it
 	auto thisShader = vertexShaderUIDMap.find(_filepath);
 	if (thisShader != vertexShaderUIDMap.end()) {
@@ -221,7 +221,7 @@ SimpleVertexShader* ResourceManager::GetVertexShader(FileName _filepath) {
 	return newShader;
 }
 
-SimplePixelShader* ResourceManager::GetPixelShader(FileName _filepath) {
+SimplePixelShader* ResourceManager::GetPixelShader(ResName _filepath) {
 	//If the shader already exists, return it
 	auto thisShader = pixelShaderUIDMap.find(_filepath);
 	if (thisShader != pixelShaderUIDMap.end()) {
@@ -237,7 +237,7 @@ SimplePixelShader* ResourceManager::GetPixelShader(FileName _filepath) {
 #pragma endregion
 
 #pragma region Mesh Loading/Generation
-Mesh* ResourceManager::CreateMeshFromData(Vertex* _vertexArray, UINT _vertexCount, UINT* _indexArray, UINT _indexCount, string _uniqueID) {
+Mesh* ResourceManager::CreateMeshFromData(Vertex* _vertexArray, UINT _vertexCount, UINT* _indexArray, UINT _indexCount, ResName _uniqueID) {
 	//First, look for a mesh with this ID.  If it exists, return it
 	auto thisMesh = meshUIDMap.find(_uniqueID);
 	if (thisMesh != meshUIDMap.end()) {
@@ -251,7 +251,7 @@ Mesh* ResourceManager::CreateMeshFromData(Vertex* _vertexArray, UINT _vertexCoun
 	return newMesh;
 }
 
-Mesh* ResourceManager::GetMesh(string _uniqueID) {
+Mesh* ResourceManager::GetMesh(ResName _uniqueID) {
 	//If the mesh already exists, return it
 	auto thisMesh = meshUIDMap.find(_uniqueID);
 	if (thisMesh != meshUIDMap.end()) {
@@ -268,7 +268,7 @@ Mesh* ResourceManager::GetMesh(string _uniqueID) {
 	return newMesh;
 }
 
-Mesh* ResourceManager::GetTerrain(std::string _uniqueID, int _resolution, float _heightScale, float _uvScale) {
+Mesh* ResourceManager::GetTerrain(ResName _uniqueID, int _resolution, float _heightScale, float _uvScale) {
 	//If the mesh already exists, return it
 	auto thisTerrain = meshUIDMap.find(_uniqueID);
 	if (thisTerrain != meshUIDMap.end()) {
@@ -309,22 +309,22 @@ Mesh* ResourceManager::GenerateSphere(float _radius, int _subdivs, float _uvScal
 	return meshUIDMap[genUID.str()];
 }
 
-Mesh* ResourceManager::LoadMesh(string _filepath) {// File input object
-
-// Check the file type of this object
-	std::string extension = _filepath.substr(_filepath.find_last_of(".") + 1);
-	if (extension == "obj" || extension == "OBJ") {
-		return LoadMeshOBJ(_filepath);
-	}
-	else if (extension == "fbx" || extension == "FBX") {
-		return LoadMeshFBX(_filepath);
-	}
-	else {
-		return nullptr;
-	}
+Mesh* ResourceManager::LoadMesh(ResName _filepath) {// File input object
+	return LoadMeshOBJ(_filepath);
+	// Check the file type of this object
+	//std::string extension = _filepath.substr(_filepath.find_last_of(".") + 1);
+	//if (extension == "obj" || extension == "OBJ") {
+	//	return LoadMeshOBJ(_filepath);
+	//}
+	//else if (extension == "fbx" || extension == "FBX") {
+	//	return LoadMeshFBX(_filepath);
+	//}
+	//else {
+	//	return nullptr;
+	//}
 }
 
-Mesh * ResourceManager::LoadMeshOBJ(std::string _filepath) {
+Mesh * ResourceManager::LoadMeshOBJ(ResName _filepath) {
 	std::ifstream obj(_filepath);
 
 	// Check for successful open
@@ -475,7 +475,7 @@ Mesh * ResourceManager::LoadMeshOBJ(std::string _filepath) {
 	return newMesh;
 }
 
-Mesh * ResourceManager::LoadMeshFBX(std::string _filepath) {
+Mesh * ResourceManager::LoadMeshFBX(ResName _filepath) {
 	DEBUG_PRINT("No FBX file support! Stoping file load...");
 
 	return nullptr;
@@ -551,7 +551,7 @@ void ResourceManager::CalculateTangents(int numVerts, int numIndices) {
 }
 #pragma endregion
 
-Texture* ResourceManager::GetTexture(FileName _uniqueID) {
+Texture* ResourceManager::GetTexture(ResName _uniqueID) {
 	//If the mesh already exists, return it
 	auto thisTex = textureUIDMap.find(_uniqueID);
 	if (thisTex != textureUIDMap.end()) {
@@ -572,7 +572,7 @@ ResourceManager::~ResourceManager() {
 void ResourceManager::Release() {
 	//Clean up and unload all resources
 	//Clean up meshes
-	map<string, Mesh*>::iterator meshIt;
+	map<ResName, Mesh*>::iterator meshIt;
 	for (meshIt = meshUIDMap.begin(); meshIt != meshUIDMap.end(); ++meshIt) {
 		Mesh* tempMesh = meshIt->second;
 		if (tempMesh != nullptr) {
@@ -581,7 +581,7 @@ void ResourceManager::Release() {
 	}
 	meshUIDMap.clear();
 	//Clean up vertex shaders
-	map<FileName, SimpleVertexShader*>::iterator vsIt;
+	map<ResName, SimpleVertexShader*>::iterator vsIt;
 	for (vsIt = vertexShaderUIDMap.begin(); vsIt != vertexShaderUIDMap.end(); ++vsIt) {
 		SimpleVertexShader* tempShader = vsIt->second;
 		if (tempShader != nullptr) {
@@ -590,7 +590,7 @@ void ResourceManager::Release() {
 	}
 	vertexShaderUIDMap.clear();
 	//Clean up pixel shaders
-	map<FileName, SimplePixelShader*>::iterator psIt;
+	map<ResName, SimplePixelShader*>::iterator psIt;
 	for (psIt = pixelShaderUIDMap.begin(); psIt != pixelShaderUIDMap.end(); ++psIt) {
 		SimplePixelShader* tempShader = psIt->second;
 		if (tempShader != nullptr) {
@@ -599,7 +599,7 @@ void ResourceManager::Release() {
 	}
 	pixelShaderUIDMap.clear();
 	//Clean up materials
-	map<string, Material*>::iterator matIt;
+	map<ResName, Material*>::iterator matIt;
 	for (matIt = materialUIDMap.begin(); matIt != materialUIDMap.end(); ++matIt) {
 		Material* tempMat = matIt->second;
 		if (tempMat != nullptr) {
@@ -608,7 +608,7 @@ void ResourceManager::Release() {
 	}
 	materialUIDMap.clear();
 	//Clean up textures
-	map<FileName, Texture*>::iterator texIt;
+	map<ResName, Texture*>::iterator texIt;
 	for (texIt = textureUIDMap.begin(); texIt != textureUIDMap.end(); ++texIt) {
 		Texture* tempTex = texIt->second;
 		if (tempTex != nullptr) {

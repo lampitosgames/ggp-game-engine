@@ -62,7 +62,7 @@ public:
 
 	// Initialization method (since we can't invoke derived class
 	// overrides in the base class constructor)
-	bool LoadShaderFile(FileName shaderFile);
+	bool LoadShaderFile(ResName shaderFile);
 
 	// Simple helpers
 	bool IsShaderValid() { return shaderValid; }

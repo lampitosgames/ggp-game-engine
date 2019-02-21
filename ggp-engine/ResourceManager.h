@@ -6,6 +6,7 @@
 #include <string>
 #include <d3d11.h>
 #include <SimpleMath.h>
+#include "json.hpp"
 
 #include "MeshGen.h"
 //Forward declaration
@@ -25,15 +26,15 @@ class ResourceManager {
 	static MeshGen meshGen;
 
 	//Map of unique material resources
-	std::map<std::string, Material*> materialUIDMap;
+	std::map<ResName, Material*> materialUIDMap;
 	//Map of unique mesh resources
-	std::map<std::string, Mesh*> meshUIDMap;
+	std::map<ResName, Mesh*> meshUIDMap;
 	//Map of unique texture resources
-	std::map<FileName, Texture*> textureUIDMap;
+	std::map<ResName, Texture*> textureUIDMap;
 	//Map of unique vertex shaders
-	std::map<FileName, SimpleVertexShader*> vertexShaderUIDMap;
+	std::map<ResName, SimpleVertexShader*> vertexShaderUIDMap;
 	//Map of unique pixel shaders
-	std::map<FileName, SimplePixelShader*> pixelShaderUIDMap;
+	std::map<ResName, SimplePixelShader*> pixelShaderUIDMap;
 public:
 	static ResourceManager* GetInstance();
 	static void ReleaseInstance();
@@ -52,46 +53,46 @@ public:
 		MATERIAL RESOURCE MANAGEMENT
 	*/
 	//Gets the material with a given UID.  If it doesn't exist, returns a new default material with that id
-	Material* GetMaterial(std::string _uniqueID);
+	Material* GetMaterial(ResName _uniqueID);
 	//Creates a material with this unique ID (If the id already exists, that material gets returned).
 	//Has space for extra materials.
-	Material* AddMaterial(std::string _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, DirectX::SimpleMath::Color _color = DirectX::SimpleMath::Color(1.0f, 1.0f, 1.0f, 1.0f), float _specular = 0.0f);
+	Material* AddMaterial(ResName _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, DirectX::SimpleMath::Color _color = DirectX::SimpleMath::Color(1.0f, 1.0f, 1.0f, 1.0f), float _specular = 0.0f);
 	//Same as above, but it fetches the shaders from their filepaths
-	Material* AddMaterial(std::string _uniqueID, FileName _vertexFilestring, FileName _pixelFilestring, DirectX::SimpleMath::Color _color = DirectX::SimpleMath::Color(1.0f, 1.0f, 1.0f, 1.0f), float _specular = 0.0f);
+	Material* AddMaterial(ResName _uniqueID, ResName _vertexFilestring, ResName _pixelFilestring, DirectX::SimpleMath::Color _color = DirectX::SimpleMath::Color(1.0f, 1.0f, 1.0f, 1.0f), float _specular = 0.0f);
 	//Same as above, but it uses a texture instead of a color
-	Material* AddMaterial(std::string _uniqueID, FileName _vertexFilestring, FileName _pixelFilestring, FileName _textureFilestring);
+	Material* AddMaterial(ResName _uniqueID, ResName _vertexFilestring, ResName _pixelFilestring, ResName _textureFilestring);
 	//Same as above, but has all 3 texture channels (diffuse, normal, specular)
-	Material* AddMaterial(std::string _uniqueID, FileName _vertexFilestring, FileName _pixelFilestring, FileName _diffuseFilestring, FileName _normalFilestring, FileName _specularFilestring);
+	Material* AddMaterial(ResName _uniqueID, ResName _vertexFilestring, ResName _pixelFilestring, ResName _diffuseFilestring, ResName _normalFilestring, ResName _specularFilestring);
 	//Create and return a new color material with this UID (If the id already exists, the existing mat gets returned)
-	Material* AddMaterial(std::string _uniqueID, DirectX::SimpleMath::Color _color, float _specular = 0.0f);
+	Material* AddMaterial(ResName _uniqueID, DirectX::SimpleMath::Color _color, float _specular = 0.0f);
 	//Create and return a new basic texture material without shaders
-	Material* AddMaterial(std::string _uniqueID, FileName _textureFilestring);
+	Material* AddMaterial(ResName _uniqueID, ResName _textureFilestring);
 
 	/// <summary>
 	/// Load in a DDS texture
 	/// </summary>
 	/// <param name="_textureFileString"></param>
 	/// <returns></returns>
-	ID3D11ShaderResourceView* LoadSRV_DDS(FileName _textureFileString);
+	ID3D11ShaderResourceView* LoadSRV_DDS(ResName _textureFileString);
 	/*
 		PBR MATERIAL MANAGEMENT
 	*/
-	PBRMaterial* GetPBRMaterial(std::string _uniqueID, FileName _vertexShaderFilestring, FileName _pixelShaderFilestring, DirectX::SimpleMath::Color _color = DirectX::SimpleMath::Color(1.0f, 1.0f, 1.0f, 1.0f), float _roughness = 0.0f, float _metalness = 0.0f);
-	PBRMaterial* GetPBRMaterial(std::string _uniqueID, FileName _vertexShaderFilestring, FileName _pixelShaderFilestring, FileName _albedoFilestring, FileName _normalFilestring, FileName _roughnessFilestring, FileName _metalnessFilestring);
+	PBRMaterial* GetPBRMaterial(ResName _uniqueID, ResName _vertexShaderFilestring, ResName _pixelShaderFilestring, DirectX::SimpleMath::Color _color = DirectX::SimpleMath::Color(1.0f, 1.0f, 1.0f, 1.0f), float _roughness = 0.0f, float _metalness = 0.0f);
+	PBRMaterial* GetPBRMaterial(ResName _uniqueID, ResName _vertexShaderFilestring, ResName _pixelShaderFilestring, ResName _albedoFilestring, ResName _normalFilestring, ResName _roughnessFilestring, ResName _metalnessFilestring);
 
 	/*
 		SHADER MANAGEMENT
 	*/
 	//Load vertex shader
-	SimpleVertexShader* GetVertexShader(FileName _filepath);
-	SimplePixelShader* GetPixelShader(FileName _filepath);
+	SimpleVertexShader* GetVertexShader(ResName _filepath);
+	SimplePixelShader* GetPixelShader(ResName _filepath);
 
 	/*
 		MESH RESOURCE MANAGEMENT
 	*/
-	Mesh* CreateMeshFromData(Vertex* _vertexArray, UINT _vertexCount, UINT* _indexArray, UINT _indexCount, std::string _uniqueID = "NA");
-	Mesh* GetMesh(std::string _uniqueID);
-	Mesh* GetTerrain(std::string _uniqueID, int _resolution, float _heightScale = 50.0f, float _uvScale = 30.0f);
+	Mesh* CreateMeshFromData(Vertex* _vertexArray, UINT _vertexCount, UINT* _indexArray, UINT _indexCount, ResName _uniqueID = ResName("NA"));
+	Mesh* GetMesh(ResName _uniqueID);
+	Mesh* GetTerrain(ResName _uniqueID, int _resolution, float _heightScale = 50.0f, float _uvScale = 30.0f);
 	//void DeleteMesh(std::string _uniqueID);
 	Mesh* GenerateCube(float _sideLength, float _uvScale = 1.0f);
 	Mesh* GenerateSphere(float _radius, int _subdivs = 4, float _uvScale = 1.0f);
@@ -99,7 +100,7 @@ public:
 	/*
 		TEXTURE RESOURCE MANAGEMENT
 	*/
-	Texture* GetTexture(FileName _filepath);
+	Texture* GetTexture(ResName _filepath);
 private:
 	ResourceManager();
 	~ResourceManager();
@@ -117,9 +118,9 @@ private:
 	std::vector<UINT> mIndices;
 
 	//Private function to load a mesh from a file
-	Mesh* LoadMesh(std::string _filepath);
-    Mesh* LoadMeshOBJ( std::string _filepath );
-    Mesh* LoadMeshFBX( std::string _filepath );
+	Mesh* LoadMesh(ResName _filepath);
+    Mesh* LoadMeshOBJ(ResName _filepath );
+    Mesh* LoadMeshFBX(ResName _filepath );
 
 	void CalculateTangents(int numVerts, int numIndices);
 };

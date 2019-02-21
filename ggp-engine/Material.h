@@ -8,7 +8,7 @@ class Texture;
 
 class Material {
 protected:
-	std::string uniqueID;
+	ResName uniqueID;
 	SimpleVertexShader* vertexShader;
 	SimplePixelShader* pixelShader;
 	DirectX::SimpleMath::Color baseColor;
@@ -22,21 +22,21 @@ protected:
 public:
 	//Constructors
 	//Blank material constructor
-	Material(std::string _uniqueID);
+	Material(ResName _uniqueID);
 	//Fully-parameterized constructor
-	Material(std::string _uniqueID,
+	Material(ResName _uniqueID,
 			 SimpleVertexShader* _vertexShader,
 			 SimplePixelShader* _pixelShader,
 			 DirectX::SimpleMath::Color _color = DirectX::SimpleMath::Color(1.0f, 1.0f, 1.0f, 1.0f),
 			 float _specular = 0.0f);
 	//Texture-only constructor
-	Material(std::string _uniqueID,
+	Material(ResName _uniqueID,
 			 SimpleVertexShader* _vertexShader,
 			 SimplePixelShader* _pixelShader,
 			 Texture* _texture,
 			 float _specular = 0.0f);
 	//Diffuse, normal, specular texture resources
-	Material(std::string _uniqueID,
+	Material(ResName _uniqueID,
 			 SimpleVertexShader* _vertexShader,
 			 SimplePixelShader* _pixelShader,
 			 Texture* _diffuse,

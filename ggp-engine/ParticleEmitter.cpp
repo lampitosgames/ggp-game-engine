@@ -83,7 +83,7 @@ EmitterOptions::EmitterOptions() {
 	looping = true;
 	playing = true;
 	hasTexture = 1;
-	textureFilepath = L"assets/textures/particles/particle.jpg";
+	textureFilepath = "assets/textures/particles/particle.jpg";
 	useDepthSettings = true;
 	shape = emitterShape::CUBE;
 	radius = 0.2f;

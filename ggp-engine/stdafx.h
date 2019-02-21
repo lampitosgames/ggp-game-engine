@@ -26,6 +26,7 @@
 #endif
 
 // Typedefs -----------------------------
+static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> sconvert;
 
 typedef unsigned int UINT;
-typedef LPCWSTR FileName;
+typedef std::string ResName;
