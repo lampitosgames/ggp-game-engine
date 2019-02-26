@@ -2,11 +2,6 @@
 #include "LightGlobals.hlsli"
 #include "InputOutputStructs.hlsli"
 
-//For depth of field
-cbuffer externalDate : register(b5)
-{
-	float4 dofPara; // Depth of Field Paramaters
-}
 //TEXTURE REGISTERS
 SamplerState basicSampler : register(s0);
 Texture2D albedoTexture   : register(t0); //needs gamma correction
@@ -15,8 +10,7 @@ Texture2D roughnessMap    : register(t2); //no gamma correction
 Texture2D metalnessMap    : register(t3); //needs gamma correction
 
 //Entry point
-PixelOut main(VertexToPixel input) {
-	PixelOut output;
+float4 main(VertexToPixel input) : SV_TARGET {
 	//Re-normalize the lerped coordinate vectors
 	input.normal = normalize(input.normal);
 	input.tangent = normalize(input.tangent);
@@ -72,22 +66,5 @@ PixelOut main(VertexToPixel input) {
 	}
 	//Gamma correction
 	float3 gammaCorrect = pow(lightColorSum, 1.0f / gammaModifier);
-
-	//Return the mesh's surface color multiplied by the calculated light data
-	output.color = float4(gammaCorrect, 1.0f);
-
-	//Calculate depth and output to depth render target
-	float f = 0.0f;
-	if (input.depth < dofPara.y)
-	{
-		f = (input.depth - dofPara.y) / (dofPara.y - dofPara.x);
-	}
-	else
-	{
-		f = (input.depth - dofPara.y) / (dofPara.z - dofPara.y);
-		f = clamp(f, 0, dofPara.w);
-	}
-	output.distance = float4((f*0.5f + 0.5f), 0, 0, 0);
-
-	return output;
+	return float4(gammaCorrect, 1.0f);
 }
