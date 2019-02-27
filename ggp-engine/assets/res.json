@@ -75,7 +75,8 @@
       "phong": "PhongPShader.cso",
       "skybox": "SkyPS.cso",
       "particle": "ParticlePixelShader.cso",
-      "pbr": "PBRPShader.cso"
+      "pbr": "PBRPShader.cso",
+      "debug": "DebugMeshPShader.cso"
     }
   },
   "tera": {

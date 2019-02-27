@@ -13,8 +13,9 @@
 #include "MeshRenderer.h"
 #include "InputListener.h"
 #include "DirLight.h"
-#include "PointLight.h"
+#include "PointLightObj.h"
 #include "SpotLight.h"
+#include "SpotLightObj.h"
 #include "ParticleEmitter.h"
 
 using namespace DirectX::SimpleMath;
@@ -24,7 +25,8 @@ using json = nlohmann::json;
 void PBRDemoScene::Init() {
 	Scene::Init();
 
-	Material* blueMatte = resourceManager->AddMaterial("blueMatte", Color(0.0f, 0.0f, 1.0f, 1.0f), 0.0f);
+
+	Material* blueMatte = resourceManager->AddMaterial("blueMatte", res["shdr"]["vert"]["default"], res["shdr"]["pix"]["debug"], Color(0.0f, 0.0f, 1.0f, 1.0f), 0.0f);
 	PBRMaterial* pbrMats[7];
 
 	//Create PBR mats
@@ -69,24 +71,10 @@ void PBRDemoScene::Init() {
 	AddChild(dirLight3);
 	dirLight3->AddComponent<DirLight>(dirLight3, Color(1.0f, 1.0f, 1.0f, 1.0f), Vector3(0.0f, -1.0f, 1.0f), 0.2f, 0.00f);
 
-	GameObject* pointLight1 = new GameObject("pointLight1");
-	AddChild(pointLight1);
-	pointLight1->AddComponent<PointLight>(pointLight1, Color(1.0f, 1.0f, 1.0f, 1.0f));
-	pointLight1->GetComponentType<PointLight>()->SetRange(10.0f);
-	pointLight1->transform.position.x += 2.0f;
-	pointLight1->transform.position.y += 4.0f;
-
-	//Debug particle emitter
-	EmitterOptions emitterOpts = EmitterOptions();
-	pointLight1->AddComponent<ParticleEmitter>(pointLight1, emitterOpts);
-	pointLight1->transform.rotation.x = -3.14159f/2.0f;
-
-	GameObject* pointLight2 = new GameObject("pointLight2");
-	AddChild(pointLight2);
-	pointLight2->AddComponent<PointLight>(pointLight2, Color(0.6f, 0.6f, 0.6f, 1.0f));
-	pointLight2->GetComponentType<PointLight>()->SetIntensity(1.0f);
-	pointLight2->transform.position.x += 6.0f;
-	pointLight2->transform.position.y += 3.0f;
+	//Add lights (one line creation)
+	AddChild(new PointLightObj("pointLight1", Vector3(2.0f, 4.0f, 0.0f), Color(0.0f, 0.0f, 1.0f, 1.0f), 1.0f, 10.0f));
+	AddChild(new PointLightObj("pointLight2", Vector3(6.0f, 3.0f, 0.0f), Color(0.6f, 0.6f, 0.6f, 1.0f)));
+	AddChild(new PointLightObj("pointLight3", Vector3(0.0f, -3.0f, 2.0f), Color(1.0f, 1.0f, 0.3f, 1.0f)));
 
 	GameObject* spotLight1 = new GameObject("spotLight1");
 	dirLight->AddChild(spotLight1);
@@ -119,9 +107,11 @@ void PBRDemoScene::Start() {
 void PBRDemoScene::Update(float _deltaTime) {
 	Scene::Update(_deltaTime);
 
-	GameObject* pointLight2 = GetGameObject<GameObject>("pointLight2");
+	PointLightObj* pointLight2 = GetGameObject<PointLightObj>("pointLight2");
 	pointLight2->transform.position.x = 3 + 3 * cos(totalTime);
 	pointLight2->transform.position.z = 3 * sin(totalTime);
+
+	GetGameObject<PointLightObj>("pointLight1")->SetRange(10.0f + (5.0f * cos(totalTime)));
 
 	if (inputManager->ActionPressed("delete_object")) {
 		delete GetGameObject<GameObject>("dirLight1");

@@ -145,6 +145,7 @@ void RenderManager::Render() {
 	std::map<UINT, MeshRenderer*>::iterator mrIterator;
 	for (mrIterator = meshRendererUIDMap.begin(); mrIterator != meshRendererUIDMap.end();) {
 		MeshRenderer* mrTemp = mrIterator->second;
+
 		//Make sure the mesh renderer still exists
 		if (mrTemp == nullptr) {
 			meshRendererUIDMap.erase(mrIterator++);
