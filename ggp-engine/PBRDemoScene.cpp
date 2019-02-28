@@ -14,7 +14,6 @@
 #include "InputListener.h"
 #include "DirLight.h"
 #include "PointLightObj.h"
-#include "SpotLight.h"
 #include "SpotLightObj.h"
 #include "ParticleEmitter.h"
 
@@ -31,12 +30,12 @@ void PBRDemoScene::Init() {
 
 	//Create PBR mats
 	pbrMats[0] = resourceManager->GetPBRMaterial(
-		"icePBR", 
-		res["shdr"]["vert"]["default"], 
-		res["shdr"]["pix"]["pbr"], 
-		res["tex"]["ice"]["a"], 
-		res["tex"]["ice"]["n"], 
-		res["tex"]["ice"]["r"], 
+		"icePBR",
+		res["shdr"]["vert"]["default"],
+		res["shdr"]["pix"]["pbr"],
+		res["tex"]["ice"]["a"],
+		res["tex"]["ice"]["n"],
+		res["tex"]["ice"]["r"],
 		res["tex"]["ice"]["m"]
 	);
 	pbrMats[1] = resourceManager->GetPBRMaterial("goldPBR", res["shdr"]["vert"]["default"], res["shdr"]["pix"]["pbr"], res["tex"]["gold"]["a"], res["tex"]["gold"]["n"], res["tex"]["gold"]["r"], res["tex"]["gold"]["m"]);
@@ -75,14 +74,8 @@ void PBRDemoScene::Init() {
 	AddChild(new PointLightObj("pointLight1", Vector3(2.0f, 4.0f, 0.0f), Color(0.0f, 0.0f, 1.0f, 1.0f), 1.0f, 10.0f));
 	AddChild(new PointLightObj("pointLight2", Vector3(6.0f, 3.0f, 0.0f), Color(0.6f, 0.6f, 0.6f, 1.0f)));
 	AddChild(new PointLightObj("pointLight3", Vector3(0.0f, -3.0f, 2.0f), Color(1.0f, 1.0f, 0.3f, 1.0f)));
+	AddChild(new SpotLightObj("spotLight1", Vector3(0.0f, 3.0f, 0.0f), Color(1.0f, 0.0f, 0.0f, 1.0f), 1.0f, Vector3(1.0f, -1.0f, 0.0f), 30.0f, 45.0f));
 
-	GameObject* spotLight1 = new GameObject("spotLight1");
-	dirLight->AddChild(spotLight1);
-	spotLight1->AddComponent<SpotLight>(spotLight1, Color(0.901f, 0.239f, 0.337f, 1.0f));
-	spotLight1->GetComponentType<SpotLight>()->SetCone(15.0f);
-	spotLight1->GetComponentType<SpotLight>()->SetRange(80.0f);
-	spotLight1->GetComponentType<SpotLight>()->SetDirection(Vector3(0.0f, -1.0f, 0.0f));
-	spotLight1->transform.position.y += 15.0f;
 
 	//Create a camera
 	activeCamera = new FlyingCamera("MainCamera");
@@ -91,12 +84,12 @@ void PBRDemoScene::Init() {
 	activeCamera->transform.position.z = -5.0f;
 	activeCamera->CalculateViewMatrix();
 
-	////Load terrain
-	//GameObject* terrain = new GameObject("testTerrain");
-	//Mesh* terrainMesh = resourceManager->GetTerrain(res["tera"]["testTerrain"], 513, 100.0f);
-	//AddChild(terrain);
-	//terrain->AddComponent<MeshRenderer>(terrain, terrainMesh, pbrMats[0]);
-	//terrain->transform.position.y = -3.0f;
+	//Load terrain
+	GameObject* terrain = new GameObject("testTerrain");
+	Mesh* terrainMesh = resourceManager->GetTerrain(res["tera"]["testTerrain"], 513, 100.0f);
+	AddChild(terrain);
+	terrain->AddComponent<MeshRenderer>(terrain, terrainMesh, pbrMats[0]);
+	terrain->transform.position.y = -3.0f;
 }
 
 void PBRDemoScene::Start() {
@@ -107,12 +100,12 @@ void PBRDemoScene::Start() {
 void PBRDemoScene::Update(float _deltaTime) {
 	Scene::Update(_deltaTime);
 
-	PointLightObj* pointLight2 = GetGameObject<PointLightObj>("pointLight2");
-	pointLight2->transform.position.x = 3 + 3 * cos(totalTime);
-	pointLight2->transform.position.z = 3 * sin(totalTime);
+	//PointLightObj* pointLight2 = GetGameObject<PointLightObj>("pointLight2");
+	//pointLight2->transform.position.x = 3 + 3 * cos(totalTime);
+	//pointLight2->transform.position.z = 3 * sin(totalTime);
 
-	GetGameObject<PointLightObj>("pointLight1")->SetRange(10.0f + (5.0f * cos(totalTime)));
-
+	//GetGameObject<PointLightObj>("pointLight1")->SetRange(10.0f + (5.0f * cos(totalTime)));
+	GetGameObject<SpotLightObj>("spotLight1")->transform.rotation.z += 1.0f * _deltaTime;
 	if (inputManager->ActionPressed("delete_object")) {
 		delete GetGameObject<GameObject>("dirLight1");
 	}

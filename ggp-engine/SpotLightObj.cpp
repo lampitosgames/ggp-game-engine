@@ -17,48 +17,54 @@ string SpotLightObj::MakeUIDString(Color _color) {
 
 Vector3 SpotLightObj::GetEulerFromDir(Vector3 _dir) {
 	_dir.Normalize();
-	//Make a quaternion out of the dir vector
-	Quaternion q = Quaternion::CreateFromAxisAngle(_dir, 30.0f);
-	//Convert quaternion back to roll, pitch, yaw (how the transform currently accepts rotations)
-	//https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
-	//Roll
-	float sinr_cosp = 2.0f * (q.w * q.x + q.y * q.z);
-	float cosr_cosp = 1.0f - 2.0f * (q.x * q.x + q.y * q.y);
-	float rollX = atan2(sinr_cosp, cosr_cosp);
-	//Pitch
-	float pitchY;
-	float sinp = 2.0f * (q.w * q.y - q.z * q.x);
-	if (fabs(sinp) >= 1.0f) {
-		pitchY = copysign(3.14159f / 2.0f, sinp);
+	Vector3 zRotAxis = Vector3(0.0f, 1.0f, 0.0f);
+	Vector3 yRotAxis = _dir * -1.0f;
+	Vector3 xRotAxis = yRotAxis.Cross(zRotAxis);
+
+	Matrix rotMat = Matrix(xRotAxis, yRotAxis, zRotAxis);
+
+	//TODO: Remove all of this when we redo transforms.
+	//https://gamedev.stackexchange.com/questions/50963/how-to-extract-euler-angles-from-transformation-matrix
+	float pitchX, yawY, rollZ;
+	if (rotMat._11 == 1.0f || rotMat._11 == -1.0f) {
+		yawY = atan2f(rotMat._13, rotMat._34);
+		pitchX = 0.0f;
+		rollZ = 0.0f;
 	}
 	else {
-		pitchY = asin(sinp);
+		yawY = atan2(-rotMat._34, rotMat._11);
+		pitchX = asin(rotMat._21);
+		rollZ = atan2(-rotMat._23, rotMat._22);
 	}
-	//Yaw
-	float siny_cosp = 2.0f * (q.w * q.z + q.x * q.y);
-	float cosy_cosp = 1.0f - 2.0f * (q.y * q.y + q.z * q.z);
-	float yawZ = atan2(siny_cosp, cosy_cosp);
 
-	return Vector3(rollX, pitchY, yawZ);
+	return Vector3(pitchX, yawY, rollZ);
 }
 
 SpotLightObj::SpotLightObj(
-	ResName _uniqueID, 
-	Vector3 _position, 
-	Color _color, 
-	Vector3 _direction, 
-	float _coneAngle, 
-	float _range) : GameObject(
+	ResName _uniqueID,
+	Vector3 _position,
+	Color _color,
+	float _intensity,
+	Vector3 _direction,
+	float _range,
+	float _cutoffAngle,
+	float _falloffRate
+	) : GameObject(
 		_uniqueID == "NA" ? MakeUIDString(_color) : _uniqueID, 
 		_position, 
-		_direction, 
-		Vector3(1.0f, 1.0f, 1.0f)
+		GetEulerFromDir(_direction), 
+		Vector3(1.0f, 30.0f / _cutoffAngle, 1.0f)
 	) {
 	this->type = GOType::SPOT_LIGHT;
 	this->color = _color;
-	this->direction = _direction;
-	this->coneAngle = _coneAngle;
+	this->intensity = _intensity;
 	this->range = _range;
+	this->cutoffAngle = _cutoffAngle;
+	this->falloffRate = _falloffRate;
+	//Direction is always the negated local y axis
+	Matrix rotMat = this->transform.GetRotationMatrix();
+	this->prevEulerAngles = this->transform.rotation;
+	this->direction = -1.0f * Vector3(rotMat._21, rotMat._22, rotMat._23);
 }
 
 void SpotLightObj::Start() {
@@ -70,5 +76,59 @@ void SpotLightObj::Start() {
 	MeshRenderer* lightMR = this->AddComponent<MeshRenderer>(this);
 	lightMR->SetMaterial(lightColorMat);
 	lightMR->SetMesh(coneMesh);
-	this->AddComponent<SpotLight>(this, this->color, this->direction, this->coneAngle, this->range);
+	this->AddComponent<SpotLight>(this, this->color, this->transform.position, this->intensity, this->direction, this->range, this->cutoffAngle, this->falloffRate);
+}
+
+void SpotLightObj::Update(float _deltaTime) {
+	if (this->transform.rotation != this->prevEulerAngles) {
+		Matrix rotMat = this->transform.GetRotationMatrix();
+		this->prevEulerAngles = this->transform.rotation;
+		this->direction = -1.0f * Vector3(rotMat._21, rotMat._22, rotMat._23);
+		this->GetComponentType<SpotLight>()->SetDirection(this->direction);
+	}
+}
+
+DirectX::SimpleMath::Color SpotLightObj::GetColor() { return this->color; }
+
+void SpotLightObj::SetColor(Color _newCol) {
+	this->color = _newCol;
+	this->GetComponentType<MeshRenderer>()->GetMaterial()->SetColor(_newCol);
+	this->GetComponentType<SpotLight>()->SetColor(_newCol);
+}
+
+float SpotLightObj::GetIntensity() { return this->intensity; }
+
+void SpotLightObj::SetIntensity(float _newIntensity) {
+	this->intensity = _newIntensity;
+	this->GetComponentType<SpotLight>()->SetIntensity(_newIntensity);
+}
+
+Vector3 SpotLightObj::GetDirection() { return this->direction; }
+
+void SpotLightObj::SetDirection(Vector3 _newDirection) {
+	this->direction = _newDirection;
+	this->transform.rotation = GetEulerFromDir(this->direction);
+	this->prevEulerAngles = this->transform.rotation;
+	this->GetComponentType<SpotLight>()->SetDirection(_newDirection);
+}
+
+float SpotLightObj::GetRange() { return this->range; }
+
+void SpotLightObj::SetRange(float _newRange) {
+	this->range = _newRange;
+	this->GetComponentType<SpotLight>()->SetRange(_newRange);
+}
+
+float SpotLightObj::GetCutoffAngle() { return this->cutoffAngle; }
+
+void SpotLightObj::SetCutoffAngle(float _newCutoffAngle) {
+	this->cutoffAngle = _newCutoffAngle;
+	this->GetComponentType<SpotLight>()->SetCutoffAngle(_newCutoffAngle);
+}
+
+float SpotLightObj::GetFalloffRate() { return this->falloffRate; }
+
+void SpotLightObj::SetFalloffRate(float _newFalloff) {
+	this->falloffRate = _newFalloff;
+	this->GetComponentType<SpotLight>()->SetFalloffRate(_newFalloff);
 }

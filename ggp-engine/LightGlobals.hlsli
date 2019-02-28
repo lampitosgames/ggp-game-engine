@@ -17,10 +17,13 @@ struct PointLight {
 
 struct SpotLight {
 	float4 color;
-	float3 direction;
-	float cone;
 	float3 position;
+	float intensity;
+	float3 direction;
 	float range;
+	float cutoffAngle;
+	float falloffRate;
+	float2 empty;
 };
 
 //LIGHTING DATA REGISTERS
@@ -95,26 +98,20 @@ float3 calcPointLight(PointLight _light, float3 _normal, float3 _surfaceColor, f
 
 //Spot Light
 float3 calcSpotLight(SpotLight _light, float3 _normal, float3 _surfaceColor, float3 _camPos, float3 _worldPos, float _shininess = 0.0f) {
-	//Get direction from the pixel to the point light
-	float3 lightDir = normalize(_worldPos - _light.position);
-	//Get the distance to the light
-	float lightDist = length(_worldPos - _light.position);
-	float NdotL = dot(_normal, -lightDir);
-	NdotL = saturate(NdotL);
-	//Attenuation calculation
-	float lightAtten = saturate(1.0f - (lightDist * lightDist / (_light.range * _light.range)));
-	lightAtten *= lightAtten;
-	float angleFromCenter = max(dot(-lightDir, normalize(-_light.direction)), 0.0f);
-	float spotAmount = pow(angleFromCenter, 45.0f - _light.cone);
-	//Calculate lighting 
-	//Calculate specular light
-	float3 toCam = normalize(_camPos - _worldPos);
-	float3 refl = reflect(lightDir, _normal);
-	float spec = pow(max(dot(refl, toCam), 0.0f), 64.0f);
+	//Get direction from this point to the light
+	float3 lightDir = normalize(_light.position - _worldPos);
+	//Get the cosine factor for the spotlight
+	float spotCos = dot(normalize(_light.direction), -lightDir);
+	//If the point is outside the cone of light from the spotlight, this spotlight has no light effect on it
+	if (spotCos < cos(_light.cutoffAngle)) { return float3(0.0f, 0.0f, 0.0f); }
+	//Point is inside the light cone. Calculate the falloff intensity
+	float spotFalloff = pow(spotCos, _light.falloffRate);
 
-	//Return the combined lighting
-	return (_light.color * NdotL * _surfaceColor * spotAmount + spec) * lightAtten;
-} 
+	//Move variables from the spot light to a point light struct
+	PointLight pl = { _light.color, _light.position, _light.intensity, _light.range, float3(0.0f, 0.0f, 0.0f) };
+	//Calculate the spot light as we would a point light, then multiply it by the falloff of the light's cone
+	return calcPointLight(pl, _normal, _surfaceColor, _camPos, _worldPos, _shininess) * spotFalloff;
+}
 
 /*
 	PHYSICALLY BASED LIGHTING
@@ -207,23 +204,19 @@ float3 calcPointLightPBR(PointLight _light, float3 _normal, float3 _camPos, floa
 }
 
 float3 calcSpotLightPBR(SpotLight _light, float3 _normal, float3 _camPos, float3 _worldPos, float3 _albedo, float _roughness, float _metalness, float3 _specColor) {
-	float3 lightDir = normalize(_worldPos - _light.position);
-	float lightDist = distance(_light.position, _worldPos);
-	float3 camDir = normalize(_camPos - _worldPos);
-	
-	//Attenuation calculation
-	float lightAtten = pow(saturate(1.0f - (lightDist * lightDist / (_light.range * _light.range))), 2);
-	//Calculate diffuse lighting
-	float diff = dot(_normal, -lightDir);
-	diff = saturate(diff);
-	//calculate spotlight amount based on cone shape
-	float angleFromCenter = max(dot(-lightDir, normalize(-_light.direction)), 0.0f);
-	float spotAmount = pow(angleFromCenter, 45.0f - _light.cone);
-	//Calculate specular lighting
-	float3 spec = microfacetSpec(_normal, -lightDir, camDir, _roughness, _metalness, _specColor);
-	//Incorporate conservation of energy
-	float3 balancedDiffuse = diff * ((1 - saturate(spec)) * (1 - _metalness));
-	return (balancedDiffuse * _albedo * spotAmount + spec) * lightAtten * _light.color;
+	//Get direction from this point to the light
+	float3 lightDir = normalize(_light.position - _worldPos);
+	//Get the cosine factor for the spotlight
+	float spotCos = dot(normalize(_light.direction), -lightDir);
+	//If the point is outside the cone of light from the spotlight, this spotlight has no light effect on it
+	if (spotCos < cos(_light.cutoffAngle)) { return float3(0.0f, 0.0f, 0.0f); }
+	//Point is inside the light cone. Calculate the falloff intensity
+	float spotFalloff = pow(spotCos, _light.falloffRate);
+
+	//Move variables from the spot light to a point light struct
+	PointLight pl = { _light.color, _light.position, _light.intensity, _light.range, float3(0.0f, 0.0f, 0.0f) };
+	//Use normal point light PBR calculation, multiplied by the spotlight falloff
+	return calcPointLightPBR(pl, _normal, _camPos, _worldPos, _albedo, _roughness, _metalness, _specColor) * spotFalloff;
 }
 
 /*

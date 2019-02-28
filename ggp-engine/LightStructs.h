@@ -21,9 +21,12 @@ struct PointLightStruct {
 
 struct SpotLightStruct {
 	DirectX::SimpleMath::Color color;
-	DirectX::SimpleMath::Vector3 direction;
-	float cone;
 	DirectX::SimpleMath::Vector3 position;
+	float intensity;
+	DirectX::SimpleMath::Vector3 direction;
 	float range;
+	float cutoffAngle;
+	float falloffRate;
+	DirectX::SimpleMath::Vector2 empty;
 };
 #endif //GGP_LIGHT_H
