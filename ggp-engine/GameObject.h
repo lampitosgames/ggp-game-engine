@@ -48,6 +48,7 @@ protected:
 	ParticleManager* particleManager;
 	ComponentManager* componentManager;
 
+	std::string MakeColorUIDString(DirectX::SimpleMath::Color _color);
 public:
 
 	GameObject(ResName _uniqueID = "NA",

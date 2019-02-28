@@ -12,18 +12,13 @@ using namespace DirectX::SimpleMath;
 
 float PointLightObj::rangeScaleMod = 25.0f;
 
-string PointLightObj::MakeUIDString(Color _color) {
-	string colorID = "rgba(" + to_string(_color.R()) + "," + to_string(_color.G()) + "," + to_string(_color.B()) + "," + to_string(_color.A()) + ")";
-	return colorID;
-}
-
 PointLightObj::PointLightObj(
 	ResName _uniqueID,
 	Vector3 _position,
 	Color _color,
 	float _intensity,
 	float _range) : GameObject(
-		_uniqueID == "NA" ? MakeUIDString(_color) : _uniqueID, 
+		_uniqueID == "NA" ? MakeColorUIDString(_color) : _uniqueID, 
 		_position, 
 		Vector3(0.0f, 0.0f, 0.0f), 
 		Vector3(_range / rangeScaleMod, _range / rangeScaleMod, _range / rangeScaleMod)
@@ -37,7 +32,7 @@ PointLightObj::PointLightObj(
 
 void PointLightObj::Start() {
 	//Create a material that is the same color as the light
-	Material* lightColorMat = resourceManager->AddMaterial(MakeUIDString(this->color), res["shdr"]["vert"]["default"], res["shdr"]["pix"]["debug"], this->color);
+	Material* lightColorMat = resourceManager->AddMaterial(MakeColorUIDString(this->color), res["shdr"]["vert"]["default"], res["shdr"]["pix"]["debug"], this->color);
 	//All lights are represented by spherees
 	Mesh* sphereMesh = resourceManager->GetMesh(res["mesh"]["sphere"]);
 	//Create a mesh renderer

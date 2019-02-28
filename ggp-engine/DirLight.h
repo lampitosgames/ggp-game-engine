@@ -16,6 +16,15 @@ public:
 			 float _ambientIntensity = 0.0f);
 	~DirLight();
 
+	DirectX::SimpleMath::Color GetColor();
+	void SetColor(DirectX::SimpleMath::Color _newColor);
+	DirectX::SimpleMath::Vector3 GetDirection();
+	void SetDirection(DirectX::SimpleMath::Vector3 _newDir);
+	float GetDiffuse();
+	void SetDiffuse(float _newDI);
+	float GetAmbient();
+	void SetAmbient(float _newAI);
+
 	DirLightStruct buildLightStruct();
 
 	GameObject* gameObject;

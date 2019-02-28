@@ -14,6 +14,11 @@ using namespace DirectX::SimpleMath;
 map<ResName, GameObject*> GameObject::goUIDMap = map<ResName, GameObject*>();
 
 
+string GameObject::MakeColorUIDString(Color _color) {
+	string colorID = "rgba(" + to_string(_color.R()) + "," + to_string(_color.G()) + "," + to_string(_color.B()) + "," + to_string(_color.A()) + ")";
+	return colorID;
+}
+
 GameObject::GameObject(ResName _uniqueID, Vector3 _position, Vector3 _rotation, Vector3 _scale) {
 	Init();
 	//Ensure the provided ID is unique

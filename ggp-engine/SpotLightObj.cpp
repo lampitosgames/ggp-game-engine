@@ -10,11 +10,6 @@
 using namespace std;
 using namespace DirectX::SimpleMath;
 
-string SpotLightObj::MakeUIDString(Color _color) {
-	string colorID = "rgba(" + to_string(_color.R()) + "," + to_string(_color.G()) + "," + to_string(_color.B()) + "," + to_string(_color.A()) + ")";
-	return colorID;
-}
-
 Vector3 SpotLightObj::GetEulerFromDir(Vector3 _dir) {
 	_dir.Normalize();
 	Vector3 zRotAxis = Vector3(0.0f, 1.0f, 0.0f);
@@ -50,7 +45,7 @@ SpotLightObj::SpotLightObj(
 	float _cutoffAngle,
 	float _falloffRate
 	) : GameObject(
-		_uniqueID == "NA" ? MakeUIDString(_color) : _uniqueID, 
+		_uniqueID == "NA" ? MakeColorUIDString(_color) : _uniqueID, 
 		_position, 
 		GetEulerFromDir(_direction), 
 		Vector3(1.0f, 30.0f / _cutoffAngle, 1.0f)
@@ -69,7 +64,7 @@ SpotLightObj::SpotLightObj(
 
 void SpotLightObj::Start() {
 	//Create a material that is the same color as the light
-	Material* lightColorMat = resourceManager->AddMaterial(MakeUIDString(this->color), res["shdr"]["vert"]["default"], res["shdr"]["pix"]["debug"], this->color);
+	Material* lightColorMat = resourceManager->AddMaterial(MakeColorUIDString(this->color), res["shdr"]["vert"]["default"], res["shdr"]["pix"]["debug"], this->color);
 	//Spotlights are represented by a cone
 	Mesh* coneMesh = resourceManager->GetMesh(res["mesh"]["cone"]);
 	//Create a mesh renderer

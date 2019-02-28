@@ -9,8 +9,6 @@ protected:
 	DirectX::SimpleMath::Color color;
 	float intensity;
 	float range;
-
-	std::string MakeUIDString(DirectX::SimpleMath::Color _color);
 public:
 	PointLightObj(
 		ResName _uniqueID = "NA",

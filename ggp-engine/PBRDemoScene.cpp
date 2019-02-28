@@ -12,9 +12,9 @@
 #include "Mesh.h"
 #include "MeshRenderer.h"
 #include "InputListener.h"
-#include "DirLight.h"
 #include "PointLightObj.h"
 #include "SpotLightObj.h"
+#include "DirLightObj.h"
 #include "ParticleEmitter.h"
 
 using namespace DirectX::SimpleMath;
@@ -60,22 +60,13 @@ void PBRDemoScene::Init() {
 		newSphere->transform.position.x = (float)i * 1.2f;
 	}
 
-	//Create a single, white directional light
-	GameObject* dirLight = new GameObject("dirLight1");
-	AddChild(dirLight);
-	GameObject* dirLight2 = new GameObject("dirLight2");
-	AddChild(dirLight2);
-	dirLight2->AddComponent<DirLight>(dirLight2, Color(1.0f, 1.0f, 1.0f, 1.0f), Vector3(-1.0f, -0.25f, 0.0f), 0.2f, 0.00f);
-	GameObject* dirLight3 = new GameObject("dirLight3");
-	AddChild(dirLight3);
-	dirLight3->AddComponent<DirLight>(dirLight3, Color(1.0f, 1.0f, 1.0f, 1.0f), Vector3(0.0f, -1.0f, 1.0f), 0.2f, 0.00f);
-
 	//Add lights (one line creation)
-	AddChild(new PointLightObj("pointLight1", Vector3(2.0f, 4.0f, 0.0f), Color(0.0f, 0.0f, 1.0f, 1.0f), 1.0f, 10.0f));
+	AddChild(new PointLightObj("pointLight1", Vector3(2.0f, 4.0f, 0.0f), Color(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 10.0f));
 	AddChild(new PointLightObj("pointLight2", Vector3(6.0f, 3.0f, 0.0f), Color(0.6f, 0.6f, 0.6f, 1.0f)));
 	AddChild(new PointLightObj("pointLight3", Vector3(0.0f, -3.0f, 2.0f), Color(1.0f, 1.0f, 0.3f, 1.0f)));
-	AddChild(new SpotLightObj("spotLight1", Vector3(0.0f, 3.0f, 0.0f), Color(1.0f, 0.0f, 0.0f, 1.0f), 1.0f, Vector3(1.0f, -1.0f, 0.0f), 30.0f, 45.0f));
-
+	AddChild(new SpotLightObj("spotLight1", Vector3(0.0f, 3.0f, 0.0f), Color(1.0f, 0.0f, 0.0f, 1.0f), 2.0f, Vector3(1.0f, -1.0f, 0.0f), 30.0f, 30.0f));
+	AddChild(new DirLightObj("dirLight1", Color(1.0f, 1.0f, 1.0f, 1.0f), Vector3(-1.0f, -0.25f, 0.0f), 0.2f, 0.0f));
+	AddChild(new DirLightObj("dirLight1", Color(1.0f, 1.0f, 1.0f, 1.0f), Vector3(0.0f, -1.0f, 1.0f), 0.2f, 0.0f));
 
 	//Create a camera
 	activeCamera = new FlyingCamera("MainCamera");
@@ -100,11 +91,11 @@ void PBRDemoScene::Start() {
 void PBRDemoScene::Update(float _deltaTime) {
 	Scene::Update(_deltaTime);
 
-	//PointLightObj* pointLight2 = GetGameObject<PointLightObj>("pointLight2");
-	//pointLight2->transform.position.x = 3 + 3 * cos(totalTime);
-	//pointLight2->transform.position.z = 3 * sin(totalTime);
+	PointLightObj* pointLight2 = GetGameObject<PointLightObj>("pointLight2");
+	pointLight2->transform.position.x = 3 + 3 * cos(totalTime);
+	pointLight2->transform.position.z = 3 * sin(totalTime);
 
-	//GetGameObject<PointLightObj>("pointLight1")->SetRange(10.0f + (5.0f * cos(totalTime)));
+	GetGameObject<PointLightObj>("pointLight1")->SetRange(5.0f + (5.0f * cos(totalTime)));
 	GetGameObject<SpotLightObj>("spotLight1")->transform.rotation.z += 1.0f * _deltaTime;
 	if (inputManager->ActionPressed("delete_object")) {
 		delete GetGameObject<GameObject>("dirLight1");
