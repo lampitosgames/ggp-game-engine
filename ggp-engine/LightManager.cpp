@@ -1,8 +1,13 @@
 #include "stdafx.h"
 
 #include "LightManager.h"
+#include "DXCore.h"
+#include "ResourceManager.h"
+#include "RenderManager.h"
 
 LightManager* LightManager::instance = nullptr;
+ID3D11Device* LightManager::dxDevice = nullptr;
+ID3D11DeviceContext* LightManager::dxContext = nullptr;
 
 LightManager* LightManager::GetInstance() {
 	if (instance == nullptr) {
@@ -16,6 +21,131 @@ void LightManager::ReleaseInstance() {
 		delete instance;
 		instance = nullptr;
 	}
+}
+
+void LightManager::Start() {
+	//Get references to the device and context
+	//TODO: Replace resource manager with the system singleton
+	dxDevice = ResourceManager::GetDevicePointer();
+	dxContext = ResourceManager::GetContextPointer();
+	//Create shadow requirements
+	//Get the shadow vertex shader
+	shadowVS = ResourceManager::GetInstance()->GetVertexShader(ResourceManager::GetRes()["shdr"]["shadow"]["texVS"]);
+	//Make shadow map texture
+	D3D11_TEXTURE2D_DESC shadowMapDesc;
+	ID3D11Texture2D* shadowMap;
+	ZeroMemory(&shadowMapDesc, sizeof(D3D11_TEXTURE2D_DESC));
+	shadowMapDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+	shadowMapDesc.MipLevels = 1;
+	shadowMapDesc.ArraySize = 1;
+	shadowMapDesc.SampleDesc.Count = 1;
+	shadowMapDesc.SampleDesc.Quality = 0;
+	shadowMapDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
+	shadowMapDesc.Height = shadowMapSize;
+	shadowMapDesc.Width = shadowMapSize;
+	HRESULT hr = dxDevice->CreateTexture2D(&shadowMapDesc, nullptr, &shadowMap);
+	if (hr != S_OK) {
+		throw std::exception("Failed to create shadow map texture");
+	}
+
+	//Depth/stencil view
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
+	ZeroMemory(&dsvDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	dsvDesc.Texture2D.MipSlice = 0;
+	hr = dxDevice->CreateDepthStencilView(shadowMap, &dsvDesc, &dirDSV);
+	if (hr != S_OK) {
+		throw std::exception("Failed to create shadow depth stencil view");
+	}
+
+	//Shader resource view
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	hr = dxDevice->CreateShaderResourceView(shadowMap, &srvDesc, &dirSRV);
+	if (hr != S_OK) {
+		throw std::exception("Failed to create shadow SRV");
+	}
+
+	//Comparison sampler state
+	D3D11_SAMPLER_DESC compSamplerDesc;
+	ZeroMemory(&compSamplerDesc, sizeof(D3D11_SAMPLER_DESC));
+	compSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	compSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	compSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	compSamplerDesc.MinLOD = 0.f;
+	compSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	compSamplerDesc.MipLODBias = 0.0f;
+	compSamplerDesc.MaxAnisotropy = 0;
+	compSamplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+	compSamplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+	compSamplerDesc.BorderColor[0] = 1.0f;
+	compSamplerDesc.BorderColor[1] = 1.0f;
+	compSamplerDesc.BorderColor[2] = 1.0f;
+	compSamplerDesc.BorderColor[3] = 1.0f;
+	hr = dxDevice->CreateSamplerState(&compSamplerDesc, &dirCSS);
+	if (hr != S_OK) {
+		throw std::exception("Failed to create shadow comparison sampler state");
+	}
+
+	D3D11_RASTERIZER_DESC rastDesc;
+	ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
+	rastDesc.CullMode = D3D11_CULL_BACK;
+	rastDesc.FillMode = D3D11_FILL_SOLID;
+	rastDesc.DepthClipEnable = true;
+	rastDesc.DepthBias = 1000;
+	rastDesc.DepthBiasClamp = 0.0f;
+	rastDesc.SlopeScaledDepthBias = 1.0f;
+	hr = dxDevice->CreateRasterizerState(&rastDesc, &shadowRast);
+	if (hr != S_OK) {
+		throw std::exception("Failed to create shadow rasterizer state");
+	}
+}
+
+void LightManager::RenderShadows(const std::map<UINT, MeshRenderer*>& _meshes) {
+	ID3D11DeviceContext* dxContext = ResourceManager::GetContextPointer();
+	//Set up rendering pipeline for depth rendering 2d shadow maps
+	dxContext->OMSetRenderTargets(0, 0, dirDSV);
+	dxContext->ClearDepthStencilView(dirDSV, D3D11_CLEAR_DEPTH, 1.0f, 0.0f);
+	dxContext->RSSetState(shadowRast);
+	//Create a viewport for the shadow render target
+	D3D11_VIEWPORT viewport = {};
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = (float)shadowMapSize;
+	viewport.Height = (float)shadowMapSize;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	dxContext->RSSetViewports(1, &viewport);
+	//Get the shader
+	shadowVS->SetShader();
+	//Upload light data to the shader (this will need to change when we add multiple lights)
+	shadowVS->SetMatrix4x4("view", dirLightUIDMap.begin()->second->GetViewMatrix());
+	shadowVS->SetMatrix4x4("projection", dirLightUIDMap.begin()->second->GetProjMatrix());
+
+	dxContext->PSSetShader(0, 0, 0);
+	//Render all meshes
+	for (auto mrIt = _meshes.begin(); mrIt != _meshes.end();) {
+		MeshRenderer* mrTemp = mrIt->second;
+		//Make sure the mesh renderer still exists
+		mrIt++;
+		if (mrTemp == nullptr) { continue; }
+		//If the mesh renderer doesn't have a mesh to render, continue
+		if (mrTemp->GetMesh() == nullptr) { continue; }
+
+		//Copy the mesh's world matrix
+		shadowVS->SetMatrix4x4("world", mrTemp->GetWorldMatrix());
+		shadowVS->CopyAllBufferData();
+		//Draw the mesh to the DSV
+		mrTemp->Draw(dxContext);
+	}
+	//Reset rendering options
+	
+	dxContext->OMSetRenderTargets(1, &RenderManager::backBufferRTV, RenderManager::depthStencilView);
 }
 
 void LightManager::UploadAllLights(SimplePixelShader* _pixelShader) {
@@ -69,6 +199,30 @@ void LightManager::UploadAllLights(SimplePixelShader* _pixelShader) {
 	}
 	_pixelShader->SetData("spotLights", &spotLights, sizeof(SpotLightStruct) * maxSpotLights);
 	_pixelShader->SetData("spotLightCount", &spotLightCount, sizeof(UINT));
+}
+
+UINT LightManager::GetShadowMapResolution() {
+	return shadowMapSize;
+}
+
+ID3D11RasterizerState* LightManager::GetShadowRasterizer() {
+	return shadowRast;
+}
+
+SimpleVertexShader* LightManager::GetShadowVertexShader() {
+	return shadowVS;
+}
+
+ID3D11DepthStencilView* LightManager::GetShadowDSV() {
+	return dirDSV;
+}
+
+ID3D11ShaderResourceView* LightManager::GetShadowSRV() {
+	return dirSRV;
+}
+
+ID3D11SamplerState* LightManager::GetShadowSampler() {
+	return dirCSS;
 }
 
 #pragma region Directional Lights

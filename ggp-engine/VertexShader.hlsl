@@ -7,6 +7,9 @@ VertexToPixel main(VertexShaderInput input) {
 
 	//Create world space -> screen space transformation matrix
 	matrix worldViewProj = mul(mul(world, view), projection);
+	//Create world space -> shadow space transformation matrix
+	matrix shadowWVP = mul(mul(world, lightView), lightProj);
+	output.posForShadow = mul(float4(input.position, 1.0f), shadowWVP);
 
 	//Transform vertex position into screen space (used for drawing pixels to the screen)
 	output.position = mul(float4(input.position, 1.0f), worldViewProj);

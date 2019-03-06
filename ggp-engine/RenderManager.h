@@ -52,6 +52,10 @@ public:
 	//Static Singleton get/release for the single renderManager instance
 	static RenderManager* GetInstance();
 	static void ReleaseInstance();
+	//Pass in initial DirectX vars
+	static ID3D11RenderTargetView* backBufferRTV;
+	static ID3D11DepthStencilView* depthStencilView;
+	static void SetViewBuffers(ID3D11RenderTargetView* _RTV, ID3D11DepthStencilView* _DSV);
 
 	// We don't want anything making copies of this class so delete these operators
 	RenderManager(RenderManager const&) = delete;
@@ -62,6 +66,7 @@ public:
 
 	//Called once per frame from the Game.cpp. Renders the active scene
 	void Render();
+	void RenderShadows();
 
 	//Gamma correction get/set
 	float GetGammaCorrection();

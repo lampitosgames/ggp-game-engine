@@ -4,6 +4,7 @@
 #include <SimpleMath.h>
 #include "BaseComponent.h"
 #include "LightStructs.h"
+#include "SimpleMath.h"
 class GameObject;
 
 class DirLight : public BaseComponent<DirLight> {
@@ -24,6 +25,9 @@ public:
 	void SetDiffuse(float _newDI);
 	float GetAmbient();
 	void SetAmbient(float _newAI);
+
+	DirectX::SimpleMath::Matrix GetViewMatrix();
+	DirectX::SimpleMath::Matrix GetProjMatrix();
 
 	DirLightStruct buildLightStruct();
 

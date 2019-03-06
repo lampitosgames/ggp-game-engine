@@ -15,6 +15,8 @@ class Mesh {
 	//Stride and offset of the buffers
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
+	//Does this mesh cast shadows?
+	bool castsShadows = false;
 public:
 	//Constructor
 	Mesh(Vertex* vertexArray, UINT vertexCount, UINT* vertexIndicesArray, UINT indexCount, ID3D11Device* dxDevice);
@@ -27,6 +29,10 @@ public:
 	UINT GetIndexCount();
 	UINT GetStride();
 	UINT GetOffset();
+	bool GetCastShadows();
+
+	//Setters
+	void SetCastShadows(bool _castsShadows);
 };
 
 #endif //GGP_MESH_H

@@ -77,6 +77,10 @@
       "particle": "ParticlePixelShader.cso",
       "pbr": "PBRPShader.cso",
       "debug": "DebugMeshPShader.cso"
+    },
+    "shadow": {
+      "texVS": "shadowVShader.cso",
+      "cubeVS":  "cubeShadowVShader.cso"
     }
   },
   "tera": {

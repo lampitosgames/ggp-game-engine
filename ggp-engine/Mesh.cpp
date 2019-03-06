@@ -64,3 +64,7 @@ UINT Mesh::GetStride() {
 UINT Mesh::GetOffset() {
 	return offset;
 }
+
+bool Mesh::GetCastShadows() { return castsShadows; }
+
+void Mesh::SetCastShadows(bool _castsShadows) { castsShadows = _castsShadows; }

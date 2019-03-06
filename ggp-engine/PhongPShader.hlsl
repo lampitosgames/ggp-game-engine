@@ -7,6 +7,9 @@ SamplerState basicSampler : register(s0);
 Texture2D diffuseTexture  : register(t0);
 Texture2D normalMap       : register(t1);
 Texture2D specularMap     : register(t2);
+//Shadow registers
+Texture2D ShadowMap       : register(t3);
+SamplerComparisonState ShadowSampler : register(s1);
 
 //Entry point
 float4 main(VertexToPixel input) : SV_TARGET {

@@ -8,6 +8,9 @@ Texture2D albedoTexture   : register(t0); //needs gamma correction
 Texture2D normalMap       : register(t1); //No gamma correction
 Texture2D roughnessMap    : register(t2); //no gamma correction
 Texture2D metalnessMap    : register(t3); //needs gamma correction
+//Shadow registers
+Texture2D ShadowMap       : register(t4);
+SamplerComparisonState ShadowSampler : register(s1);
 
 //Entry point
 float4 main(VertexToPixel input) : SV_TARGET {

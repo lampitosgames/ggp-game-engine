@@ -16,6 +16,7 @@ protected:
 	Texture* diffuse;
 	Texture* normal;
 	Texture* specular;
+	bool recievesShadows;
 
 	//Protected constructor that simply sets everything to null. Used for the PBRMaterial
 	Material();
@@ -80,6 +81,10 @@ public:
 	ID3D11ShaderResourceView* GetSpecularSRV();
 	void SetSpecularMap(Texture* _newSpecular);
 	bool HasSpecularMap();
+
+	//Recieves shadows get/set
+	void SetRecievesShadows(bool _recieveShadows);
+	bool GetRecievesShadows();
 };
 
 #endif //GGP_MATERIAL_H
