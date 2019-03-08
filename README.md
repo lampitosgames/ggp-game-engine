@@ -1,4 +1,4 @@
 # Game Graphics Programming Game Engine
-An engine developed as part of my education at RIT
+A game engine I've been working on as part of my senior project at RIT
 
 
