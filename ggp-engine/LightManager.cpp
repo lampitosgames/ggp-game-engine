@@ -124,8 +124,8 @@ void LightManager::RenderShadows(const std::map<UINT, MeshRenderer*>& _meshes) {
 	//Get the shader
 	shadowVS->SetShader();
 	//Upload light data to the shader (this will need to change when we add multiple lights)
-	shadowVS->SetMatrix4x4("view", dirLightUIDMap.begin()->second->GetViewMatrix());
-	shadowVS->SetMatrix4x4("projection", dirLightUIDMap.begin()->second->GetProjMatrix());
+	//shadowVS->SetMatrix4x4("view", dirLightUIDMap.begin()->second->GetViewMatrix());
+	//shadowVS->SetMatrix4x4("projection", dirLightUIDMap.begin()->second->GetProjMatrix());
 
 	dxContext->PSSetShader(0, 0, 0);
 	//Render all meshes

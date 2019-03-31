@@ -61,9 +61,9 @@ void PBRDemoScene::Init() {
 	}
 
 	//Add lights (one line creation)
-	AddChild(new PointLightObj("pointLight1", Vector3(2.0f, 4.0f, 0.0f), Color(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 10.0f));
-	AddChild(new PointLightObj("pointLight2", Vector3(6.0f, 3.0f, 0.0f), Color(0.6f, 0.6f, 0.6f, 1.0f)));
-	AddChild(new PointLightObj("pointLight3", Vector3(0.0f, -3.0f, 2.0f), Color(1.0f, 1.0f, 0.3f, 1.0f)));
+	//AddChild(new PointLightObj("pointLight1", Vector3(2.0f, 4.0f, 0.0f), Color(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 10.0f));
+	//AddChild(new PointLightObj("pointLight2", Vector3(6.0f, 3.0f, 0.0f), Color(0.6f, 0.6f, 0.6f, 1.0f)));
+	//AddChild(new PointLightObj("pointLight3", Vector3(0.0f, -3.0f, 2.0f), Color(1.0f, 1.0f, 0.3f, 1.0f)));
 	AddChild(new SpotLightObj("spotLight1", Vector3(0.0f, 3.0f, 0.0f), Color(1.0f, 0.0f, 0.0f, 1.0f), 2.0f, Vector3(1.0f, -1.0f, 0.0f), 30.0f, 30.0f));
 	AddChild(new DirLightObj("dirLight1", Color(1.0f, 1.0f, 1.0f, 1.0f), Vector3(-1.0f, -0.25f, 0.0f), 0.2f, 0.0f));
 	AddChild(new DirLightObj("dirLight1", Color(1.0f, 1.0f, 1.0f, 1.0f), Vector3(0.0f, -1.0f, 1.0f), 0.2f, 0.0f));
@@ -91,11 +91,11 @@ void PBRDemoScene::Start() {
 void PBRDemoScene::Update(float _deltaTime) {
 	Scene::Update(_deltaTime);
 
-	PointLightObj* pointLight2 = GetGameObject<PointLightObj>("pointLight2");
-	pointLight2->transform.position.x = 3 + 3 * cos(totalTime);
-	pointLight2->transform.position.z = 3 * sin(totalTime);
-
-	GetGameObject<PointLightObj>("pointLight1")->SetRange(5.0f + (5.0f * cos(totalTime)));
+	//PointLightObj* pointLight2 = GetGameObject<PointLightObj>("pointLight2");
+	//pointLight2->transform.position.x = 3 + 3 * cos(totalTime);
+	//pointLight2->transform.position.z = 3 * sin(totalTime);
+	//
+	//GetGameObject<PointLightObj>("pointLight1")->SetRange(5.0f + (5.0f * cos(totalTime)));
 	GetGameObject<SpotLightObj>("spotLight1")->transform.rotation.z += 1.0f * _deltaTime;
 	if (inputManager->ActionPressed("delete_object")) {
 		delete GetGameObject<GameObject>("dirLight1");
