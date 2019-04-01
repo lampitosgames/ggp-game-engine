@@ -7,6 +7,7 @@
 #include "GameObject.h"
 #include "MeshRenderer.h"
 #include "ResourceManager.h"
+#include "SystemManager.h"
 #include "ParticleManager.h"
 #include "LightManager.h"
 #include "Texture.h"
@@ -225,6 +226,7 @@ RenderManager::RenderManager() {
 	//Gamma correction value should default to 2.2
 	gammaCorrection = 2.2f;
 	//Get an instance of the resource manager
+	systemManager = SystemManager::GetInstance();
 	resourceManager = ResourceManager::GetInstance();
 	lightManager = LightManager::GetInstance();
 }

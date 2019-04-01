@@ -10,6 +10,7 @@ protected:
 	Camera* activeCamera;
 	float totalTime;
 public:
+	static Scene* activeScene;
 	Scene(ResName _uniqueID);
 
 	//Extra init method that runs before start. Useful to create objects and set up the scene

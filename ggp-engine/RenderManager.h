@@ -7,6 +7,7 @@
 class Mesh;
 class MeshRenderer;
 class GameObject;
+class SystemManager;
 class ResourceManager;
 class LightManager;
 class ParticleManager;
@@ -19,6 +20,7 @@ class RenderManager {
 	//Singleton pointer
 	static RenderManager* instance;
 
+	SystemManager* systemManager;
 	ResourceManager* resourceManager;
 	LightManager* lightManager;
 	ParticleManager* particleManager;
