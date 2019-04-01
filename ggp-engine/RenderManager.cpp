@@ -15,8 +15,6 @@
 #include "Mesh.h"
 
 RenderManager* RenderManager::instance = nullptr;
-ID3D11RenderTargetView* RenderManager::backBufferRTV = nullptr;
-ID3D11DepthStencilView* RenderManager::depthStencilView = nullptr;
 
 RenderManager* RenderManager::GetInstance() {
 	if (instance == nullptr) {
@@ -30,11 +28,6 @@ void RenderManager::ReleaseInstance() {
 		delete instance;
 		instance = nullptr;
 	}
-}
-
-void RenderManager::SetViewBuffers(ID3D11RenderTargetView* _RTV, ID3D11DepthStencilView* _DSV) {
-	RenderManager::backBufferRTV = _RTV;
-	RenderManager::depthStencilView = _DSV;
 }
 
 void RenderManager::Start() {

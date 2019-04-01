@@ -4,6 +4,9 @@
 #include "DXCore.h"
 #include "ResourceManager.h"
 #include "RenderManager.h"
+#include <DirectXMath.h>
+
+using namespace DirectX::SimpleMath;
 
 LightManager* LightManager::instance = nullptr;
 ID3D11Device* LightManager::dxDevice = nullptr;
@@ -124,8 +127,11 @@ void LightManager::RenderShadows(const std::map<UINT, MeshRenderer*>& _meshes) {
 	//Get the shader
 	shadowVS->SetShader();
 	//Upload light data to the shader (this will need to change when we add multiple lights)
-	//shadowVS->SetMatrix4x4("view", dirLightUIDMap.begin()->second->GetViewMatrix());
-	//shadowVS->SetMatrix4x4("projection", dirLightUIDMap.begin()->second->GetProjMatrix());
+	DirectX::XMFLOAT4X4 viewMat = dirLightUIDMap.begin()->second->GetViewMatrix();
+	DirectX::XMFLOAT4X4 projMat = dirLightUIDMap.begin()->second->GetProjMatrix();
+
+	shadowVS->SetMatrix4x4("view", viewMat);
+	shadowVS->SetMatrix4x4("projection", projMat);
 
 	dxContext->PSSetShader(0, 0, 0);
 	//Render all meshes
@@ -144,8 +150,11 @@ void LightManager::RenderShadows(const std::map<UINT, MeshRenderer*>& _meshes) {
 		mrTemp->Draw(dxContext);
 	}
 	//Reset rendering options
-	
-	dxContext->OMSetRenderTargets(1, &RenderManager::backBufferRTV, RenderManager::depthStencilView);
+	//context->OMSetRenderTargets(1, &backBufferRTV, depthStencilView);
+	//viewport.Width = (float)this->width;
+	//viewport.Height = (float)this->height;
+	//context->RSSetViewports(1, &viewport); // Viewport that matches screen size
+	//context->RSSetState(0); // Default rasterizer options
 }
 
 void LightManager::UploadAllLights(SimplePixelShader* _pixelShader) {

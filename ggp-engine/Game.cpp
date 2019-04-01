@@ -77,7 +77,6 @@ void Game::Init() {
 	//Give the device and context to the resource manager
 	ResourceManager::SetDevicePointer(dxDevice);
 	ResourceManager::SetContextPointer(dxContext);
-	RenderManager::SetViewBuffers(backBufferRTV, depthStencilView);
 
 	//Call init on singletons that need it
 	particleManager->Init();
