@@ -12,13 +12,13 @@ using namespace std;
 
 SystemManager* SystemManager::instance = nullptr;
 
+#pragma region Constructor/Destructor for singleton
 SystemManager* SystemManager::GetInstance() {
 	if (instance == nullptr) {
 		instance = new SystemManager();
 	}
 	return instance;
 }
-
 void SystemManager::ReleaseInstance() {
 	if (instance != nullptr) {
 		delete instance;
@@ -26,222 +26,45 @@ void SystemManager::ReleaseInstance() {
 	}
 }
 
-void SystemManager::CreateConsoleWindow(int bufferLines, int bufferColumns, int windowLines, int windowColumns) {
-	// Our temp console info struct
-	CONSOLE_SCREEN_BUFFER_INFO coninfo;
-
-	// Get the console info and set the number of lines
-	AllocConsole();
-	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &coninfo);
-	coninfo.dwSize.Y = bufferLines;
-	coninfo.dwSize.X = bufferColumns;
-	SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coninfo.dwSize);
-
-	SMALL_RECT rect;
-	rect.Left = 0;
-	rect.Top = 0;
-	rect.Right = windowColumns;
-	rect.Bottom = windowLines;
-	SetConsoleWindowInfo(GetStdHandle(STD_OUTPUT_HANDLE), TRUE, &rect);
-
-	FILE *stream;
-	freopen_s(&stream, "CONIN$", "r", stdin);
-	freopen_s(&stream, "CONOUT$", "w", stdout);
-	freopen_s(&stream, "CONOUT$", "w", stderr);
-
-	// Prevent accidental console window close
-	HWND consoleHandle = GetConsoleWindow();
-	HMENU hmenu = GetSystemMenu(consoleHandle, FALSE);
-	EnableMenuItem(hmenu, SC_CLOSE, MF_GRAYED);
-}
-
-void SystemManager::UpdateTimer() {
-	// Grab the current time
-	__int64 now;
-	QueryPerformanceCounter((LARGE_INTEGER*)&now);
-	currentTime = now;
-
-	// Calculate delta time and clamp to zero
-	//  - Could go negative if CPU goes into power save mode 
-	//    or the process itself gets moved to another core
-	deltaTime = max((float)((currentTime - previousTime) * perfCounterSeconds), 0.0f);
-
-	// Calculate the total time from start to now
-	totalTime = (float)((currentTime - startTime) * perfCounterSeconds);
-
-	// Save current time for next frame
-	previousTime = currentTime;
-}
-
-void SystemManager::UpdateTitleBarStats() {
-	fpsFrameCount++;
-
-	// Only calc FPS and update title bar once per second
-	float timeDiff = totalTime - fpsTimeElapsed;
-	if (timeDiff < 1.0f)
-		return;
-
-	// How long did each frame take?  (Approx)
-	float mspf = 1000.0f / (float)fpsFrameCount;
-
-	// Quick and dirty title bar text (mostly for debugging)
-	std::ostringstream output;
-	output.precision(6);
-	output << titleBarText <<
-		"    Width: " << width <<
-		"    Height: " << height <<
-		"    FPS: " << fpsFrameCount <<
-		"    Frame Time: " << mspf << "ms";
-
-	// Append the version of DirectX the app is using
-	switch (dxFeatureLevel) {
-	case D3D_FEATURE_LEVEL_11_1: output << "    DX 11.1"; break;
-	case D3D_FEATURE_LEVEL_11_0: output << "    DX 11.0"; break;
-	case D3D_FEATURE_LEVEL_10_1: output << "    DX 10.1"; break;
-	case D3D_FEATURE_LEVEL_10_0: output << "    DX 10.0"; break;
-	case D3D_FEATURE_LEVEL_9_3:  output << "    DX 9.3";  break;
-	case D3D_FEATURE_LEVEL_9_2:  output << "    DX 9.2";  break;
-	case D3D_FEATURE_LEVEL_9_1:  output << "    DX 9.1";  break;
-	default:                     output << "    DX ???";  break;
-	}
-
-	// Actually update the title bar and reset fps data
-	SetWindowText(hWnd, output.str().c_str());
+SystemManager::SystemManager() {
+	// Initialize fields
 	fpsFrameCount = 0;
-	fpsTimeElapsed += 1.0f;
+	fpsTimeElapsed = 0.0f;
+	// Query performance counter for accurate timing information
+	__int64 perfFreq;
+	QueryPerformanceFrequency((LARGE_INTEGER*)&perfFreq);
+	perfCounterSeconds = 1.0 / (double)perfFreq;
+	//Init directX objects
+	dxDevice = 0;
+	dxContext = 0;
+	swapChain = 0;
+	backBufferRTV = 0;
+	depthStencilView = 0;
+	//Is the cursor locked (Default yes)
+	mouseLocked = true;
+	ShowCursor(true);
 }
 
-void SystemManager::HandleMouseMove() {
-	mouseLocked = inputManager->GetMouseLocked();
-	//Store previous mouse position
-	prevMousePos.x = mousePos.x;
-	prevMousePos.y = mousePos.y;
-	//Get the new mouse position
-	GetCursorPos(&mousePos);
-	if (mouseLocked) {
-		//Store window rect
-		RECT windowRect;
-		GetWindowRect(hWnd, &windowRect);
-		//Previous position is always the window's center when the cursor is locked
-		prevMousePos.x = windowRect.left + width / 2;
-		prevMousePos.y = windowRect.top + height / 2;
-		//Reset cursor position
-		SetCursorPos(prevMousePos.x, prevMousePos.y);
-	}
-	//Get mouse displacement
-	int displaceX = mousePos.x - prevMousePos.x;
-	int displaceY = mousePos.y - prevMousePos.y;
-	//Pass data to input manager if mouse moved
-	if (displaceX != 0 || displaceY != 0) {
-		inputManager->_OnMouseMove(prevMousePos.x, prevMousePos.y, mousePos.x, mousePos.y);
-	}
+SystemManager::~SystemManager() {
+	Release();
 }
 
-void SystemManager::OnMouseDown(WPARAM buttonState, int x, int y) {
-	//Pass event to the input manager
-	inputManager->_OnMouseDown(buttonState, x, y);
-	// Caputure the mouse so we keep getting mouse move
-	// events even if the mouse leaves the window.  we'll be
-	// releasing the capture once a mouse button is released
-	SetCapture(hWnd);
-}
-
-void SystemManager::OnMouseUp(WPARAM buttonState, int x, int y) {
-	//Pass event to the input manager
-	inputManager->_OnMouseUp(buttonState, x, y);
-
-	// We don't care about the tracking the cursor outside
-	// the window anymore (we're not dragging if the mouse is up)
-	ReleaseCapture();
-}
-
-void SystemManager::OnMouseMove(WPARAM buttonState, int x, int y) {
-	//Currently does nothing
-}
-
-void SystemManager::OnMouseWheel(float wheelDelta, int x, int y) {
-	//Pass event to the input manager
-	inputManager->_OnMouseWheel(wheelDelta);
-}
-
-LRESULT SystemManager::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	return instance->ProcessMessage(hWnd, uMsg, wParam, lParam);
-}
-
-#if defined(ENABLE_UI)
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+void SystemManager::Release() {
+#ifdef ENABLE_UI
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 #endif
-LRESULT SystemManager::ProcessMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-#if defined(ENABLE_UI)
-	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
-		return true;
-#endif
-
-	// Check the incoming message and handle any we care about
-	switch (uMsg) {
-		// This is the message that signifies the window closing
-	case WM_DESTROY:
-		PostQuitMessage(0); // Send a quit message to our own program
-		return 0;
-
-		// Prevent beeping when we "alt-enter" into fullscreen
-	case WM_MENUCHAR:
-		return MAKELRESULT(0, MNC_CLOSE);
-
-		// Prevent the overall window from becoming too small
-	case WM_GETMINMAXINFO:
-		((MINMAXINFO*)lParam)->ptMinTrackSize.x = 200;
-		((MINMAXINFO*)lParam)->ptMinTrackSize.y = 200;
-		return 0;
-
-		// Sent when the window size changes
-	case WM_SIZE:
-		// Don't adjust anything when minimizing,
-		// since we end up with a width/height of zero
-		// and that doesn't play well with DirectX
-		if (wParam == SIZE_MINIMIZED)
-			return 0;
-
-		// Save the new client area dimensions.
-		width = LOWORD(lParam);
-		height = HIWORD(lParam);
-
-		// If DX is initialized, resize 
-		// our required buffers
-		if (dxDevice)
-			OnResize();
-
-		return 0;
-
-		// Mouse button being pressed (while the cursor is currently over our window)
-	case WM_LBUTTONDOWN:
-	case WM_MBUTTONDOWN:
-	case WM_RBUTTONDOWN:
-		OnMouseDown(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-		return 0;
-
-		// Mouse button being released (while the cursor is currently over our window)
-	case WM_LBUTTONUP:
-	case WM_MBUTTONUP:
-	case WM_RBUTTONUP:
-		OnMouseUp(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-		return 0;
-
-		// Cursor moves over the window (or outside, while we're currently capturing it)
-	case WM_MOUSEMOVE:
-		OnMouseMove(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-		return 0;
-
-		// Mouse wheel is scrolled
-	case WM_MOUSEWHEEL:
-		OnMouseWheel(GET_WHEEL_DELTA_WPARAM(wParam) / (float)WHEEL_DELTA, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-		return 0;
-	}
-
-	// Let Windows handle any messages we're not touching
-	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+	// Release all DirectX resources
+	if (depthStencilView) { depthStencilView->Release(); }
+	if (backBufferRTV) { backBufferRTV->Release(); }
+	if (swapChain) { swapChain->Release(); }
+	if (dxContext) { dxContext->Release(); }
+	if (dxDevice) { dxDevice->Release(); }
 }
+#pragma endregion
 
+#pragma region Initialization
 void SystemManager::Init(HINSTANCE hInstance, char * titleBarText, unsigned int windowWidth, unsigned int windowHeight, bool debugTitleBarStats) {
 	// Save params
 	this->hInstance = hInstance;
@@ -402,7 +225,7 @@ HRESULT SystemManager::InitDirectX() {
 	// Now that we have the texture, create a render target view
 	// for the back buffer so we can render into it.  Then release
 	// our local reference to the texture, since we have the view.
-	dxDevice->CreateRenderTargetView(backBufferTexture,	0, &backBufferRTV);
+	dxDevice->CreateRenderTargetView(backBufferTexture, 0, &backBufferRTV);
 	backBufferTexture->Release();
 
 	// Set up the description of the texture to use for the depth buffer
@@ -462,6 +285,37 @@ HRESULT SystemManager::InitDirectX() {
 	return S_OK;
 }
 
+void SystemManager::CreateConsoleWindow(int bufferLines, int bufferColumns, int windowLines, int windowColumns) {
+	// Our temp console info struct
+	CONSOLE_SCREEN_BUFFER_INFO coninfo;
+
+	// Get the console info and set the number of lines
+	AllocConsole();
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &coninfo);
+	coninfo.dwSize.Y = bufferLines;
+	coninfo.dwSize.X = bufferColumns;
+	SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coninfo.dwSize);
+
+	SMALL_RECT rect;
+	rect.Left = 0;
+	rect.Top = 0;
+	rect.Right = windowColumns;
+	rect.Bottom = windowLines;
+	SetConsoleWindowInfo(GetStdHandle(STD_OUTPUT_HANDLE), TRUE, &rect);
+
+	FILE *stream;
+	freopen_s(&stream, "CONIN$", "r", stdin);
+	freopen_s(&stream, "CONOUT$", "w", stdout);
+	freopen_s(&stream, "CONOUT$", "w", stderr);
+
+	// Prevent accidental console window close
+	HWND consoleHandle = GetConsoleWindow();
+	HMENU hmenu = GetSystemMenu(consoleHandle, FALSE);
+	EnableMenuItem(hmenu, SC_CLOSE, MF_GRAYED);
+}
+#pragma endregion
+
+#pragma region Update/Draw
 void SystemManager::Update() {
 	//Update timer and title bar
 	UpdateTimer();
@@ -518,26 +372,205 @@ void SystemManager::Draw(float _deltaTime) {
 	swapChain->Present(0, 0);
 }
 
-HWND SystemManager::GetWindowHandle() { return this->hWnd; }
+void SystemManager::UpdateTimer() {
+	// Grab the current time
+	__int64 now;
+	QueryPerformanceCounter((LARGE_INTEGER*)&now);
+	currentTime = now;
 
-float SystemManager::GetDeltaTime() { return this->deltaTime; }
+	// Calculate delta time and clamp to zero
+	//  - Could go negative if CPU goes into power save mode 
+	//    or the process itself gets moved to another core
+	deltaTime = max((float)((currentTime - previousTime) * perfCounterSeconds), 0.0f);
 
-float SystemManager::GetTotalTime() { return this->totalTime; }
+	// Calculate the total time from start to now
+	totalTime = (float)((currentTime - startTime) * perfCounterSeconds);
 
-ID3D11Device * SystemManager::GetDevice() {
-	return this->dxDevice;}
-
-ID3D11DeviceContext * SystemManager::GetContext() { 
-	return this->dxContext;
+	// Save current time for next frame
+	previousTime = currentTime;
 }
 
+void SystemManager::UpdateTitleBarStats() {
+	fpsFrameCount++;
+
+	// Only calc FPS and update title bar once per second
+	float timeDiff = totalTime - fpsTimeElapsed;
+	if (timeDiff < 1.0f)
+		return;
+
+	// How long did each frame take?  (Approx)
+	float mspf = 1000.0f / (float)fpsFrameCount;
+
+	// Quick and dirty title bar text (mostly for debugging)
+	std::ostringstream output;
+	output.precision(6);
+	output << titleBarText <<
+		"    Width: " << width <<
+		"    Height: " << height <<
+		"    FPS: " << fpsFrameCount <<
+		"    Frame Time: " << mspf << "ms";
+
+	// Append the version of DirectX the app is using
+	switch (dxFeatureLevel) {
+	case D3D_FEATURE_LEVEL_11_1: output << "    DX 11.1"; break;
+	case D3D_FEATURE_LEVEL_11_0: output << "    DX 11.0"; break;
+	case D3D_FEATURE_LEVEL_10_1: output << "    DX 10.1"; break;
+	case D3D_FEATURE_LEVEL_10_0: output << "    DX 10.0"; break;
+	case D3D_FEATURE_LEVEL_9_3:  output << "    DX 9.3";  break;
+	case D3D_FEATURE_LEVEL_9_2:  output << "    DX 9.2";  break;
+	case D3D_FEATURE_LEVEL_9_1:  output << "    DX 9.1";  break;
+	default:                     output << "    DX ???";  break;
+	}
+
+	// Actually update the title bar and reset fps data
+	SetWindowText(hWnd, output.str().c_str());
+	fpsFrameCount = 0;
+	fpsTimeElapsed += 1.0f;
+}
+#pragma endregion
+
+#pragma region Windows Messaging Management
+LRESULT SystemManager::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	return instance->ProcessMessage(hWnd, uMsg, wParam, lParam);
+}
+
+#if defined(ENABLE_UI)
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#endif
+LRESULT SystemManager::ProcessMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+#if defined(ENABLE_UI)
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+		return true;
+#endif
+
+	// Check the incoming message and handle any we care about
+	switch (uMsg) {
+		// This is the message that signifies the window closing
+	case WM_DESTROY:
+		PostQuitMessage(0); // Send a quit message to our own program
+		return 0;
+
+		// Prevent beeping when we "alt-enter" into fullscreen
+	case WM_MENUCHAR:
+		return MAKELRESULT(0, MNC_CLOSE);
+
+		// Prevent the overall window from becoming too small
+	case WM_GETMINMAXINFO:
+		((MINMAXINFO*)lParam)->ptMinTrackSize.x = 200;
+		((MINMAXINFO*)lParam)->ptMinTrackSize.y = 200;
+		return 0;
+
+		// Sent when the window size changes
+	case WM_SIZE:
+		// Don't adjust anything when minimizing,
+		// since we end up with a width/height of zero
+		// and that doesn't play well with DirectX
+		if (wParam == SIZE_MINIMIZED)
+			return 0;
+
+		// Save the new client area dimensions.
+		width = LOWORD(lParam);
+		height = HIWORD(lParam);
+
+		// If DX is initialized, resize 
+		// our required buffers
+		if (dxDevice)
+			OnResize();
+
+		return 0;
+
+		// Mouse button being pressed (while the cursor is currently over our window)
+	case WM_LBUTTONDOWN:
+	case WM_MBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+		OnMouseDown(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		return 0;
+
+		// Mouse button being released (while the cursor is currently over our window)
+	case WM_LBUTTONUP:
+	case WM_MBUTTONUP:
+	case WM_RBUTTONUP:
+		OnMouseUp(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		return 0;
+
+		// Cursor moves over the window (or outside, while we're currently capturing it)
+	case WM_MOUSEMOVE:
+		OnMouseMove(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		return 0;
+
+		// Mouse wheel is scrolled
+	case WM_MOUSEWHEEL:
+		OnMouseWheel(GET_WHEEL_DELTA_WPARAM(wParam) / (float)WHEEL_DELTA, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		return 0;
+	}
+
+	// Let Windows handle any messages we're not touching
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+#pragma region Mouse Events
+void SystemManager::HandleMouseMove() {
+	mouseLocked = inputManager->GetMouseLocked();
+	//Store previous mouse position
+	prevMousePos.x = mousePos.x;
+	prevMousePos.y = mousePos.y;
+	//Get the new mouse position
+	GetCursorPos(&mousePos);
+	if (mouseLocked) {
+		//Store window rect
+		RECT windowRect;
+		GetWindowRect(hWnd, &windowRect);
+		//Previous position is always the window's center when the cursor is locked
+		prevMousePos.x = windowRect.left + width / 2;
+		prevMousePos.y = windowRect.top + height / 2;
+		//Reset cursor position
+		SetCursorPos(prevMousePos.x, prevMousePos.y);
+	}
+	//Get mouse displacement
+	int displaceX = mousePos.x - prevMousePos.x;
+	int displaceY = mousePos.y - prevMousePos.y;
+	//Pass data to input manager if mouse moved
+	if (displaceX != 0 || displaceY != 0) {
+		inputManager->_OnMouseMove(prevMousePos.x, prevMousePos.y, mousePos.x, mousePos.y);
+	}
+}
+
+void SystemManager::OnMouseDown(WPARAM buttonState, int x, int y) {
+	//Pass event to the input manager
+	inputManager->_OnMouseDown(buttonState, x, y);
+	// Caputure the mouse so we keep getting mouse move
+	// events even if the mouse leaves the window.  we'll be
+	// releasing the capture once a mouse button is released
+	SetCapture(hWnd);
+}
+
+void SystemManager::OnMouseUp(WPARAM buttonState, int x, int y) {
+	//Pass event to the input manager
+	inputManager->_OnMouseUp(buttonState, x, y);
+
+	// We don't care about the tracking the cursor outside
+	// the window anymore (we're not dragging if the mouse is up)
+	ReleaseCapture();
+}
+
+void SystemManager::OnMouseMove(WPARAM buttonState, int x, int y) {
+	//Currently does nothing
+}
+
+void SystemManager::OnMouseWheel(float wheelDelta, int x, int y) {
+	//Pass event to the input manager
+	inputManager->_OnMouseWheel(wheelDelta);
+}
+#pragma endregion
+
+#pragma region Resize Events
 void SystemManager::OnResize() {
 	// Release existing DirectX views and buffers
 	if (depthStencilView) { depthStencilView->Release(); }
 	if (backBufferRTV) { backBufferRTV->Release(); }
 
 	// Resize the underlying swap chain buffers
-	swapChain->ResizeBuffers(1,	width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+	swapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 
 	// Recreate the render target view for the back buffer
 	// texture, then release our local texture reference
@@ -642,40 +675,13 @@ void SystemManager::OnResize(ID3D11RenderTargetView * rtv) {
 	viewport.MaxDepth = 1.0f;
 	dxContext->RSSetViewports(1, &viewport);
 }
+#pragma endregion
+#pragma endregion
 
-SystemManager::SystemManager() {
-	// Initialize fields
-	fpsFrameCount = 0;
-	fpsTimeElapsed = 0.0f;
-	// Query performance counter for accurate timing information
-	__int64 perfFreq;
-	QueryPerformanceFrequency((LARGE_INTEGER*)&perfFreq);
-	perfCounterSeconds = 1.0 / (double)perfFreq;
-	//Init directX objects
-	dxDevice = 0;
-	dxContext = 0;
-	swapChain = 0;
-	backBufferRTV = 0;
-	depthStencilView = 0;
-	//Is the cursor locked (Default yes)
-	mouseLocked = true;
-	ShowCursor(true);
-}
-
-SystemManager::~SystemManager() {
-	Release();
-}
-
-void SystemManager::Release() {
-#ifdef ENABLE_UI
-	ImGui_ImplDX11_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
-#endif
-	// Release all DirectX resources
-	if (depthStencilView) { depthStencilView->Release(); }
-	if (backBufferRTV) { backBufferRTV->Release(); }
-	if (swapChain) { swapChain->Release(); }
-	if (dxContext) { dxContext->Release(); }
-	if (dxDevice) { dxDevice->Release(); }
-}
+#pragma region Get/Set
+HWND SystemManager::GetWindowHandle() { return this->hWnd; }
+float SystemManager::GetDeltaTime() { return this->deltaTime; }
+float SystemManager::GetTotalTime() { return this->totalTime; }
+ID3D11Device * SystemManager::GetDevice() { return this->dxDevice; }
+ID3D11DeviceContext * SystemManager::GetContext() { return this->dxContext; }
+#pragma endregion
