@@ -9,6 +9,7 @@
 #include "LightStructs.h"
 #include "SimpleShader.h"
 #include "MeshRenderer.h"
+class SystemManager;
 class GameObject;
 
 typedef UINT DirLightID;
@@ -55,6 +56,8 @@ class LightManager {
 	ID3D11ShaderResourceView* dirSRV; //Shader resource view
 	ID3D11SamplerState* dirCSS; //Comparison sampler state
 
+	SystemManager* systemManager;
+
 public:
 	//Static singleton get/release
 	static LightManager* GetInstance();
@@ -68,6 +71,7 @@ public:
 
 	void RenderShadows(const std::map<UINT, MeshRenderer*> &_meshes);
 	void UploadAllLights(SimplePixelShader* _pixelShader);
+	void UploadAllShadows(SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader);
 
 	UINT GetShadowMapResolution();
 	ID3D11RasterizerState* GetShadowRasterizer();

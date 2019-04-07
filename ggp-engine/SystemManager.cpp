@@ -4,6 +4,10 @@
 #include <WindowsX.h>
 #include <sstream>
 #include "SystemManager.h"
+#include "ResourceManager.h"
+#include "LightManager.h"
+#include "ParticleManager.h"
+#include "ComponentManager.h"
 #include "InputManager.h"
 #include "RenderManager.h"
 #include "Scene.h"
@@ -55,6 +59,15 @@ void SystemManager::Release() {
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 #endif
+	resourceManager->ReleaseInstance();
+	renderManager->ReleaseInstance();
+	inputManager->ReleaseInstance();
+	lightManager->ReleaseInstance();
+	particleManager->ReleaseInstance();
+	componentManager->ReleaseInstance();
+#if defined(DEBUG) || defined(_DEBUG)
+	ReportLiveObjects();
+#endif
 	// Release all DirectX resources
 	if (depthStencilView) { depthStencilView->Release(); }
 	if (backBufferRTV) { backBufferRTV->Release(); }
@@ -81,8 +94,12 @@ void SystemManager::Init(HINSTANCE hInstance, char * titleBarText, unsigned int 
 	previousTime = now;
 
 	//Get singletons
-	inputManager = InputManager::GetInstance();
+	resourceManager = ResourceManager::GetInstance();
 	renderManager = RenderManager::GetInstance();
+	inputManager = InputManager::GetInstance();
+	lightManager = LightManager::GetInstance();
+	particleManager = ParticleManager::GetInstance();
+	componentManager = ComponentManager::GetInstance();
 }
 
 HRESULT SystemManager::InitWindow() {
@@ -177,6 +194,7 @@ HRESULT SystemManager::InitDirectX() {
 	// errors and warnings in Visual Studio's output window
 	// when things go wrong!
 	deviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+
 #endif
 
 	// Create a description of how our swap
@@ -255,7 +273,7 @@ HRESULT SystemManager::InitDirectX() {
 
 	// Lastly, set up a viewport so we render into
 	// to correct portion of the window
-	D3D11_VIEWPORT viewport = {};
+	viewport = {};
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
 	viewport.Width = (float)width;
@@ -281,8 +299,18 @@ HRESULT SystemManager::InitDirectX() {
 	// Essentially: "What kind of shape should the GPU draw with our data?"
 	dxContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+//Set up debugging // memory leak stuff
+#if defined(DEBUG) || defined(_DEBUG)
+	hr = dxDevice->QueryInterface(IID_PPV_ARGS(&dxDebug));
+	if (FAILED(hr)) { return hr; }
+#endif
+
 	// Return the "everything is ok" HRESULT value
 	return S_OK;
+}
+
+void SystemManager::ReportLiveObjects() {
+	dxDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 }
 
 void SystemManager::CreateConsoleWindow(int bufferLines, int bufferColumns, int windowLines, int windowColumns) {
@@ -606,7 +634,7 @@ void SystemManager::OnResize() {
 
 	// Lastly, set up a viewport so we render into
 	// to correct portion of the window
-	D3D11_VIEWPORT viewport = {};
+	viewport = {};
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
 	viewport.Width = (float)width;
@@ -684,4 +712,7 @@ float SystemManager::GetDeltaTime() { return this->deltaTime; }
 float SystemManager::GetTotalTime() { return this->totalTime; }
 ID3D11Device * SystemManager::GetDevice() { return this->dxDevice; }
 ID3D11DeviceContext * SystemManager::GetContext() { return this->dxContext; }
+D3D11_VIEWPORT SystemManager::GetViewport() { return this->viewport; }
+ID3D11RenderTargetView * SystemManager::GetDefaultRTV() { return this->backBufferRTV; }
+ID3D11DepthStencilView * SystemManager::GetDefaultDSV() { return this->depthStencilView; }
 #pragma endregion

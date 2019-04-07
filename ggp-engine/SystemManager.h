@@ -9,9 +9,14 @@
 #endif
 
 #include <Windows.h>
+#include <wrl.h>
 #include <d3d11.h>
-class InputManager;
+class ResourceManager;
 class RenderManager;
+class InputManager;
+class LightManager;
+class ParticleManager;
+class ComponentManager;
 
 class SystemManager {
 public:
@@ -27,6 +32,8 @@ public:
 	HRESULT InitWindow();
 	//Initialize directX
 	HRESULT InitDirectX();
+	//Debugging option for dumping directx objects still in use
+	void ReportLiveObjects();
 
 	//Update the singleton and timer data
 	void Update();
@@ -41,6 +48,9 @@ public:
 	float GetTotalTime();
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetContext();
+	D3D11_VIEWPORT GetViewport();
+	ID3D11RenderTargetView* GetDefaultRTV();
+	ID3D11DepthStencilView* GetDefaultDSV();
 private:
 	//Singleton pointer
 	static SystemManager* instance;
@@ -62,8 +72,12 @@ private:
 	LRESULT ProcessMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 	//Singleton references that the system needs to update on changes
-	InputManager* inputManager;
+	ResourceManager* resourceManager;
 	RenderManager* renderManager;
+	InputManager* inputManager;
+	LightManager* lightManager;
+	ParticleManager* particleManager;
+	ComponentManager* componentManager;
 
 	//The handle to the application
 	HINSTANCE hInstance;
@@ -77,10 +91,12 @@ private:
 	unsigned int width;
 	unsigned int height;
 	//DirectX related objects and variables
+	D3D11_VIEWPORT viewport;
 	D3D_FEATURE_LEVEL dxFeatureLevel;
 	IDXGISwapChain* swapChain;
 	ID3D11Device* dxDevice;
 	ID3D11DeviceContext* dxContext;
+	Microsoft::WRL::ComPtr<ID3D11Debug> dxDebug;
 	ID3D11RenderTargetView* backBufferRTV;
 	ID3D11DepthStencilView* depthStencilView;
 

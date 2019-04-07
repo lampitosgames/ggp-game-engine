@@ -3,6 +3,7 @@
 #include "LightManager.h"
 #include "DXCore.h"
 #include "ResourceManager.h"
+#include "SystemManager.h"
 #include "RenderManager.h"
 #include <DirectXMath.h>
 
@@ -27,10 +28,9 @@ void LightManager::ReleaseInstance() {
 }
 
 void LightManager::Start() {
-	//Get references to the device and context
-	//TODO: Replace resource manager with the system singleton
-	dxDevice = ResourceManager::GetDevicePointer();
-	dxContext = ResourceManager::GetContextPointer();
+	//Get the device and context from DirectX
+	dxDevice = systemManager->GetDevice();
+	dxContext = systemManager->GetContext();
 	//Create shadow requirements
 	//Get the shadow vertex shader
 	shadowVS = ResourceManager::GetInstance()->GetVertexShader(ResourceManager::GetRes()["shdr"]["shadow"]["texVS"]);
@@ -110,10 +110,9 @@ void LightManager::Start() {
 }
 
 void LightManager::RenderShadows(const std::map<UINT, MeshRenderer*>& _meshes) {
-	ID3D11DeviceContext* dxContext = ResourceManager::GetContextPointer();
 	//Set up rendering pipeline for depth rendering 2d shadow maps
 	dxContext->OMSetRenderTargets(0, 0, dirDSV);
-	dxContext->ClearDepthStencilView(dirDSV, D3D11_CLEAR_DEPTH, 1.0f, 0.0f);
+	dxContext->ClearDepthStencilView(dirDSV, D3D11_CLEAR_DEPTH, 1, 0);
 	dxContext->RSSetState(shadowRast);
 	//Create a viewport for the shadow render target
 	D3D11_VIEWPORT viewport = {};
@@ -150,11 +149,11 @@ void LightManager::RenderShadows(const std::map<UINT, MeshRenderer*>& _meshes) {
 		mrTemp->Draw(dxContext);
 	}
 	//Reset rendering options
-	//context->OMSetRenderTargets(1, &backBufferRTV, depthStencilView);
-	//viewport.Width = (float)this->width;
-	//viewport.Height = (float)this->height;
-	//context->RSSetViewports(1, &viewport); // Viewport that matches screen size
-	//context->RSSetState(0); // Default rasterizer options
+	ID3D11RenderTargetView* defaultRTV = systemManager->GetDefaultRTV();
+	ID3D11DepthStencilView* defaultDSV = systemManager->GetDefaultDSV();
+	dxContext->OMSetRenderTargets(1, &defaultRTV, defaultDSV);
+	dxContext->RSSetViewports(1, &systemManager->GetViewport()); // Viewport that matches screen size
+	dxContext->RSSetState(0); // Default rasterizer options
 }
 
 void LightManager::UploadAllLights(SimplePixelShader* _pixelShader) {
@@ -208,6 +207,16 @@ void LightManager::UploadAllLights(SimplePixelShader* _pixelShader) {
 	}
 	_pixelShader->SetData("spotLights", &spotLights, sizeof(SpotLightStruct) * maxSpotLights);
 	_pixelShader->SetData("spotLightCount", &spotLightCount, sizeof(UINT));
+}
+
+void LightManager::UploadAllShadows(SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader) {
+	//Upload light data to the shader (this will need to change when we add multiple lights)
+	DirectX::XMFLOAT4X4 viewMat = dirLightUIDMap.begin()->second->GetViewMatrix();
+	DirectX::XMFLOAT4X4 projMat = dirLightUIDMap.begin()->second->GetProjMatrix();
+	_vertexShader->SetMatrix4x4("lightView", viewMat);
+	_vertexShader->SetMatrix4x4("lightProj", projMat);
+	_pixelShader->SetShaderResourceView("DirShadowMap", dirSRV);
+	_pixelShader->SetSamplerState("DirShadowSampler", dirCSS);
 }
 
 UINT LightManager::GetShadowMapResolution() {
@@ -337,7 +346,10 @@ SpotLightStruct LightManager::GetSpotLightStruct(PointLightID _uniqueID) {
 }
 #pragma endregion
 
-LightManager::LightManager() {}
+LightManager::LightManager() {
+	//Get references to the device and context
+	systemManager = SystemManager::GetInstance();
+}
 
 LightManager::~LightManager() {
 	Release();
@@ -356,4 +368,9 @@ void LightManager::Release() {
 	slCount = 0;
 	//Clear the map so the singleton can be reused.
 	spotLightUIDMap.clear();
+
+	shadowRast->Release();
+	dirCSS->Release();
+	dirSRV->Release();
+	dirDSV->Release();
 }

@@ -45,7 +45,7 @@ void RenderManager::Start() {
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	//Create the sampler state
-	HRESULT samplerSuccessfulLoad = ResourceManager::GetDevicePointer()->CreateSamplerState(&samplerDesc, &samplerState);
+	HRESULT samplerSuccessfulLoad = systemManager->GetDevice()->CreateSamplerState(&samplerDesc, &samplerState);
 	if (samplerSuccessfulLoad != S_OK) {
 		std::cout << "Sampler load error!" << std::endl;
 	}
@@ -60,13 +60,13 @@ void RenderManager::Start() {
 	rs.FillMode = D3D11_FILL_SOLID;
 	rs.CullMode = D3D11_CULL_FRONT;
 	rs.DepthClipEnable = true;
-	ResourceManager::GetDevicePointer()->CreateRasterizerState(&rs, &skyRastState);
+	systemManager->GetDevice()->CreateRasterizerState(&rs, &skyRastState);
 
 	D3D11_DEPTH_STENCIL_DESC ds = {};
 	ds.DepthEnable = true;
 	ds.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	ds.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-	ResourceManager::GetDevicePointer()->CreateDepthStencilState(&ds, &skyDepthState);
+	systemManager->GetDevice()->CreateDepthStencilState(&ds, &skyDepthState);
 }
 
 UINT RenderManager::AddMeshRenderer(MeshRenderer * _meshRenderer) {
@@ -99,7 +99,7 @@ void RenderManager::SetSkyboxPS(SimplePixelShader * aSkyPS) {
 }
 
 void RenderManager::Render() {
-	ID3D11DeviceContext* _dxContext = ResourceManager::GetContextPointer();
+	ID3D11DeviceContext* _dxContext = systemManager->GetContext();
 	// Render the skybox ------------------------
 	// Set up sky render states
 	_dxContext->RSSetState(skyRastState);
@@ -142,6 +142,7 @@ void RenderManager::Render() {
 
 
 	//Render Objects ---------------------------------
+	RenderShadows();
 	//Loop through and render every object
 	std::map<UINT, MeshRenderer*>::iterator mrIterator;
 	for (mrIterator = meshRendererUIDMap.begin(); mrIterator != meshRendererUIDMap.end();) {
@@ -165,6 +166,13 @@ void RenderManager::Render() {
 
 		//Null check vertex shader
 		if (vsTemp == nullptr) { vsTemp = defaultVertexShader; }
+		//Null check pixel shader
+		if (psTemp == nullptr) { psTemp = defaultPixelShader; }
+
+		//Upload lighting data from the light manager
+		lightManager->UploadAllLights(psTemp);
+		//Upload shadow data from the light manager
+		lightManager->UploadAllShadows(vsTemp, psTemp);
 
 		//Upload all data to vertex shader
 		vsTemp->SetMatrix4x4("world", mrTemp->GetWorldMatrix());
@@ -172,12 +180,6 @@ void RenderManager::Render() {
 		vsTemp->SetMatrix4x4("projection", activeCamera->GetProjectionMatrix());
 		vsTemp->SetMatrix4x4("worldInvTrans", mrTemp->GetWorldInvTransMatrix());
 		vsTemp->CopyAllBufferData();
-
-		//Null check pixel shader
-		if (psTemp == nullptr) { psTemp = defaultPixelShader; }
-
-		//Upload lighting data from the light manager
-		lightManager->UploadAllLights(psTemp);
 
 		//Upload data from the material
 		matTemp->UploadPSData(activeCamera->transform.position, samplerState, psTemp);
@@ -193,6 +195,9 @@ void RenderManager::Render() {
 	}
 	//Render Particles -------------------------------
 	ParticleManager::GetInstance()->Render();
+
+	ID3D11ShaderResourceView* nullSRVs[16] = {};
+	_dxContext->PSSetShaderResources(0, 16, nullSRVs);
 }
 
 void RenderManager::RenderShadows() {
