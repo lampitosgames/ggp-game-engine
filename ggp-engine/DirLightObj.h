@@ -10,6 +10,8 @@ protected:
 	DirectX::SimpleMath::Vector3 direction;
 	float diffuseIntensity;
 	float ambientIntensity;
+
+	DirectX::SimpleMath::Vector3 prevEulerAngles;
 public:
 	DirLightObj(
 		ResName _uniqueID = "NA",
@@ -19,6 +21,7 @@ public:
 		float _ambientIntensity = 0.0f
 	);
 	void Start();
+	void Update(float _deltaTime);
 
 	DirectX::SimpleMath::Color GetColor();
 	void SetColor(DirectX::SimpleMath::Color _newCol);

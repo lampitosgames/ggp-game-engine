@@ -8,6 +8,9 @@ Texture2D albedoTexture   : register(t0); //needs gamma correction
 Texture2D normalMap       : register(t1); //No gamma correction
 Texture2D roughnessMap    : register(t2); //no gamma correction
 Texture2D metalnessMap    : register(t3); //needs gamma correction
+//Shadow registers
+Texture2D DirShadowMap       : register(t4);
+SamplerComparisonState DirShadowSampler : register(s1);
 
 //Entry point
 float4 main(VertexToPixel input) : SV_TARGET {
@@ -64,7 +67,13 @@ float4 main(VertexToPixel input) : SV_TARGET {
 		//Add each light's calculated value to the total color sum
 		lightColorSum += calcSpotLightPBR(spotLights[k], input.normal, cameraPosition, input.worldPos, albedo, roughness, metalness, specColor);
 	}
+
+	float2 shadowUV = input.posForShadow.xy / input.posForShadow.w * 0.5f + 0.5f;
+	shadowUV.y = 1.0f - shadowUV.y;
+	float depthFromLight = input.posForShadow.z / input.posForShadow.w;
+	float shadowAmount = DirShadowMap.SampleCmpLevelZero(DirShadowSampler, shadowUV, depthFromLight);
+
 	//Gamma correction
 	float3 gammaCorrect = pow(lightColorSum, 1.0f / gammaModifier);
-	return float4(gammaCorrect, 1.0f);
+	return shadowAmount * float4(gammaCorrect, 1.0f);
 }

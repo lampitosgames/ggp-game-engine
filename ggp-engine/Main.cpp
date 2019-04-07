@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <Windows.h>
 #include "Game.h"
+#include "SystemManager.h"
 #include <iostream>
 //Overwrite the new keyword in debug mode.  Allows us to create memory allocation break points
 #ifdef DEBUG
@@ -25,6 +26,8 @@ int WINAPI WinMain(
 	// TO DEBUG MEMORY LEAKS: uncomment the next line and change the number to the heap location
 	//_crtBreakAlloc = 1878;
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
+
+	//_crtBreakAlloc = 3631;
 
 	#endif
 
@@ -53,25 +56,34 @@ int WINAPI WinMain(
 		}
 	}	
 
+	//Get the system singleton
+	SystemManager* systemManager = SystemManager::GetInstance();
+	systemManager->Init(hInstance, "Daniel Timko Game Engine", 1920, 1080, true);
+
 	// Create the Game object using
 	// the app handle we got from WinMain
-	Game dxGame(hInstance);
+	Game* game = new Game();
 
 	// Result variable for function calls below
 	HRESULT hr = S_OK;
 
 	// Attempt to create the window for our program, and
 	// exit early if something failed
-	hr = dxGame.InitWindow();
+	hr = systemManager->InitWindow();
 	if (FAILED(hr)) return hr;
 
 	// Attempt to initialize DirectX, and exit
 	// early if something failed
-	hr = dxGame.InitDirectX();
+	hr = systemManager->InitDirectX();
 	if (FAILED(hr)) return hr;
 
 	// Begin the message and game loop, and then return
 	// whatever we get back once the game loop is over
-	HRESULT dxGameResult = dxGame.Run();
+	HRESULT dxGameResult = game->Run();
+
+	delete game;
+
+	systemManager->ReleaseInstance();
+
 	return dxGameResult;
 }

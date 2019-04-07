@@ -13,7 +13,6 @@ class SpotLightObj : public GameObject {
 
 	//Keep track of rotation so we know when we need to update the direction vector
 	DirectX::SimpleMath::Vector3 prevEulerAngles;
-	DirectX::SimpleMath::Vector3 GetEulerFromDir(DirectX::SimpleMath::Vector3 _dir);
 public:
 	SpotLightObj(
 		ResName _uniqueID = "NA",

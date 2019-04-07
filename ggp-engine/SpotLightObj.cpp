@@ -10,31 +10,6 @@
 using namespace std;
 using namespace DirectX::SimpleMath;
 
-Vector3 SpotLightObj::GetEulerFromDir(Vector3 _dir) {
-	_dir.Normalize();
-	Vector3 zRotAxis = Vector3(0.0f, 1.0f, 0.0f);
-	Vector3 yRotAxis = _dir * -1.0f;
-	Vector3 xRotAxis = yRotAxis.Cross(zRotAxis);
-
-	Matrix rotMat = Matrix(xRotAxis, yRotAxis, zRotAxis);
-
-	//TODO: Remove all of this when we redo transforms.
-	//https://gamedev.stackexchange.com/questions/50963/how-to-extract-euler-angles-from-transformation-matrix
-	float pitchX, yawY, rollZ;
-	if (rotMat._11 == 1.0f || rotMat._11 == -1.0f) {
-		yawY = atan2f(rotMat._13, rotMat._34);
-		pitchX = 0.0f;
-		rollZ = 0.0f;
-	}
-	else {
-		yawY = atan2(-rotMat._34, rotMat._11);
-		pitchX = asin(rotMat._21);
-		rollZ = atan2(-rotMat._23, rotMat._22);
-	}
-
-	return Vector3(pitchX, yawY, rollZ);
-}
-
 SpotLightObj::SpotLightObj(
 	ResName _uniqueID,
 	Vector3 _position,
@@ -47,7 +22,7 @@ SpotLightObj::SpotLightObj(
 	) : GameObject(
 		_uniqueID == "NA" ? MakeColorUIDString(_color) : _uniqueID, 
 		_position, 
-		GetEulerFromDir(_direction), 
+		Util::GetEulerFromDir(_direction), 
 		Vector3(1.0f, 30.0f / _cutoffAngle, 1.0f)
 	) {
 	this->type = GOType::SPOT_LIGHT;
@@ -102,7 +77,7 @@ Vector3 SpotLightObj::GetDirection() { return this->direction; }
 
 void SpotLightObj::SetDirection(Vector3 _newDirection) {
 	this->direction = _newDirection;
-	this->transform.rotation = GetEulerFromDir(this->direction);
+	this->transform.rotation = Util::GetEulerFromDir(this->direction);
 	this->prevEulerAngles = this->transform.rotation;
 	this->GetComponentType<SpotLight>()->SetDirection(_newDirection);
 }

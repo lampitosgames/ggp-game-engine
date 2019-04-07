@@ -8,6 +8,8 @@
 #include "DirLight.h"
 #include "LightStructs.h"
 #include "SimpleShader.h"
+#include "MeshRenderer.h"
+class SystemManager;
 class GameObject;
 
 typedef UINT DirLightID;
@@ -17,6 +19,9 @@ typedef UINT SpotLightID;
 class LightManager {
 	//Singleton pointer
 	static LightManager* instance;
+	//Device and context for creating shadow maps
+	static ID3D11Device* dxDevice;
+	static ID3D11DeviceContext* dxContext;
 
 	//Unique ids given to each directional light
 	DirLightID dlCount = 0;
@@ -41,6 +46,18 @@ class LightManager {
 	//Spot light struct array of fixed length. Helps upload to the shader
 	const UINT maxSpotLights = 128;
 	SpotLightStruct spotLights[128];
+
+	//Shadow calculation globals
+	const UINT shadowMapSize = 2048; //Shadow map resolution
+	ID3D11RasterizerState* shadowRast; //Rasterizer state for shadows
+	SimpleVertexShader* shadowVS;
+	//Directional light 
+	ID3D11DepthStencilView* dirDSV; //Depth stencil view
+	ID3D11ShaderResourceView* dirSRV; //Shader resource view
+	ID3D11SamplerState* dirCSS; //Comparison sampler state
+
+	SystemManager* systemManager;
+
 public:
 	//Static singleton get/release
 	static LightManager* GetInstance();
@@ -50,7 +67,18 @@ public:
 	LightManager(LightManager const&) = delete;
 	void operator=(LightManager const&) = delete;
 
+	void Start();
+
+	void RenderShadows(const std::map<UINT, MeshRenderer*> &_meshes);
 	void UploadAllLights(SimplePixelShader* _pixelShader);
+	void UploadAllShadows(SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader);
+
+	UINT GetShadowMapResolution();
+	ID3D11RasterizerState* GetShadowRasterizer();
+	SimpleVertexShader* GetShadowVertexShader();
+	ID3D11DepthStencilView* GetShadowDSV();
+	ID3D11ShaderResourceView* GetShadowSRV();
+	ID3D11SamplerState* GetShadowSampler();
 
 	/*
 		DIRECTIONAL LIGHT HELPERS

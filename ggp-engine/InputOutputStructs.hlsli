@@ -21,6 +21,12 @@ struct VertexToPixel {
 	float2 uv           : TEXCOORD;     // UV Coordinates
 	float3 tangent      : TANGENT;      // Tangent vector
 	float3 worldPos     : POSITION;     // World-space position of the vertex
+	float4 posForShadow : POSITION1;    // Shadow map position info
+};
+
+// Special output struct for the shadow depth buffer rendering vertex shader
+struct ShadowToPixel {
+	float4 position     : SV_POSITION;
 };
 
 

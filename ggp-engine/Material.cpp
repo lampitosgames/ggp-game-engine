@@ -15,6 +15,7 @@ Material::Material() {
 	diffuse = nullptr;
 	normal = nullptr;
 	specular = nullptr;
+	recievesShadows = true;
 }
 
 Material::Material(ResName _uniqueID) {
@@ -27,6 +28,7 @@ Material::Material(ResName _uniqueID) {
 	diffuse = nullptr;
 	normal = nullptr;
 	specular = nullptr;
+	recievesShadows = true;
 }
 
 Material::Material(ResName _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, Color _color, float _specular) {
@@ -38,6 +40,7 @@ Material::Material(ResName _uniqueID, SimpleVertexShader* _vertexShader, SimpleP
 	diffuse = nullptr;
 	normal = nullptr;
 	specular = nullptr;
+	recievesShadows = true;
 }
 
 Material::Material(ResName _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, Texture* _texture, float _specular) {
@@ -49,6 +52,7 @@ Material::Material(ResName _uniqueID, SimpleVertexShader* _vertexShader, SimpleP
 	diffuse = _texture;
 	normal = nullptr;
 	specular = nullptr;
+	recievesShadows = true;
 }
 
 Material::Material(ResName _uniqueID, SimpleVertexShader* _vertexShader, SimplePixelShader* _pixelShader, Texture* _diffuse, Texture* _normal, Texture* _specular) {
@@ -60,6 +64,7 @@ Material::Material(ResName _uniqueID, SimpleVertexShader* _vertexShader, SimpleP
 	diffuse = _diffuse;
 	normal = _normal;
 	specular = _specular;
+	recievesShadows = true;
 }
 #pragma endregion
 
@@ -143,4 +148,6 @@ ID3D11ShaderResourceView* Material::GetSpecularSRV() {
 void Material::SetSpecularMap(Texture* _newSpecular) { specular = _newSpecular; }
 
 bool Material::HasSpecularMap() { return specular != nullptr; }
+void Material::SetRecievesShadows(bool _recieveShadows) { recievesShadows = _recieveShadows; }
+bool Material::GetRecievesShadows() { return recievesShadows; }
 #pragma endregion

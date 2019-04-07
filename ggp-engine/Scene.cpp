@@ -3,6 +3,8 @@
 #include "Scene.h"
 #include "Camera.h"
 
+Scene* Scene::activeScene = nullptr;
+
 Scene::Scene(ResName _uniqueID) : GameObject(_uniqueID) {
 	type = GOType::SCENE;
 	activeCamera = nullptr;
