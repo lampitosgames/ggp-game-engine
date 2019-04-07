@@ -76,11 +76,11 @@ void PBRDemoScene::Init() {
 	activeCamera->CalculateViewMatrix();
 
 	//Load terrain
-	GameObject* terrain = new GameObject("testTerrain");
-	Mesh* terrainMesh = resourceManager->GetTerrain(res["tera"]["testTerrain"], 513, 100.0f);
-	AddChild(terrain);
-	terrain->AddComponent<MeshRenderer>(terrain, terrainMesh, pbrMats[0]);
-	terrain->transform.position.y = -3.0f;
+	//GameObject* terrain = new GameObject("testTerrain");
+	//Mesh* terrainMesh = resourceManager->GetTerrain(res["tera"]["testTerrain"], 513, 100.0f);
+	//AddChild(terrain);
+	//terrain->AddComponent<MeshRenderer>(terrain, terrainMesh, pbrMats[0]);
+	//terrain->transform.position.y = -3.0f;
 }
 
 void PBRDemoScene::Start() {

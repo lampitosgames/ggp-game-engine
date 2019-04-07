@@ -59,20 +59,15 @@ void SystemManager::Release() {
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 #endif
-	resourceManager->ReleaseInstance();
-	renderManager->ReleaseInstance();
-	inputManager->ReleaseInstance();
-	lightManager->ReleaseInstance();
-	particleManager->ReleaseInstance();
-	componentManager->ReleaseInstance();
-#if defined(DEBUG) || defined(_DEBUG)
-	ReportLiveObjects();
-#endif
 	// Release all DirectX resources
 	if (depthStencilView) { depthStencilView->Release(); }
 	if (backBufferRTV) { backBufferRTV->Release(); }
 	if (swapChain) { swapChain->Release(); }
 	if (dxContext) { dxContext->Release(); }
+#if defined(DEBUG) || defined(_DEBUG)
+	//DirectX Debug reporting. Lets us know which types of DX resources haven't been released
+	ReportLiveObjects();
+#endif
 	if (dxDevice) { dxDevice->Release(); }
 }
 #pragma endregion

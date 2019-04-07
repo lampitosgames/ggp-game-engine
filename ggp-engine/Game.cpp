@@ -35,7 +35,13 @@ Game::Game() : DXCore() {
 //  - Delete any objects to prevent memory leaks
 // --------------------------------------------------------
 Game::~Game() {
-	//delete Scene::activeScene;
+	delete Scene::activeScene;
+	resourceManager->ReleaseInstance();
+	renderManager->ReleaseInstance();
+	inputManager->ReleaseInstance();
+	lightManager->ReleaseInstance();
+	particleManager->ReleaseInstance();
+	componentManager->ReleaseInstance();
 }
 
 // --------------------------------------------------------

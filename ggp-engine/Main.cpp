@@ -27,6 +27,8 @@ int WINAPI WinMain(
 	//_crtBreakAlloc = 1878;
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 
+	//_crtBreakAlloc = 3631;
+
 	#endif
 
 			// Ensure "Current Directory" (relative path) is always the .exe's folder
@@ -60,7 +62,7 @@ int WINAPI WinMain(
 
 	// Create the Game object using
 	// the app handle we got from WinMain
-	Game game = Game();
+	Game* game = new Game();
 
 	// Result variable for function calls below
 	HRESULT hr = S_OK;
@@ -77,7 +79,9 @@ int WINAPI WinMain(
 
 	// Begin the message and game loop, and then return
 	// whatever we get back once the game loop is over
-	HRESULT dxGameResult = game.Run();
+	HRESULT dxGameResult = game->Run();
+
+	delete game;
 
 	systemManager->ReleaseInstance();
 

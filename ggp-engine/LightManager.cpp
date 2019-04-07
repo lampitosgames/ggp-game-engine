@@ -107,6 +107,8 @@ void LightManager::Start() {
 	if (hr != S_OK) {
 		throw std::exception("Failed to create shadow rasterizer state");
 	}
+	//Release the shadow map texture since we no longer need it
+	shadowMap->Release();
 }
 
 void LightManager::RenderShadows(const std::map<UINT, MeshRenderer*>& _meshes) {
