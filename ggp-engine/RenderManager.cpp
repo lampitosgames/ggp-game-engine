@@ -171,8 +171,12 @@ void RenderManager::Render() {
 
 		//Upload lighting data from the light manager
 		lightManager->UploadAllLights(psTemp);
-		//Upload shadow data from the light manager
-		lightManager->UploadAllShadows(vsTemp, psTemp);
+		//If this object recieves shadows
+		//TODO: Fix this
+		if (mrTemp->DoesRecieveShadows()) {
+			//Upload shadow data from the light manager
+			lightManager->UploadAllShadows(vsTemp, psTemp);
+		}
 
 		//Upload all data to vertex shader
 		vsTemp->SetMatrix4x4("world", mrTemp->GetWorldMatrix());
