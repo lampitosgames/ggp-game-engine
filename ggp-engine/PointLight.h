@@ -22,6 +22,10 @@ public:
 	//Attenuation
 	float GetRange();
 	void SetRange(float _newRange);
+
+	void GetViewMatrices(DirectX::SimpleMath::Matrix* _viewList);
+	DirectX::SimpleMath::Matrix GetProjMatrix();
+
 	PointLightStruct buildLightStruct();
 
 	GameObject* gameObject;

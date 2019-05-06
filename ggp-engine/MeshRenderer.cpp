@@ -14,6 +14,8 @@ MeshRenderer::MeshRenderer(GameObject* _gameObject) {
 	owner = _gameObject->GetUniqueID();
 	mesh = nullptr;
 	material = nullptr;
+	castsShadows = false;
+	recievesShadows = false;
 	RenderManager::GetInstance()->AddMeshRenderer(this);
 }
 
@@ -22,6 +24,8 @@ MeshRenderer::MeshRenderer(GameObject* _gameObject, Mesh* _mesh, Material* _mate
 	owner = _gameObject->GetUniqueID();
 	mesh = _mesh;
 	material = _material;
+	castsShadows = true;
+	recievesShadows = true;
 	RenderManager::GetInstance()->AddMeshRenderer(this);
 }
 
@@ -31,10 +35,12 @@ MeshRenderer::~MeshRenderer() {
 
 void MeshRenderer::SetMesh(Mesh* _mesh) {
 	mesh = _mesh;
+	castsShadows = true;
 }
 
 void MeshRenderer::SetMaterial(Material* _material) {
 	material = _material;
+	recievesShadows = true;
 }
 
 void MeshRenderer::Draw(ID3D11DeviceContext* _dxContext) {
@@ -66,6 +72,14 @@ Mesh* MeshRenderer::GetMesh() {
 Material* MeshRenderer::GetMaterial() {
 	return material;
 }
+
+void MeshRenderer::SetCastsShadows(bool _newVal) { this->castsShadows = _newVal; }
+
+bool MeshRenderer::DoesCastShadows() { return this->castsShadows; }
+
+void MeshRenderer::SetRecievesShadows(bool _newVal) { this->recievesShadows = _newVal; }
+
+bool MeshRenderer::DoesRecieveShadows() { return this->recievesShadows; }
 
 SimpleVertexShader* MeshRenderer::GetVertexShader() {
 	if (material == nullptr) { return nullptr; }

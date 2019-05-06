@@ -1,5 +1,6 @@
 #include "VertexShaderGlobals.hlsli"
 #include "InputOutputStructs.hlsli"
+#include "LightVars.hlsli"
 
 VertexToPixel main(VertexShaderInput input) {
 	// Set up output struct
@@ -7,9 +8,12 @@ VertexToPixel main(VertexShaderInput input) {
 
 	//Create world space -> screen space transformation matrix
 	matrix worldViewProj = mul(mul(world, view), projection);
-	//Create world space -> shadow space transformation matrix
-	matrix shadowWVP = mul(mul(world, lightView), lightProj);
-	output.posForShadow = mul(float4(input.position, 1.0f), shadowWVP);
+
+	//Create world space -> shadow space transformation matrix for every dir light
+	for (int i = 0; i < maxDirLightCount; i++) {
+		matrix shadowWVP = mul(mul(world, dirLightView[i]), dirLightProj[i]);
+		output.dirShadowPos[i] = mul(float4(input.position, 1.0f), shadowWVP);
+	}
 
 	//Transform vertex position into screen space (used for drawing pixels to the screen)
 	output.position = mul(float4(input.position, 1.0f), worldViewProj);

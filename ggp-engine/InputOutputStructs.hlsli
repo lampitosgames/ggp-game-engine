@@ -16,12 +16,12 @@ struct VertexShaderInput {
 // - The name of the struct itself is unimportant, but should be descriptive
 // - Each variable must have a semantic, which defines its usage
 struct VertexToPixel {
-	float4 position		: SV_POSITION;	// XYZW position (System Value Position)
-	float3 normal		: NORMAL;       // Normal vector
-	float2 uv           : TEXCOORD;     // UV Coordinates
-	float3 tangent      : TANGENT;      // Tangent vector
-	float3 worldPos     : POSITION;     // World-space position of the vertex
-	float4 posForShadow : POSITION1;    // Shadow map position info
+	float4 position		   : SV_POSITION;	// XYZW position (System Value Position)
+	float3 normal		   : NORMAL;       // Normal vector
+	float2 uv              : TEXCOORD;     // UV Coordinates
+	float3 tangent         : TANGENT;      // Tangent vector
+	float3 worldPos        : POSITION;     // World-space position of the vertex
+	float4 dirShadowPos[4] : POSITION1;
 };
 
 // Special output struct for the shadow depth buffer rendering vertex shader

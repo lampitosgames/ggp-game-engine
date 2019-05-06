@@ -385,5 +385,8 @@
     <None Include="assets\res.json">
       <Filter>Header Files\Resources</Filter>
     </None>
+    <None Include="LightVars.hlsli">
+      <Filter>Shaders\Shader Helpers</Filter>
+    </None>
   </ItemGroup>
 </Project>

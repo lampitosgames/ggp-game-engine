@@ -364,6 +364,7 @@ xcopy /E /I /r "$(ProjectDir)assets" "$(OutDir)assets"</Command>
     <None Include="ClassDiagram.cd" />
     <None Include="InputOutputStructs.hlsli" />
     <None Include="LightGlobals.hlsli" />
+    <None Include="LightVars.hlsli" />
     <None Include="packages.config" />
     <None Include="PBRShaderGlobals.hlsli" />
     <None Include="PShaderGlobals.hlsli" />

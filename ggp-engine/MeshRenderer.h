@@ -17,6 +17,8 @@ class RenderManager;
 class MeshRenderer : public BaseComponent<MeshRenderer> {
 	Mesh* mesh;
 	Material* material;
+	bool recievesShadows;
+	bool castsShadows;
 public:
 	MeshRenderer(GameObject* _gameObject);
 	MeshRenderer(GameObject* _gameObject, Mesh* _mesh, Material* _material);
@@ -30,6 +32,11 @@ public:
 	DirectX::SimpleMath::Matrix GetWorldInvTransMatrix();
 	Mesh* GetMesh();
 	Material* GetMaterial();
+	//Shadow casting/recieving
+	void SetCastsShadows(bool _newVal);
+	bool DoesCastShadows();
+	void SetRecievesShadows(bool _newVal);
+	bool DoesRecieveShadows();
 	//Quick access to the material's members
 	SimpleVertexShader* GetVertexShader();
 	SimplePixelShader* GetPixelShader();

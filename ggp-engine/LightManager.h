@@ -27,34 +27,37 @@ class LightManager {
 	DirLightID dlCount = 0;
 	//Map of all directional lights
 	std::map<DirLightID, DirLight*> dirLightUIDMap;
-	//Directional light struct array of fixed length. Helsp upload to the shader
-	const UINT maxDirLights = 4;
-	DirLightStruct dirLights[4];
+	//Directional light struct array of fixed length. Helps upload to the shader
+	static const UINT maxDirLights = 4;
+	DirLightStruct dirLights[maxDirLights];
+	//Shadow vars for directional lights	
+	ID3D11DepthStencilView* dirDepthStencilArr[maxDirLights];
+	ID3D11ShaderResourceView* dirSRV; //Shader resource view
 
 	//Unique ids given to each point light
 	PointLightID plCount = 0;
 	//Map of all point lights
 	std::map<PointLightID, PointLight*> pointLightUIDMap;
 	//Point light struct array of fixed length. Helps upload to the shader
-	const UINT maxPointLights = 128;
-	PointLightStruct pointLights[128];
+	static const UINT maxPointLights = 32;
+	PointLightStruct pointLights[maxPointLights];
+	//Shadow vars for point lights
+	ID3D11DepthStencilView* pointDepthStencilArr[maxPointLights * 6];
+	ID3D11ShaderResourceView* pointSRV;
 
 	//Unique ids given to each spot light
 	SpotLightID slCount = 0;
 	//Map of all spot lights
 	std::map<SpotLightID, SpotLight*> spotLightUIDMap;
 	//Spot light struct array of fixed length. Helps upload to the shader
-	const UINT maxSpotLights = 128;
-	SpotLightStruct spotLights[128];
+	static const UINT maxSpotLights = 32;
+	SpotLightStruct spotLights[maxSpotLights];
 
 	//Shadow calculation globals
-	const UINT shadowMapSize = 2048; //Shadow map resolution
+	static const UINT shadowMapSize = 2048; //Shadow map resolution
 	ID3D11RasterizerState* shadowRast; //Rasterizer state for shadows
-	SimpleVertexShader* shadowVS;
-	//Directional light 
-	ID3D11DepthStencilView* dirDSV; //Depth stencil view
-	ID3D11ShaderResourceView* dirSRV; //Shader resource view
-	ID3D11SamplerState* dirCSS; //Comparison sampler state
+	SimpleVertexShader* shadowVS; //Specialized shadow vertex shader
+	ID3D11SamplerState* samplerState; //Comparison sampler state
 
 	SystemManager* systemManager;
 
@@ -107,6 +110,8 @@ public:
 	void RemoveSpotLight(SpotLight* _spotLight);
 	SpotLightStruct GetSpotLightStruct(SpotLightID _uniqueID);
 private:
+	void InitDirShadowData();
+	void InitPointShadowData();
 	LightManager();
 	~LightManager();
 	void Release();
