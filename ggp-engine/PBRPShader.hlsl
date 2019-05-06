@@ -9,8 +9,9 @@ Texture2D normalMap       : register(t1); //No gamma correction
 Texture2D roughnessMap    : register(t2); //no gamma correction
 Texture2D metalnessMap    : register(t3); //needs gamma correction
 //Shadow registers
-Texture2DArray DirShadowMap             : register(t4);
-SamplerComparisonState DirShadowSampler : register(s1);
+Texture2DArray DirShadowMap          : register(t4);
+TextureCubeArray PointShadowMap      : register(t5);
+SamplerComparisonState shadowSampler : register(s1);
 
 //Entry point
 float4 main(VertexToPixel input) : SV_TARGET {
@@ -57,13 +58,16 @@ float4 main(VertexToPixel input) : SV_TARGET {
 		float2 shadowUV = input.dirShadowPos[i].xy / input.dirShadowPos[i].w * 0.5f + 0.5f;
 		shadowUV.y = 1.0f - shadowUV.y;
 		float depthFromLight = input.dirShadowPos[i].z / input.dirShadowPos[i].w;
-		float shadowAmount = DirShadowMap.SampleCmpLevelZero(DirShadowSampler, float3(shadowUV[0], shadowUV[1], i), depthFromLight);
+		float shadowAmount = DirShadowMap.SampleCmpLevelZero(shadowSampler, float3(shadowUV[0], shadowUV[1], i), depthFromLight);
 		//Add each light's calculated value to the total color sum
 		lightColorSum += shadowAmount*calcDirLightPBR(dirLights[i], input.normal, cameraPosition, input.worldPos, albedo, roughness, metalness, specColor);
 	}
 	//Loop through point lights
 	for (uint j = 0; j < maxPointLightCount; j++) {
 		if (j >= pointLightCount) { break; }
+		float3 lightDir = pointLights[j].position - input.worldPos;
+		float depthFromLight = length(lightDir) / (pointLights[j].range*20) - 0.002f;
+		float shadowAmount = PointShadowMap.SampleCmpLevelZero(shadowSampler, float4(-lightDir, j), depthFromLight);
 		//Add each light's calculated value to the total color sum
 		lightColorSum += calcPointLightPBR(pointLights[j], input.normal, cameraPosition, input.worldPos, albedo, roughness, metalness, specColor);
 	}

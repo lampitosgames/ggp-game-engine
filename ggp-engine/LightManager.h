@@ -39,22 +39,25 @@ class LightManager {
 	//Map of all point lights
 	std::map<PointLightID, PointLight*> pointLightUIDMap;
 	//Point light struct array of fixed length. Helps upload to the shader
-	static const UINT maxPointLights = 128;
+	static const UINT maxPointLights = 32;
 	PointLightStruct pointLights[maxPointLights];
+	//Shadow vars for point lights
+	ID3D11DepthStencilView* pointDepthStencilArr[maxPointLights * 6];
+	ID3D11ShaderResourceView* pointSRV;
 
 	//Unique ids given to each spot light
 	SpotLightID slCount = 0;
 	//Map of all spot lights
 	std::map<SpotLightID, SpotLight*> spotLightUIDMap;
 	//Spot light struct array of fixed length. Helps upload to the shader
-	static const UINT maxSpotLights = 128;
+	static const UINT maxSpotLights = 32;
 	SpotLightStruct spotLights[maxSpotLights];
 
 	//Shadow calculation globals
 	static const UINT shadowMapSize = 2048; //Shadow map resolution
 	ID3D11RasterizerState* shadowRast; //Rasterizer state for shadows
 	SimpleVertexShader* shadowVS; //Specialized shadow vertex shader
-	ID3D11SamplerState* dirCSS; //Comparison sampler state
+	ID3D11SamplerState* samplerState; //Comparison sampler state
 
 	SystemManager* systemManager;
 
@@ -108,7 +111,7 @@ public:
 	SpotLightStruct GetSpotLightStruct(SpotLightID _uniqueID);
 private:
 	void InitDirShadowData();
-
+	void InitPointShadowData();
 	LightManager();
 	~LightManager();
 	void Release();

@@ -34,11 +34,10 @@ void LightManager::Start() {
 	dxContext = systemManager->GetContext();
 
 	//Get the shadow vertex shader
-	shadowVS = ResourceManager::GetInstance()->GetVertexShader(ResourceManager::GetRes()["shdr"]["shadow"]["texVS"]);
-
+	shadowVS = ResourceManager::GetInstance()->GetVertexShader(ResourceManager::GetRes()["shdr"]["shadow"]);
 	//Create shadow requirements
 	InitDirShadowData();
-	//InitPointShadowData();
+	InitPointShadowData();
 	//InitSpotShadowData();
 
 	//Comparison sampler state. Used to sample from individual shadow maps
@@ -57,7 +56,7 @@ void LightManager::Start() {
 	compSamplerDesc.BorderColor[1] = 1.0f;
 	compSamplerDesc.BorderColor[2] = 1.0f;
 	compSamplerDesc.BorderColor[3] = 1.0f;
-	HRESULT hr = dxDevice->CreateSamplerState(&compSamplerDesc, &dirCSS);
+	HRESULT hr = dxDevice->CreateSamplerState(&compSamplerDesc, &samplerState);
 	if (hr != S_OK) {
 		throw std::exception("Failed to create shadow comparison sampler state");
 	}
@@ -138,6 +137,67 @@ void LightManager::InitDirShadowData() {
 	//From here out, we deal only with the DSV and SRV
 	dirShadowMapArr->Release();
 }
+
+void LightManager::InitPointShadowData() {
+	//Make shadow map texture cube
+	ID3D11Texture2D* pointShadowMapArr;
+	D3D11_TEXTURE2D_DESC pointShadowMapDesc;
+	ZeroMemory(&pointShadowMapDesc, sizeof(D3D11_TEXTURE2D_DESC));
+	pointShadowMapDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+	pointShadowMapDesc.MipLevels = 1;
+	pointShadowMapDesc.ArraySize = 6 * maxPointLights;
+	pointShadowMapDesc.SampleDesc.Count = 1;
+	pointShadowMapDesc.SampleDesc.Quality = 0;
+	pointShadowMapDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
+	pointShadowMapDesc.Height = shadowMapSize;
+	pointShadowMapDesc.Width = shadowMapSize;
+	pointShadowMapDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+	HRESULT hr = dxDevice->CreateTexture2D(&pointShadowMapDesc, nullptr, &pointShadowMapArr);
+	if (hr != S_OK) {
+		throw std::exception("Failed to create shadow map texture");
+	}
+
+	//Shader resource view - cube map array
+	D3D11_SHADER_RESOURCE_VIEW_DESC pointSRVDesc;
+	ZeroMemory(&pointSRVDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	pointSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBEARRAY;
+	pointSRVDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	pointSRVDesc.TextureCubeArray.NumCubes = maxPointLights;
+	pointSRVDesc.TextureCubeArray.MipLevels = 1;
+	pointSRVDesc.TextureCubeArray.MostDetailedMip = 0;
+	pointSRVDesc.TextureCubeArray.First2DArrayFace = 0;
+	hr = dxDevice->CreateShaderResourceView(pointShadowMapArr, &pointSRVDesc, &pointSRV);
+	if (hr != S_OK) {
+		throw std::exception("Failed to create shadow SRV");
+	}
+
+	//Depth stencil view (6 for each light, one for each direction on the cube map [+x, -x, +y, -y, +z, -z])
+	//Init the DSV description
+	D3D11_DEPTH_STENCIL_VIEW_DESC pointDSVDesc;
+	ZeroMemory(&pointDSVDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+	pointDSVDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+	pointDSVDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	pointDSVDesc.Texture2DArray.MipSlice = 0;
+	pointDSVDesc.Texture2DArray.ArraySize = 1;
+	//Loop through all the dir light slots
+	for (UINT i = 0; i < maxPointLights * 6; i++) {
+		//Change slot to the correct slice from the array
+		pointDSVDesc.Texture2DArray.FirstArraySlice = D3D11CalcSubresource(0, i, 1);
+
+		//Create a depth stencil view for this light
+		ID3D11DepthStencilView* thisDSV;
+		hr = dxDevice->CreateDepthStencilView(pointShadowMapArr, &pointDSVDesc, &thisDSV);
+		if (hr != S_OK) {
+			throw std::exception("Failed to create shadow depth stencil view");
+		}
+		//Store it in the DSV array for dir lights
+		pointDepthStencilArr[i] = thisDSV;
+	}
+
+	//Release local reference to shadow map texture pointer since we no longer need it in C++
+	//From here out, we deal only with the DSV and SRV
+	pointShadowMapArr->Release();
+}
 #pragma endregion
 
 void LightManager::RenderShadows(const std::map<UINT, MeshRenderer*>& _meshes) {
@@ -182,6 +242,41 @@ void LightManager::RenderShadows(const std::map<UINT, MeshRenderer*>& _meshes) {
 			//Draw the mesh to the DSV
 			mrTemp->Draw(dxContext);
 		}
+	}
+
+	//For every point light
+	UINT j = 0;
+	for (auto plIt = pointLightUIDMap.begin(); plIt != pointLightUIDMap.end(); plIt++) {
+		Matrix viewMats[6];
+		plIt->second->GetViewMatrices(viewMats);
+		viewMats[0];
+		DirectX::XMFLOAT4X4 projMat = plIt->second->GetProjMatrix();
+		//For every face on the shadow cube map
+		for (UINT f = 0; f < 6; f++) {
+			//Set the render target for this iteration
+			dxContext->OMSetRenderTargets(0, 0, pointDepthStencilArr[j+f]);
+			dxContext->ClearDepthStencilView(pointDepthStencilArr[j+f], D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+			//Upload light matrices to the shader
+			shadowVS->SetMatrix4x4("view", viewMats[0]);
+			shadowVS->SetMatrix4x4("projection", projMat);
+			//Render all meshes
+			for (auto mrIt = _meshes.begin(); mrIt != _meshes.end(); mrIt++) {
+				MeshRenderer* mrTemp = mrIt->second;
+				//Make sure the mesh renderer still exists
+				if (mrTemp == nullptr) { continue; }
+				//If the mesh renderer doesn't have a mesh to render, continue
+				if (mrTemp->GetMesh() == nullptr) { continue; }
+				//If the mesh renderer doesn't cast shadows, continue
+				if (!mrTemp->DoesCastShadows()) { continue; }
+
+				//Copy the mesh's world matrix
+				shadowVS->SetMatrix4x4("world", mrTemp->GetWorldMatrix());
+				shadowVS->CopyAllBufferData();
+				//Draw the mesh to the DSV
+				mrTemp->Draw(dxContext);
+			}
+		}
+		j++;
 	}
 	//Reset rendering options
 	ID3D11RenderTargetView* defaultRTV = systemManager->GetDefaultRTV();
@@ -259,9 +354,11 @@ void LightManager::UploadAllShadows(SimpleVertexShader* _vertexShader, SimplePix
 	_pixelShader->SetShaderResourceView("DirShadowMap", dirSRV);
 
 	//Upload point light data
+	_pixelShader->SetShaderResourceView("PointShadowMap", pointSRV);
 	//Upload spot light data
-	_pixelShader->SetSamplerState("DirShadowSampler", dirCSS);
 
+	//Upload the shadow sampler
+	_pixelShader->SetSamplerState("shadowSampler", samplerState);
 }
 
 UINT LightManager::GetShadowMapResolution() {
@@ -285,7 +382,7 @@ ID3D11ShaderResourceView* LightManager::GetShadowSRV() {
 }
 
 ID3D11SamplerState* LightManager::GetShadowSampler() {
-	return dirCSS;
+	return samplerState;
 }
 
 #pragma region Directional Lights
@@ -415,9 +512,13 @@ void LightManager::Release() {
 	spotLightUIDMap.clear();
 
 	shadowRast->Release();
-	dirCSS->Release();
+	samplerState->Release();
 	dirSRV->Release();
 	for (UINT i = 0; i < maxDirLights; i++) {
 		dirDepthStencilArr[i]->Release();
+	}
+	pointSRV->Release();
+	for (UINT i = 0; i < maxPointLights * 6; i++) {
+		pointDepthStencilArr[i]->Release();
 	}
 }

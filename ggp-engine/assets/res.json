@@ -78,10 +78,7 @@
       "pbr": "PBRPShader.cso",
       "debug": "DebugMeshPShader.cso"
     },
-    "shadow": {
-      "texVS": "shadowVShader.cso",
-      "cubeVS":  "cubeShadowVShader.cso"
-    }
+    "shadow": "shadowVShader.cso"
   },
   "tera": {
     "testTerrain": "assets/terrain/testTerrain.raw"

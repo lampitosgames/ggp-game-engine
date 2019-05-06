@@ -35,7 +35,7 @@ cbuffer dirLightData : register(b1) {
 	uint dirLightCount;
 }
 
-static const uint maxPointLightCount = 128;
+static const uint maxPointLightCount = 32;
 cbuffer pointLightData : register(b2) {
 	PointLight pointLights[maxPointLightCount];
 	matrix pointLightProj[maxPointLightCount];
@@ -43,7 +43,7 @@ cbuffer pointLightData : register(b2) {
 	uint pointLightCount;
 }
 
-static const uint maxSpotLightCount = 128;
+static const uint maxSpotLightCount = 32;
 cbuffer spotLightData : register(b3) {
 	SpotLight spotLights[maxSpotLightCount];
 	matrix spotLightProj[maxSpotLightCount];
